@@ -1,0 +1,14 @@
+<!-- BOTÓN DE MODO CLARO (arriba a la izquierda) -->
+<button class="theme-btn" (click)="toggleTheme()" aria-label="Cambiar tema">
+  <img
+    [src]="isLightMode ? 'assets/flynn/trebol-verde.png' : 'assets/flynn/trebol-blanco.png'"
+    alt="Cambiar tema"
+  />
+</button>
+
+<!-- CONTENEDOR DEL BOTÓN DE WHATSAPP (abajo a la derecha) -->
+<div class="floating-container">
+  <button class="whatsapp-btn" (click)="openWhatsApp()" aria-label="Abrir WhatsApp">
+    <img src="assets/flynn/icons-whatsapp.svg" alt="WhatsApp" />
+  </button>
+</div>
