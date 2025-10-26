@@ -5,6 +5,7 @@ import { Component } from '@angular/core';
   imports: [],
   templateUrl: './features.html',
   styleUrl: './features.css',
+  standalone: true,
 })
 export class Features {
 

@@ -3,6 +3,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 @Component({
   selector: 'app-hero',
   templateUrl: './hero.html',
+  standalone: true,
   styleUrls: ['./hero.css']
 })
 export class Hero implements OnInit, OnDestroy {

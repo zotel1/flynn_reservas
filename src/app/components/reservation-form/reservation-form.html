@@ -1,1 +1,49 @@
-<p>reservation-form works!</p>
+<section id="reservar" class="reserva">
+  <h2>Reservá tu mesa</h2>
+  <p>Completá tus datos para asegurar tu lugar en Flynn Irish Bar 🍀</p>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()">
+    <div class="grid">
+      <label>
+        <span>Nombre</span>
+        <input formControlName="nombre" type="text" placeholder="Tu nombre" />
+      </label>
+
+      <label>
+        <span>Email</span>
+        <input formControlName="email" type="email" placeholder="tu@email.com" />
+      </label>
+
+      <label>
+        <span>Teléfono</span>
+        <input formControlName="telefono" type="tel" placeholder="+54..." />
+      </label>
+
+      <label>
+        <span>Fecha</span>
+        <input formControlName="fecha" type="date" />
+      </label>
+
+      <label>
+        <span>Hora</span>
+        <input formControlName="hora" type="time" />
+      </label>
+
+      <label>
+        <span>Personas</span>
+        <input formControlName="personas" type="number" min="1" />
+      </label>
+    </div>
+
+    <label class="mt">
+      <span>Notas</span>
+      <textarea formControlName="notas" rows="3" placeholder="Algún detalle adicional..."></textarea>
+    </label>
+
+    <button class="btn" type="submit" [disabled]="cargando">
+      {{ cargando ? 'Enviando...' : 'Enviar reserva' }}
+    </button>
+
+    <p class="ok" *ngIf="enviado">✅ ¡Reserva enviada con éxito!</p>
+  </form>
+</section>
