@@ -1,13 +1,14 @@
 <section class="hero">
   <div
-    class="hero-bg fade"
-    [ngStyle]="{ 'background-image': 'url(' + currentImage + ')' }"
-  ></div>
-  <div class="overlay"></div>
+    class="hero-bg"
+    [style.background-image]="'url(' + imagenActual + ')'"
+  >
+    <div class="overlay"></div>
+  </div>
 
   <div class="hero-content">
     <h1>Flynn Irish Bar</h1>
-    <p>Reservá tu mesa y viví la mejor experiencia irlandesa.</p>
+    <p>Reservá tu mesa en el mejor bar irlandés de Misiones 🍀</p>
     <a href="#reservar" class="btn">Reservar Ahora</a>
   </div>
 </section>
