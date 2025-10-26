@@ -100,3 +100,11 @@
     transform: scale(1);
   }
 }
+
+body.light-mode .theme-btn {
+  background: #e0b04e;
+}
+
+body.light-mode .theme-btn:hover {
+  box-shadow: 0 0 12px rgba(224, 176, 78, 0.6);
+}
