@@ -1,5 +1,8 @@
 <section class="hero">
-  <div class="hero-bg" [style.backgroundImage]="'url(' + currentImage + ')'"></div>
+  <div
+    class="hero-bg fade"
+    [ngStyle]="{ 'background-image': 'url(' + currentImage + ')' }"
+  ></div>
   <div class="overlay"></div>
 
   <div class="hero-content">

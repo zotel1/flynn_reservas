@@ -14,6 +14,17 @@ export class ReservationForm implements OnInit {
   enviado = false;
   cargando = false;
 
+  sitios = [
+    { nombre: 'Barra Principal', icono: '🍺' },
+    { nombre: 'Patio Cervecero', icono: '🌿' },
+    { nombre: 'Área de Pool', icono: '🎱' },
+    { nombre: 'Espacio de Juegos', icono: '🎮' },
+    { nombre: 'Salón con TV', icono: '📺' },
+    { nombre: 'Jardín Interior', icono: '☘️' },
+  ];
+
+  sitioSeleccionado: string | null = null;
+
   constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
@@ -25,7 +36,13 @@ export class ReservationForm implements OnInit {
       hora: ['', Validators.required],
       personas: [2, [Validators.required, Validators.min(1)]],
       notas: [''],
+      sitio: ['', Validators.required],
     });
+  }
+
+  seleccionarSitio(nombre: string) {
+    this.sitioSeleccionado = nombre;
+    this.form.patchValue({ sitio: nombre });
   }
 
   onSubmit() {
@@ -37,11 +54,11 @@ export class ReservationForm implements OnInit {
     this.cargando = true;
     this.enviado = false;
 
-    // Simulación de envío
     setTimeout(() => {
       this.cargando = false;
       this.enviado = true;
       this.form.reset({ personas: 2 });
+      this.sitioSeleccionado = null;
     }, 1500);
   }
 }
