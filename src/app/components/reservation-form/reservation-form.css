@@ -1,12 +1,3 @@
-:root {
-  --flynn-bg: #07140b;
-  --flynn-bg-light: #0d1c11;
-  --flynn-text: #ffffff;
-  --flynn-muted: #d0cec0;
-  --flynn-accent: #f2a13b;
-  --flynn-green: #1e7d32;
-}
-
 /* ===== CONTENEDOR PRINCIPAL ===== */
 .reserva {
   background: var(--flynn-bg);
@@ -15,6 +6,7 @@
   display: flex;
   justify-content: center;
   background-image: radial-gradient(circle at top, rgba(255, 255, 255, 0.04), transparent 60%);
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
 .reserva .container {
@@ -24,7 +16,8 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 20px;
   padding: 3.5rem 2.5rem;
-  box-shadow: 0 0 40px rgba(0, 0, 0, 0.7);
+  box-shadow: 0 0 35px rgba(0, 0, 0, 0.6);
+  transition: background-color 0.4s ease, box-shadow 0.4s ease;
 }
 
 /* ===== TÍTULOS ===== */
@@ -32,15 +25,14 @@ h2 {
   text-align: center;
   font-size: clamp(2rem, 4vw, 2.8rem);
   margin-bottom: 0.5rem;
-  /*color: var(--flynn-accent);*/
-  color: #ffffff;
+  color: var(--flynn-accent);
   font-family: "Merriweather", serif;
   letter-spacing: 0.5px;
 }
 
 p {
   text-align: center;
-  color: #ffffff;
+  color: var(--flynn-muted);
   margin-bottom: 2.8rem;
   font-family: "Inter", sans-serif;
 }
@@ -53,7 +45,7 @@ p {
 .sitios h3 {
   font-size: 1.2rem;
   margin-bottom: 1.2rem;
-  color: #ffffff;
+  color: var(--flynn-accent);
   text-align: left;
   font-family: "Merriweather", serif;
 }
@@ -61,9 +53,7 @@ p {
 .sitios-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 1.2rem;
-  color: #ffffff;
-  
+  gap: 1.4rem;
 }
 
 .sitios-grid button {
@@ -86,6 +76,13 @@ p {
   background: rgba(255, 255, 255, 0.12);
 }
 
+.sitios-grid button.activo {
+  background: var(--flynn-accent);
+  border-color: var(--flynn-accent);
+  color: #ffffff;
+  box-shadow: 0 0 20px rgba(242, 161, 59, 0.5);
+  transform: scale(1.02);
+}
 
 .icon {
   font-size: 1.4rem;
@@ -95,14 +92,17 @@ p {
 form {
   display: flex;
   flex-direction: column;
-  gap: 2.2rem; /* separación entre grupos */
+  gap: 2.4rem;
 }
 
 .grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-  gap: 1.6rem 2rem; /* más espacio vertical y horizontal */
-  color: #ffffff;
+  gap: 2rem 2.5rem;
+}
+
+.grid label {
+  margin-bottom: 1.2rem;
 }
 
 label span {
@@ -120,7 +120,7 @@ textarea {
   border-radius: 10px;
   border: 1px solid #222b22;
   background: #101710;
-  color: var(--flynn-muted);
+  color: var(--flynn-text);
   font-size: 1rem;
   font-family: "Inter", sans-serif;
   transition: border 0.2s ease, box-shadow 0.3s ease;
@@ -138,20 +138,10 @@ textarea:focus {
   box-shadow: 0 0 10px rgba(30, 125, 50, 0.5);
 }
 
-textarea {
-  resize: none;
-  height: 110px;
-}
-
-.notas {
-  margin-top: 0.5rem;
-  color: #ffffff;
-}
-
-/* ===== BOTÓN ===== */
+/* ===== BOTÓN PRINCIPAL ===== */
 .btn {
   background: var(--flynn-accent);
-  color: #ffffff; /* blanco visible */
+  color: #ffffff;
   border: none;
   border-radius: 12px;
   padding: 1.2rem;
@@ -179,43 +169,82 @@ textarea {
   margin-top: 1.2rem;
   font-family: "Inter", sans-serif;
 }
-.sitios-grid button.activo {
-  background: #f2a13b;
-  border-color: #f2a13b;
-  color: #ffffff;
-  box-shadow: 0 0 25px rgba(242, 161, 59, 0.6);
-  transform: scale(1.02);
+
+/* ======== MODO CLARO (ST. PATRICK) ======== */
+body.light-mode .reserva {
+  background: #cdecc9;
+  background-image: radial-gradient(circle at top, rgba(255, 255, 255, 0.4), transparent 70%);
+  color: #1b3b1a;
 }
 
-.sitios-grid button.activo:hover {
-  background: #ffb648;
-  box-shadow: 0 0 35px rgba(242, 161, 59, 0.8);
-  transform: scale(1.04);
+body.light-mode .reserva .container {
+  background: #e8f6e8;
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 0 30px rgba(0, 0, 0, 0.08);
 }
 
-/* ===== SEPARACIÓN ENTRE LABELS E INPUTS ===== */
-label {
+/* === Títulos === */
+body.light-mode h2,
+body.light-mode .sitios h3 {
+  color: #d8a63a;
+}
+
+body.light-mode p {
+  color: #3e633f;
+}
+
+/* === Inputs y Textarea === */
+body.light-mode input,
+body.light-mode textarea {
+  background: #ffffff;
+  color: #1b3b1a;
+  border: 1px solid #9ecf9e;
+}
+
+body.light-mode input:focus,
+body.light-mode textarea:focus {
+  border-color: #3ea35c;
+  box-shadow: 0 0 8px rgba(62, 163, 92, 0.5);
+}
+
+/* === Botones de sitio (modo claro, versión final mejorada) === */
+body.light-mode .sitios-grid button {
+  background: #e2f4da; /* #c9ebb8más claro y con leve contraste#e2f4da */
+  color: #143015;
+  border: 2px solid #2f6b2f; /* verde Flynn fuerte */
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+  font-weight: 500;
   display: flex;
-  flex-direction: column;
-  gap: 1.2rem; /* espacio entre texto y campo */
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  transition: all 0.25s ease-in-out;
 }
 
-label span {
-  color: var(--flynn-muted);
-  font-size: 0.95rem;
-  letter-spacing: 0.2px;
+body.light-mode .sitios-grid button:hover:not(.activo) {
+  background: #c9ebb8; /* verde más oscuro al hover */
+  border-color: #3ea35c;
+  transform: scale(1.03);
+  box-shadow: 0 0 10px rgba(62, 163, 92, 0.4);
 }
 
-.grid {
-  gap: 2.2rem 3rem; /* aumenta espacio entre columnas y filas */
+body.light-mode .sitios-grid button.activo {
+  background: #3ea35c;
+  color: #ffffff;
+  border-color: #d8a63a; /* borde dorado Flynn */
+  box-shadow: 0 0 20px rgba(216, 166, 58, 0.5);
+  transform: scale(1.05);
+}
+/* === Botón principal === */
+body.light-mode .btn {
+  background: #d8a63a;
+  color: #1b1b1b;
+  box-shadow: 0 0 12px rgba(216, 166, 58, 0.4);
 }
 
-.notas {
-  margin-top: 1.8rem;
-}
-
-/* ===== EFECTO AL PASAR EL MOUSE SOBRE BOTONES NORMALES ===== */
-.sitios-grid button:hover:not(.activo) {
-  background: rgba(242, 161, 59, 0.12);
-  border-color: rgba(242, 161, 59, 0.25);
+body.light-mode .btn:hover {
+  background: #f1c34a;
+  box-shadow: 0 0 20px rgba(216, 166, 58, 0.6);
 }
