@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "build:api": "tsc -p tsconfig.api.json",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test"
