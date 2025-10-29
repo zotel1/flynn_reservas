@@ -10,7 +10,7 @@
     "test": "ng test"
   },
   "engines": {
-    "node": "22.x"
+    "node": "20.x"
   },
   "dependencies": {
     "@angular/common": "^20.3.0",
