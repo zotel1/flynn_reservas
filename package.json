@@ -21,9 +21,9 @@
       }
     ]
   },
-
-    "node": "20.x"
-  ,
+  "engines": {
+    "node": "18.x"
+  },
   "dependencies": {
     "@angular/common": "^20.3.0",
     "@angular/compiler": "^20.3.0",
