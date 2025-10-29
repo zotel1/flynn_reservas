@@ -3,7 +3,7 @@ import { Hero } from '../../components/hero/hero';
 import { Features } from '../../components/features/features';
 import { ReservationForm } from '../../components/reservation-form/reservation-form';
 import { Footer } from '../../components/footer/footer';
-import { FloatingButtons } from '../../components/floating-buttons/floating-buttons';
+
 
 @Component({
   selector: 'app-reservas',
@@ -13,7 +13,7 @@ import { FloatingButtons } from '../../components/floating-buttons/floating-butt
     Features,
     ReservationForm,
     Footer,
-    FloatingButtons
+    
   ],
   templateUrl: './reservas.html',
   styleUrl: './reservas.css',
