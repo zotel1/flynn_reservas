@@ -7,6 +7,9 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: "Método no permitido" });
   }
 
+  console.log("Runtime version:", process.version);
+  res.status(200).json({ version: process.version });
+
   try {
     const { message } = req.body || {};
     if (!message || message.trim() === "") {
