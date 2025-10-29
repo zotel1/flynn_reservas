@@ -35,90 +35,93 @@ export class Chatbot {
       timestamp: new Date(),
     });
   }
-async sendMessage() {
-    const text = this.userMessage.trim();
 
-    // === VALIDACIONES ===
-    if (!text) return;
-    if (text.length > 60) {
-      this.messages.push({
-        id: Date.now().toString(),
-        text: '⚠️ Tu mensaje es demasiado largo. Por favor, escribí en menos de 60 caracteres.',
-        isBot: true,
-        timestamp: new Date(),
-      });
-      this.userMessage = '';
-      return;
-    }
-    if (this.userQuestionCount >= 6) {
-      this.showLimitModal = true;
-      return;
-    }
+  async sendMessage() {
+  const text = this.userMessage.trim();
 
-    // === MOSTRAR MENSAJE DEL USUARIO ===
-    const userMsg: Message = {
-      id: Date.now().toString(),
-      text,
-      isBot: false,
-      timestamp: new Date(),
-    };
-    this.messages.push(userMsg);
-    this.userMessage = '';
-    this.userQuestionCount++;
-    this.isTyping = true;
+  // === VALIDACIONES ===
+  if (!text) return;
 
-    const lower = text.toLowerCase();
-
-    // === DETECTAR PALABRAS CLAVE DE RESERVA ===
-    if (lower.includes('reserva') || lower.includes('reservar') || lower.includes('mesa')) {
-      this.isTyping = false;
-      this.showLimitModal = true;
-      return;
-    }
-
-    // === CONSULTAR A GEMINI (API Serverless) ===
-    try {
-      const response = await fetch('/api/gemini', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: text }),
-      });
-
-      const data = await response.json();
-
-      this.messages.push({
-        id: (Date.now() + 1).toString(),
-        text: data.reply || 'No pude entenderte, podrías repetirlo 🍀',
-        isBot: true,
-        timestamp: new Date(),
-      });
-    } catch (error) {
-      console.error('Error al conectar con Gemini:', error);
-      this.messages.push({
-        id: (Date.now() + 2).toString(),
-        text: '⚠️ Ocurrió un error al conectar con el asistente. Intentá más tarde.',
-        isBot: true,
-        timestamp: new Date(),
-      });
-    } finally {
-      this.isTyping = false;
-    }
-  }
-
-  // === ACCIONES DEL MODAL ===
-  onConfirmReserve() {
-    this.showLimitModal = false;
-    this.router.navigate(['/reservas']);
-  }
-
-  onDeclineReserve() {
-    this.showLimitModal = false;
+  if (text.length > 60) {
     this.messages.push({
       id: Date.now().toString(),
-      text: '¡Entendido! 🍀 Si más adelante querés hacer una reserva, estaré aquí para ayudarte.',
+      text: '⚠️ Tu mensaje es demasiado largo. Por favor, escribí en menos de 60 caracteres.',
       isBot: true,
       timestamp: new Date(),
     });
-    this.userQuestionCount = 0;
+    this.userMessage = '';
+    return;
   }
+
+  if (this.userQuestionCount >= 6) {
+    this.showLimitModal = true;
+    return;
+  }
+
+  // === MOSTRAR MENSAJE DEL USUARIO ===
+  const userMsg: Message = {
+    id: Date.now().toString(),
+    text,
+    isBot: false,
+    timestamp: new Date(),
+  };
+  this.messages.push(userMsg);
+  this.userMessage = '';
+  this.userQuestionCount++;
+  this.isTyping = true;
+
+  const lower = text.toLowerCase();
+
+  // === DETECTAR PALABRAS CLAVE DE RESERVA ===
+  if (lower.includes('reserva') || lower.includes('reservar') || lower.includes('mesa')) {
+    this.isTyping = false;
+    this.showLimitModal = true;
+    return;
+  }
+
+  // === CONSULTAR A GEMINI (API Serverless en Vercel) ===
+  try {
+    const response = await fetch('https://flynn-reservas.vercel.app/api/gemini.js', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: text }),
+    });
+
+    const data = await response.json();
+
+    this.messages.push({
+      id: (Date.now() + 1).toString(),
+      text: data.reply || 'No pude entenderte, podrías repetirlo 🍀',
+      isBot: true,
+      timestamp: new Date(),
+    });
+  } catch (error) {
+    console.error('Error al conectar con Gemini:', error);
+    this.messages.push({
+      id: (Date.now() + 2).toString(),
+      text: '⚠️ Ocurrió un error al conectar con el asistente. Intentá más tarde.',
+      isBot: true,
+      timestamp: new Date(),
+    });
+  } finally {
+    this.isTyping = false;
+  }
+}
+
+// === ACCIONES DEL MODAL ===
+onConfirmReserve() {
+  this.showLimitModal = false;
+  this.router.navigate(['/reservas']);
+}
+
+onDeclineReserve() {
+  this.showLimitModal = false;
+  this.messages.push({
+    id: Date.now().toString(),
+    text: '¡Entendido! 🍀 Si más adelante querés hacer una reserva, estaré aquí para ayudarte.',
+    isBot: true,
+    timestamp: new Date(),
+  });
+  this.userQuestionCount = 0;
+}
 }
