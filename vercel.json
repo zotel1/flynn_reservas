@@ -14,3 +14,4 @@
     { "src": "/(.*)", "dest": "/dist/flynn_reservas/index.html" }
   ]
 }
+
