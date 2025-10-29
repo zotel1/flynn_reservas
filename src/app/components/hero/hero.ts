@@ -29,6 +29,8 @@ export class Hero implements OnInit, OnDestroy {
     'assets/flynn/8.jpeg'
   ];
 
+  // Agregamos el scroll a reservas
+
   scrollToReserva() {
     const section = document.getElementById('reservar');
     if (section) {
