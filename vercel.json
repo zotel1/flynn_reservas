@@ -1,15 +1,15 @@
 {
   "version": 2,
   "framework": "angular",
-  "buildCommand": "pnpm run build",
-  "outputDirectory": "dist/flynn_reservas",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/flynn_reservas/browser",
   "functions": {
-    "api/**/*.js": {
+    "api/**/*.ts": {
       "runtime": "@vercel/node@2.15.10"
     }
   },
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/(.*)", "dest": "/dist/flynn_reservas/index.html" }
+    { "src": "/(.*)", "dest": "/dist/flynn_reservas/browser/index.html" }
   ]
 }
