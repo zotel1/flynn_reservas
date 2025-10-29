@@ -1,34 +1,40 @@
 // api/gemini.ts
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import type { VercelRequest, VercelResponse } from '@vercel/node';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 
-export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Método no permitido" });
+// 👇 Tipado explícito y control de errores
+export default async function handler(req: VercelRequest, res: VercelResponse) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Método no permitido' });
   }
 
   try {
-    const { message } = req.body;
-    if (!message || message.trim() === "") {
-      return res.status(400).json({ error: "Mensaje vacío" });
+    const { message } = req.body as { message?: string };
+    if (!message || message.trim() === '') {
+      return res.status(400).json({ error: 'Mensaje vacío' });
     }
 
-    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const apiKey = process.env.GEMINI_API_KEY;
+    if (!apiKey) {
+      return res.status(500).json({ error: 'Falta GEMINI_API_KEY en el entorno' });
+    }
 
-    // Prompt base con estilo "Flynn Irish Pub"
+    const genAI = new GoogleGenerativeAI(apiKey);
+    const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
+
     const prompt = `
-      Sos Flynn Assistant 🍀, el asistente virtual de un bar irlandés familiar en Misiones.
-      Responde siempre en tono amigable, cálido y breve (máx. 2 frases).
-      Hablas sobre horarios, eventos, menú, ambiente o reservas.
+      Sos Flynn Assistant 🍀, el asistente virtual del Flynn Irish Pub.
+      Responde con tono cálido, irlandés y en español con tono misionero y correntino, argentino.
+      Sé breve (máx. 2 frases). Si el mensaje habla de reservas, menciona que puede reservarse desde el sitio.
       Usuario dice: "${message}"
     `;
 
     const result = await model.generateContent(prompt);
-    const response = await result.response.text();
+    const responseText = await result.response.text();
 
-    res.status(200).json({ reply: response });
+    return res.status(200).json({ reply: responseText });
   } catch (err) {
-    console.error("Error en función Gemini:", err);
-    res.status(500).json({ error: "Error interno del servidor" });
+    console.error('Error en Gemini:', err);
+    return res.status(500).json({ error: 'Error interno del servidor' });
   }
 }
