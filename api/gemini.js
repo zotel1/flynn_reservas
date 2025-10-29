@@ -24,7 +24,7 @@ export default async function handler(req, res) {
     console.log("✅ API KEY detectada, inicializando modelo Gemini...");
 
     const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
     // Prompt base para mantener el tono irlandés y del bar
     const prompt = `
       Sos Flynn Assistant 🍀, el asistente virtual del Flynn Irish Pub.
