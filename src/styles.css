@@ -1,15 +1,14 @@
-/* You can add global styles to this file, and also import other style files */
-/* ========== ESTILOS GLOBALES ========== */
-:root {
-  --flynn-bg: #07140b;
-  --flynn-bg-light: #0d1c11;
-  --flynn-text: #ffffff;
-  --flynn-muted: #d0cec0;
-  --flynn-accent: #f2a13b;
-  --flynn-green: #1e7d32;
-}
+/* Importa el theme y luego tus estilos globales */
+@import url('./styles/_flynn-theme.css');
 
-/* Transiciones suaves para todo */
-* {
-  transition: background-color 0.4s ease, color 0.4s ease, border-color 0.4s ease;
+/* Tus estilos globales existentes */
+:root{
+  --flynn-bg:#07140b;
+  --flynn-bg-light:#0d1c11;
+  --flynn-text:#ffffff;
+  --flynn-muted:#d0cec0;
+  --flynn-accent:#f2a13b;
+  --flynn-green:#1e7d32;
 }
+/* Transiciones suaves */
+*{ transition:background-color .4s ease, color .4s ease, border-color .4s ease }

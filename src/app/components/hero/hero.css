@@ -29,7 +29,7 @@
   padding: 0 1rem;
 }
 
-.hero-content h1 {
+/*.hero-content h1 {
   font-size: clamp(2.5rem, 6vw, 4rem);
   font-family: 'Merriweather', serif;
   margin-bottom: 1rem;
@@ -37,11 +37,6 @@
   text-shadow: 0 0 10px rgba(0, 0, 0, 0.6);
 }
 
-.hero-content p {
-  font-size: clamp(1rem, 2vw, 1.3rem);
-  color: #f7f3e9;
-  margin-bottom: 2rem;
-}
 
 .hero-content .btn {
   background: #f2a13b;
@@ -52,7 +47,23 @@
   transition: all 0.3s ease;
   text-decoration: none;
   box-shadow: 0 0 20px rgba(242, 161, 59, 0.4);
+} */
+
+.hero-content h1{
+  font-size:clamp(2.5rem,6vw,4rem);
+  font-family:'Uncial Antiqua', serif;
+  margin-bottom:1rem;
+  color:var(--flynn-accent);
+  text-shadow:0 0 10px rgba(0,0,0,.6);
 }
+
+
+.hero-content p {
+  font-size: clamp(1rem, 2vw, 1.3rem);
+  color: #f7f3e9;
+  margin-bottom: 2rem;
+}
+
 
 .hero-content .btn:hover {
   background: #ffb648;

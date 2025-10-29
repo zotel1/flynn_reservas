@@ -1,10 +1,13 @@
-<!--
 <div class="chat-container">
-  <header class="chat-header">
-    <h2>🍀 Flynn Assistant</h2>
+  <header class="chat-header flynn-frame">
+    <img src="assets/flynn/logo-trebol.png" alt="Flynn Logo" class="chat-logo" />
+    <div class="chat-title">
+      <h2 class="font-title">Flynn's Assistant</h2>
+      <p class="font-text">Tu compañero virtual del pub</p>
+    </div>
   </header>
 
-  <div class="chat-messages">
+  <div class="chat-messages scroll-gold">
     <div *ngFor="let msg of messages" [ngClass]="msg.isBot ? 'bot' : 'user'">
       <div class="bubble">
         <p>{{ msg.text }}</p>
@@ -18,40 +21,15 @@
   </div>
 
   <div class="chat-input">
-    <input [(ngModel)]="userMessage" placeholder="Escribí tu mensaje..." (keyup.enter)="sendMessage()" />
-    <button (click)="sendMessage()">Enviar</button>
+    <input
+      [(ngModel)]="userMessage"
+      maxlength="60"
+      placeholder="Escribí tu mensaje..."
+      (keyup.enter)="sendMessage()" />
+    <button (click)="sendMessage()" class="font-title">Enviar</button>
   </div>
 
   <footer class="chat-footer">
-    <p>Flynn Irish Pub © 2025 | Hecho con 🍀 y pasión irlandesa</p>
-  </footer>
-</div>
--->
-
-<div class="chat-container">
-  <header class="chat-header">
-    <h2>🍀 Flynn Irish Pub Assistant</h2>
-  </header>
-
-  <div class="chat-messages">
-    <div *ngFor="let msg of messages" [ngClass]="msg.isBot ? 'bot' : 'user'">
-      <div class="bubble">
-        <p>{{ msg.text }}</p>
-        <small>{{ msg.timestamp | date:'shortTime' }}</small>
-      </div>
-    </div>
-
-    <div class="typing" *ngIf="isTyping">
-      <span></span><span></span><span></span>
-    </div>
-  </div>
-
-  <div class="chat-input">
-    <input [(ngModel)]="userMessage" maxlength="30" placeholder="Escribí tu mensaje..." (keyup.enter)="sendMessage()" />
-    <button (click)="sendMessage()">Enviar</button>
-  </div>
-
-  <footer class="chat-footer">
-    <p>Flynn Irish Pub © 2025 | Hecho con 🍀 y pasión irlandesa</p>
+    <app-footer></app-footer> <!-- reutilizamos tu footer global -->
   </footer>
 </div>

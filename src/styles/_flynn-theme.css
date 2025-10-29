@@ -1,0 +1,63 @@
+/* ===========================================
+   🎨 FLYNN THEME — Irish Pub Visual System 🍀
+   =========================================== */
+
+/* === COLORES BASE (paleta) === */
+:root{
+  --flynn-green-dark:#1f2610;
+  --flynn-green-mid:#2b3316;
+  --flynn-green-light:#3b4720;
+  --flynn-gold:#d4a84e;
+  --flynn-gold-soft:#e7bb63;
+  --flynn-beige:#f7f3e7;
+  --flynn-brown:#b3885b;
+
+  /* ya presentes en tu styles.css, los mantenemos para la sección reservas */
+  --flynn-bg:#07140b;
+  --flynn-bg-light:#0d1c11;
+  --flynn-text:#ffffff;
+  --flynn-muted:#d0cec0;
+  --flynn-accent:#f2a13b;
+  --flynn-green:#1e7d32;
+}
+
+/* === TIPOGRAFÍAS === */
+@import url('https://fonts.googleapis.com/css2?family=Uncial+Antiqua&family=Marcellus+SC&family=Merriweather:wght@400;700&display=swap');
+
+.font-title { font-family:'Uncial Antiqua', serif; letter-spacing:.5px; }
+.font-text  { font-family:'Marcellus SC', serif; }
+.font-serif { font-family:'Merriweather', serif; }
+
+/* === UTILITARIAS DE COLOR === */
+.text-gold{color:var(--flynn-gold)}
+.text-beige{color:var(--flynn-beige)}
+.bg-flynn-dark{background:var(--flynn-green-dark); color:var(--flynn-beige)}
+.bg-flynn-mid{background:var(--flynn-green-mid);  color:var(--flynn-beige)}
+.bg-flynn-light{background:var(--flynn-green-light); color:var(--flynn-beige)}
+
+/* === BOTÓN PRINCIPAL Flynn === */
+.btn-flynn{
+  background:var(--flynn-accent);
+  color:#fff; border:none; border-radius:12px;
+  padding:1rem 2rem; font-weight:700; cursor:pointer;
+  font-family:'Merriweather', serif;
+  box-shadow:0 0 15px rgba(242,161,59,.3);
+  transition:all .25s ease-in-out;
+}
+.btn-flynn:hover{ background:var(--flynn-gold-soft); transform:scale(1.03); box-shadow:0 0 25px rgba(242,161,59,.6)}
+
+/* === MARCO DORADO (borde decorativo) === */
+.flynn-frame{
+  position:relative; border:2px solid var(--flynn-gold);
+  box-shadow:0 0 20px rgba(212,168,78,.18); border-radius:10px;
+}
+.flynn-frame::before,.flynn-frame::after{
+  content:""; position:absolute; top:0; height:2px; width:50px;
+  background:var(--flynn-gold); box-shadow:0 0 8px rgba(212,168,78,.5)
+}
+.flynn-frame::before{left:10px} .flynn-frame::after{right:10px}
+
+/* === SCROLLBAR dorado === */
+.scroll-gold{ scrollbar-width:thin; scrollbar-color:var(--flynn-gold) var(--flynn-green-dark) }
+.scroll-gold::-webkit-scrollbar{ width:8px }
+.scroll-gold::-webkit-scrollbar-thumb{ background:var(--flynn-gold); border-radius:5px }

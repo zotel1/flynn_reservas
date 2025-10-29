@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Footer } from '../footer/footer';
 
 interface Message {
   id: string;
@@ -12,7 +13,7 @@ interface Message {
 @Component({
   selector: 'app-chatbot',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, Footer],
   templateUrl: './chatbot.html',
   styleUrl: './chatbot.css',
 })
@@ -38,7 +39,7 @@ export class Chatbot implements OnInit {
 
     if (!text) return;
 
-    if (text.length > 30) {
+    if (text.length > 60) {
       this.messages.push({
         id: Date.now().toString(),
         text: '⚠️ Tu mensaje es muy largo. Escribí algo más corto (máx. 30 caracteres).',

@@ -1,296 +1,59 @@
-/* === Flynn Irish Pub Chatbot 🍀 === 
-
-.chat-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background: radial-gradient(circle at top, #32421d 0%, #2b3a1a 60%);
-  color: #f8f5ec;
-  font-family: 'Cormorant Garamond', serif;
-  border: 3px solid #a67c52;
-  box-shadow: inset 0 0 30px rgba(0,0,0,0.5);
+/* === Contenedor general con paleta Flynn === */
+.chat-container{
+  display:flex; flex-direction:column; height:100vh;
+  background:radial-gradient(circle at top, var(--flynn-green-light) 0%, var(--flynn-green-dark) 80%);
+  color:var(--flynn-beige);
+  font-family:'Marcellus SC', serif;
+  border:2px solid var(--flynn-gold);
+  box-shadow:inset 0 0 40px rgba(0,0,0,.5);
 }
 
-/* HEADER 
-.chat-header {
-  background: linear-gradient(180deg, #3f4d25, #2f3b1b);
-  color: #f5f0d9;
-  padding: 12px;
-  text-align: center;
-  border-bottom: 2px solid #a67c52;
-  font-family: 'MedievalSharp', cursive;
-  font-size: 1.6em;
-  letter-spacing: 1px;
-  text-shadow: 0 1px 2px #000;
+/* === Header con logo + título === */
+.chat-header{
+  display:flex; align-items:center; justify-content:center; gap:12px;
+  background:linear-gradient(180deg, var(--flynn-green-light), var(--flynn-green-mid));
+  padding:14px 10px; border-bottom:2px solid var(--flynn-gold);
+  text-shadow:0 2px 4px #000;
 }
+.chat-logo{ width:38px; height:38px; object-fit:contain; filter: drop-shadow(0 0 6px rgba(212,168,78,.55)); }
+.chat-title h2{ margin:0; font-size:1.7em; }
+.chat-title p{ margin:2px 0 0; font-size:.85em; color:var(--flynn-gold) }
 
-/* MESSAGES 
-.chat-messages {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #a67c52 #2b3a1a;
-}
+/* === Mensajes === */
+.chat-messages{ flex:1; padding:20px }
+.user,.bot{ display:flex; margin-bottom:12px }
+.user{ justify-content:flex-end }
 
-.chat-messages::-webkit-scrollbar {
-  width: 8px;
+.bubble{
+  padding:12px 16px; border-radius:12px; max-width:75%;
+  box-shadow:0 2px 5px rgba(0,0,0,.4); border:1px solid var(--flynn-gold);
+  line-height:1.5;
 }
-.chat-messages::-webkit-scrollbar-thumb {
-  background: #a67c52;
-  border-radius: 4px;
-}
+.bot .bubble{ background:rgba(38,46,22,.92); color:var(--flynn-beige) }
+.user .bubble{ background:rgba(179,136,91,.92); color:#fffdf5 }
 
-.user, .bot {
-  display: flex;
-  margin-bottom: 12px;
+/* === Input === */
+.chat-input{
+  display:flex; align-items:center;
+  background:var(--flynn-green-mid); padding:10px; border-top:2px solid var(--flynn-gold)
 }
+.chat-input input{
+  flex:1; padding:10px; border:1px solid var(--flynn-gold); border-radius:8px;
+  background:var(--flynn-green-dark); color:var(--flynn-beige); font-size:15px;
+}
+.chat-input input::placeholder{ color:#cbb887 }
+.chat-input button{
+  background:var(--flynn-gold); color:var(--flynn-green-dark);
+  border:none; margin-left:8px; padding:10px 16px; border-radius:8px; cursor:pointer;
+  font-weight:bold; transition:all .3s ease;
+}
+.chat-input button:hover{ background:var(--flynn-gold-soft); transform:scale(1.05) }
 
-.user {
-  justify-content: flex-end;
-}
+/* === Animación de escritura === */
+.typing{ display:flex; gap:4px; margin:10px 0 }
+.typing span{ width:8px; height:8px; background:var(--flynn-gold); border-radius:50%; animation:blink 1.4s infinite both }
+.typing span:nth-child(2){ animation-delay:.2s } .typing span:nth-child(3){ animation-delay:.4s }
+@keyframes blink{0%,80%,100%{opacity:0; transform:translateY(0)} 40%{opacity:1; transform:translateY(-4px)}}
 
-.bubble {
-  padding: 10px 14px;
-  border-radius: 12px;
-  max-width: 70%;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-  border: 2px solid #a67c52;
-  word-wrap: break-word;
-}
-
-.bot .bubble {
-  background: #f5f0d9;
-  color: #2b3a1a;
-}
-
-.user .bubble {
-  background: #b3885b;
-  color: #fffef8;
-}
-
-/* INPUT AREA 
-.chat-input {
-  display: flex;
-  align-items: center;
-  background: #3f4d25;
-  padding: 10px;
-  border-top: 2px solid #a67c52;
-}
-
-.chat-input input {
-  flex: 1;
-  padding: 10px;
-  border: 2px solid #a67c52;
-  border-radius: 8px;
-  background: #2b3a1a;
-  color: #f8f5ec;
-  font-size: 15px;
-}
-
-.chat-input input::placeholder {
-  color: #cfc9b2;
-}
-
-.chat-input button {
-  background: #a67c52;
-  color: #fffdf5;
-  border: none;
-  margin-left: 8px;
-  padding: 10px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: 'MedievalSharp', cursive;
-  transition: background 0.3s ease;
-}
-.chat-input button:hover {
-  background: #c2955b;
-}
-
-/* TYPING ANIMATION 
-.typing {
-  display: flex;
-  gap: 4px;
-  margin: 10px 0;
-  justify-content: flex-start;
-}
-.typing span {
-  width: 8px;
-  height: 8px;
-  background: #b3885b;
-  border-radius: 50%;
-  animation: blink 1.4s infinite both;
-}
-.typing span:nth-child(2) { animation-delay: 0.2s; }
-.typing span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes blink {
-  0%, 80%, 100% { opacity: 0; transform: translateY(0); }
-  40% { opacity: 1; transform: translateY(-4px); }
-}
-
-/* FOOTER 
-.chat-footer {
-  background: #3f4d25;
-  text-align: center;
-  font-size: 12px;
-  color: #f5f0d9;
-  padding: 8px 0;
-  border-top: 2px solid #a67c52;
-  font-family: 'Cormorant Garamond', serif;
-}
-
-*/
-
-/* === Flynn's Assistant 🍀 Estilo Bar Irlandés === */
-
-.chat-container {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-  background: radial-gradient(circle at top, #3b4720 0%, #1f2610 80%);
-  color: #f7f3e7;
-  font-family: 'Marcellus SC', serif;
-  border: 2px solid #d4a84e;
-  box-shadow: inset 0 0 40px rgba(0, 0, 0, 0.5);
-}
-
-/* === ENCABEZADO === */
-.chat-header {
-  background: linear-gradient(180deg, #4b5a23, #2d3418);
-  color: #f7f3e7;
-  padding: 16px;
-  text-align: center;
-  border-bottom: 2px solid #d4a84e;
-  font-family: 'Uncial Antiqua', serif;
-  font-size: 1.8em;
-  letter-spacing: 0.5px;
-  text-shadow: 0 2px 4px #000;
-  position: relative;
-}
-
-.chat-header::after {
-  content: "Tu compañero virtual del pub";
-  display: block;
-  font-family: 'Marcellus SC', serif;
-  font-size: 0.8em;
-  font-weight: normal;
-  color: #c8b27d;
-  margin-top: 4px;
-}
-
-/* === MENSAJES === */
-.chat-messages {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-  scrollbar-width: thin;
-  scrollbar-color: #d4a84e #1f2610;
-}
-
-.chat-messages::-webkit-scrollbar {
-  width: 8px;
-}
-.chat-messages::-webkit-scrollbar-thumb {
-  background: #d4a84e;
-  border-radius: 5px;
-}
-
-.user,
-.bot {
-  display: flex;
-  margin-bottom: 12px;
-}
-
-.user {
-  justify-content: flex-end;
-}
-
-.bubble {
-  padding: 12px 16px;
-  border-radius: 12px;
-  max-width: 75%;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.4);
-  border: 1px solid #d4a84e;
-  line-height: 1.5;
-}
-
-.bot .bubble {
-  background: rgba(38, 46, 22, 0.9);
-  color: #f7f3e7;
-}
-
-.user .bubble {
-  background: rgba(179, 136, 91, 0.9);
-  color: #fffdf5;
-}
-
-/* === INPUT === */
-.chat-input {
-  display: flex;
-  background: #2b3316;
-  padding: 10px;
-  border-top: 2px solid #d4a84e;
-}
-
-.chat-input input {
-  flex: 1;
-  padding: 10px;
-  border: 1px solid #d4a84e;
-  border-radius: 8px;
-  background: #1f2610;
-  color: #f7f3e7;
-  font-size: 15px;
-}
-
-.chat-input input::placeholder {
-  color: #bfa97b;
-}
-
-.chat-input button {
-  background: #d4a84e;
-  color: #1f2610;
-  border: none;
-  margin-left: 8px;
-  padding: 10px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-family: 'Uncial Antiqua', serif;
-  font-weight: bold;
-  transition: all 0.3s ease;
-}
-
-.chat-input button:hover {
-  background: #e7bb63;
-  transform: scale(1.05);
-}
-
-/* === ANIMACIÓN DE ESCRITURA === */
-.typing {
-  display: flex;
-  gap: 4px;
-  margin: 10px 0;
-}
-.typing span {
-  width: 8px;
-  height: 8px;
-  background: #d4a84e;
-  border-radius: 50%;
-  animation: blink 1.4s infinite both;
-}
-.typing span:nth-child(2) { animation-delay: 0.2s; }
-.typing span:nth-child(3) { animation-delay: 0.4s; }
-@keyframes blink {
-  0%, 80%, 100% { opacity: 0; transform: translateY(0); }
-  40% { opacity: 1; transform: translateY(-4px); }
-}
-
-/* === PIE === */
-.chat-footer {
-  background: #2b3316;
-  text-align: center;
-  font-size: 12px;
-  color: #cbb887;
-  padding: 8px 0;
-  border-top: 2px solid #d4a84e;
-  font-family: 'Marcellus SC', serif;
-}
+/* === Footer reusado === */
+.chat-footer{ border-top:2px solid var(--flynn-gold) }
