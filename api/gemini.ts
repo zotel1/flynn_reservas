@@ -5,7 +5,7 @@ module.exports = async function handler(req: VercelRequest, res: VercelResponse)
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
-  
+
   const { message } = req.body || {};
   if (!message || typeof message !== 'string') {
     return res.status(400).json({ error: 'Mensaje vacío o inválido' });
@@ -26,6 +26,8 @@ module.exports = async function handler(req: VercelRequest, res: VercelResponse)
         contents: [{ role: 'user', parts: [{ text: message }] }]
       }),
     });
+
+    
 
     if (!response.ok) {
       const text = await response.text();
