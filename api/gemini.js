@@ -1,50 +1,59 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
-
+// /api/gemini.js
 export default async function handler(req, res) {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "Método no permitido" });
-  }
-
   try {
-    const body = typeof req.body === "string" ? JSON.parse(req.body) : req.body;
-    const { message } = body;
+    const body = req.body || (await req.json?.());
+    const { message, history = [] } = body || {};
 
-    if (!message || message.trim() === "") {
-      return res.status(400).json({ error: "Mensaje vacío" });
+    if (!message || typeof message !== "string") {
+      return res.status(400).json({ error: "Mensaje vacío o inválido" });
     }
 
     const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      console.error("❌ Falta GEMINI_API_KEY en entorno");
-      return res.status(500).json({ error: "Falta GEMINI_API_KEY" });
-    }
+    const url =
+      "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent";
 
-    // Inicializar cliente con API Key
-    const genAI = new GoogleGenerativeAI(apiKey);
-    const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
+    // === Prompt base ===
+    const systemPrompt = `
+Sos el asistente virtual de *Flynn Irish Pub 🍀*, un bar deportivo con espíritu familiar en Misiones.
+Respondé siempre con un tono cálido, breve y amistoso, como si fueras parte del equipo del bar.
+Podés hablar sobre: horarios, reservas, eventos, menú, bebidas y ambiente.
+Si el usuario menciona "reservar" o "reserva", recordale amablemente que puede hacerlo desde la sección de reservas.
+`;
 
-    // Prompt base para mantener el tono irlandés y del bar
-    const prompt = `
-      Sos Flynn Assistant 🍀, el asistente virtual del Flynn Irish Pub.
-      Respondé con tono cálido, irlandés y en español con acento misionero o correntino.
-      Sé breve (máx. 2 frases). Si el mensaje habla de reservas, mencioná que pueden hacerse desde el sitio.
-      Usuario dice: "${message}"
-    `;
+    // === Construir contexto (últimos 5 mensajes) ===
+    const conversationContext = history
+      .slice(-5)
+      .map((m) => ({
+        role: m.isBot ? "model" : "user",
+        parts: [{ text: m.text }],
+      }));
 
-    // Nuevo método según SDK v1
-    const result = await model.generateContent({
-      contents: [{ role: "user", parts: [{ text: prompt }] }],
+    // === Enviar al modelo ===
+    const response = await fetch(`${url}?key=${apiKey}`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        contents: [
+          { role: "user", parts: [{ text: systemPrompt }] },
+          ...conversationContext,
+          { role: "user", parts: [{ text: message }] },
+        ],
+      }),
     });
 
-    const reply = result.response.text();
-    console.log("✅ Respuesta de Gemini:", reply);
+    if (!response.ok) {
+      const errorData = await response.text();
+      throw new Error(`Gemini API error: ${errorData}`);
+    }
+
+    const data = await response.json();
+    const reply =
+      data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+      "No pude generar una respuesta 🍀";
 
     return res.status(200).json({ reply });
   } catch (error) {
-    console.error("❌ Error interno en Gemini:", error);
-    return res.status(500).json({
-      error: "Error interno del servidor",
-      details: error.message,
-    });
+    console.error("Error al conectar con Gemini:", error);
+    return res.status(500).json({ error: error.message });
   }
 }
