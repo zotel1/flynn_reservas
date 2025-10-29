@@ -6,6 +6,6 @@
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "/api/$1" },
-    { "src": "/(.*)", "dest": "/dist/flynn_reservas/browser/$1" }
+    { "src": "/(.*)", "dest": "/dist/flynn_reservas/browser/index.html" }
   ]
 }
