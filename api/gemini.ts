@@ -1,8 +1,6 @@
-// api/gemini.ts
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-// 👇 Tipado explícito y control de errores
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
@@ -14,9 +12,11 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(400).json({ error: 'Mensaje vacío' });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
+    // ✅ Acceso seguro a la variable de entorno
+    const apiKey = process.env['GEMINI_API_KEY'] ?? '';
     if (!apiKey) {
-      return res.status(500).json({ error: 'Falta GEMINI_API_KEY en el entorno' });
+      console.error('❌ Falta la variable GEMINI_API_KEY en el entorno');
+      return res.status(500).json({ error: 'Falta GEMINI_API_KEY' });
     }
 
     const genAI = new GoogleGenerativeAI(apiKey);
