@@ -58,7 +58,7 @@ export class Chatbot {
     return;
   }
 
-  // === MOSTRAR MENSAJE DEL USUARIO ===
+  // === AGREGAR MENSAJE DEL USUARIO AL CHAT ===
   const userMsg: Message = {
     id: Date.now().toString(),
     text,
@@ -84,7 +84,10 @@ export class Chatbot {
     const response = await fetch('https://flynn-reservas.vercel.app/api/gemini.js', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ message: text }),
+      body: JSON.stringify({
+        message: text,
+        history: this.messages.map(m => ({ text: m.text, isBot: m.isBot })), // <--- HISTORIAL
+      }),
     });
 
     const data = await response.json();
@@ -106,22 +109,5 @@ export class Chatbot {
   } finally {
     this.isTyping = false;
   }
-}
-
-// === ACCIONES DEL MODAL ===
-onConfirmReserve() {
-  this.showLimitModal = false;
-  this.router.navigate(['/reservas']);
-}
-
-onDeclineReserve() {
-  this.showLimitModal = false;
-  this.messages.push({
-    id: Date.now().toString(),
-    text: '¡Entendido! 🍀 Si más adelante querés hacer una reserva, estaré aquí para ayudarte.',
-    isBot: true,
-    timestamp: new Date(),
-  });
-  this.userQuestionCount = 0;
 }
 }
