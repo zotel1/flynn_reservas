@@ -35,18 +35,33 @@ export class Chatbot {
       timestamp: new Date(),
     });
   }
-
-  sendMessage() {
+async sendMessage() {
     const text = this.userMessage.trim();
-    if (!text) return;
 
+    // === VALIDACIONES ===
+    if (!text) return;
+    if (text.length > 60) {
+      this.messages.push({
+        id: Date.now().toString(),
+        text: '⚠️ Tu mensaje es demasiado largo. Por favor, escribí en menos de 60 caracteres.',
+        isBot: true,
+        timestamp: new Date(),
+      });
+      this.userMessage = '';
+      return;
+    }
+    if (this.userQuestionCount >= 6) {
+      this.showLimitModal = true;
+      return;
+    }
+
+    // === MOSTRAR MENSAJE DEL USUARIO ===
     const userMsg: Message = {
       id: Date.now().toString(),
       text,
       isBot: false,
       timestamp: new Date(),
     };
-
     this.messages.push(userMsg);
     this.userMessage = '';
     this.userQuestionCount++;
@@ -55,48 +70,39 @@ export class Chatbot {
     const lower = text.toLowerCase();
 
     // === DETECTAR PALABRAS CLAVE DE RESERVA ===
-    if (
-      lower.includes('reserva') ||
-      lower.includes('reservar') ||
-      lower.includes('mesa')
-    ) {
-      this.isTyping = false;
-      this.showLimitModal = true; // mostramos modal, no redirigimos directo
-      return;
-    }
-
-    // === LÍMITE DE CONSULTAS ===
-    if (this.userQuestionCount > 5) {
+    if (lower.includes('reserva') || lower.includes('reservar') || lower.includes('mesa')) {
       this.isTyping = false;
       this.showLimitModal = true;
       return;
     }
 
-    // === RESPUESTA AUTOMÁTICA ===
-    setTimeout(() => {
-      const botResponse = this.getBotResponse(text);
+    // === CONSULTAR A GEMINI (API Serverless) ===
+    try {
+      const response = await fetch('/api/gemini', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message: text }),
+      });
+
+      const data = await response.json();
+
       this.messages.push({
         id: (Date.now() + 1).toString(),
-        text: botResponse,
+        text: data.reply || 'No pude entenderte, podrías repetirlo 🍀',
         isBot: true,
         timestamp: new Date(),
       });
+    } catch (error) {
+      console.error('Error al conectar con Gemini:', error);
+      this.messages.push({
+        id: (Date.now() + 2).toString(),
+        text: '⚠️ Ocurrió un error al conectar con el asistente. Intentá más tarde.',
+        isBot: true,
+        timestamp: new Date(),
+      });
+    } finally {
       this.isTyping = false;
-    }, 1000);
-  }
-
-  getBotResponse(msg: string): string {
-    const lower = msg.toLowerCase();
-
-    if (lower.includes('horario') || lower.includes('hora'))
-      return 'Estamos abiertos de martes a domingo 🍀. Mar-Jue 18:00–02:00, Vie-Sáb 18:00–04:00 y Dom 18:00–00:00.';
-    if (lower.includes('menú') || lower.includes('menu'))
-      return 'Nuestro menú incluye auténtica comida irlandesa 🍺: Fish & Chips, Irish Stew, Shepherd’s Pie y más.';
-    if (lower.includes('evento') || lower.includes('música'))
-      return '🎶 Tenemos música en vivo los fines de semana y noches especiales. ¡El ambiente es único!';
-    if (lower.includes('pool') || lower.includes('billar'))
-      return '🎱 Contamos con mesas de pool en un ambiente relajado. Ideal para grupos y amigos.';
-    return 'Puedo ayudarte con horarios, menú, eventos o reservas. ¿Qué te gustaría saber?';
+    }
   }
 
   // === ACCIONES DEL MODAL ===
