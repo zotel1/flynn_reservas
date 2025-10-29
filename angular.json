@@ -13,7 +13,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
-            "outputPath": "dist/flynn_reservas/browser",
+            "outputPath": "dist/flynn_reservas",
             "browser": "src/main.ts",
             "tsConfig": "tsconfig.app.json",
             "assets": [
