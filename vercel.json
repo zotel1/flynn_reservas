@@ -1,5 +1,8 @@
 {
   "version": 2,
+  "framework": "angular",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/flynn_reservas/browser",
   "builds": [
     { "src": "api/**/*.{js,ts}", "use": "@vercel/node" },
     { "src": "dist/flynn_reservas/browser/**", "use": "@vercel/static" }
@@ -9,5 +12,3 @@
     { "src": "/(.*)", "dest": "/dist/flynn_reservas/browser/index.html" }
   ]
 }
-
-
