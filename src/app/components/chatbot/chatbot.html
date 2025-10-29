@@ -1,1 +1,57 @@
-<p>chatbot works!</p>
+<!--
+<div class="chat-container">
+  <header class="chat-header">
+    <h2>🍀 Flynn Assistant</h2>
+  </header>
+
+  <div class="chat-messages">
+    <div *ngFor="let msg of messages" [ngClass]="msg.isBot ? 'bot' : 'user'">
+      <div class="bubble">
+        <p>{{ msg.text }}</p>
+        <small>{{ msg.timestamp | date:'shortTime' }}</small>
+      </div>
+    </div>
+
+    <div class="typing" *ngIf="isTyping">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <div class="chat-input">
+    <input [(ngModel)]="userMessage" placeholder="Escribí tu mensaje..." (keyup.enter)="sendMessage()" />
+    <button (click)="sendMessage()">Enviar</button>
+  </div>
+
+  <footer class="chat-footer">
+    <p>Flynn Irish Pub © 2025 | Hecho con 🍀 y pasión irlandesa</p>
+  </footer>
+</div>
+-->
+
+<div class="chat-container">
+  <header class="chat-header">
+    <h2>🍀 Flynn Irish Pub Assistant</h2>
+  </header>
+
+  <div class="chat-messages">
+    <div *ngFor="let msg of messages" [ngClass]="msg.isBot ? 'bot' : 'user'">
+      <div class="bubble">
+        <p>{{ msg.text }}</p>
+        <small>{{ msg.timestamp | date:'shortTime' }}</small>
+      </div>
+    </div>
+
+    <div class="typing" *ngIf="isTyping">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+
+  <div class="chat-input">
+    <input [(ngModel)]="userMessage" maxlength="30" placeholder="Escribí tu mensaje..." (keyup.enter)="sendMessage()" />
+    <button (click)="sendMessage()">Enviar</button>
+  </div>
+
+  <footer class="chat-footer">
+    <p>Flynn Irish Pub © 2025 | Hecho con 🍀 y pasión irlandesa</p>
+  </footer>
+</div>
