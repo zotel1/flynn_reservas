@@ -1,10 +1,12 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
+import { RouterLink } from "@angular/router";
 
 @Component({
   selector: 'app-hero',
   standalone: true,
   templateUrl: './hero.html',
-  styleUrls: ['./hero.css']
+  styleUrls: ['./hero.css'],
+  imports: []
 })
 export class Hero implements OnInit, OnDestroy {
   imagenActual = '';
@@ -26,6 +28,13 @@ export class Hero implements OnInit, OnDestroy {
     'assets/flynn/5.jpeg',
     'assets/flynn/8.jpeg'
   ];
+
+  scrollToReserva() {
+    const section = document.getElementById('reservar');
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
 
   get imagenes() {
     return window.innerWidth > 768 ? this.imagenesDesktop : this.imagenesMobile;

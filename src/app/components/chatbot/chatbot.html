@@ -23,13 +23,25 @@
   <div class="chat-input">
     <input
       [(ngModel)]="userMessage"
-      maxlength="60"
+      maxlength="30"
       placeholder="Escribí tu mensaje..."
       (keyup.enter)="sendMessage()" />
     <button (click)="sendMessage()" class="font-title">Enviar</button>
   </div>
 
   <footer class="chat-footer">
-    <app-footer></app-footer> <!-- reutilizamos tu footer global -->
+    <app-footer></app-footer>
   </footer>
+
+  <!-- MODAL DE CONFIRMACIÓN -->
+  <div class="limit-modal" *ngIf="showLimitModal">
+    <div class="limit-content flynn-frame animate-modal">
+      <h3>¿Deseas hacer una reserva? 🍀</h3>
+      <p>Podés reservar tu mesa directamente desde el sitio.</p>
+      <div class="limit-buttons">
+        <button (click)="onConfirmReserve()" class="btn-flynn">Sí, reservar</button>
+        <button (click)="onDeclineReserve()" class="btn-flynn" style="background:#b3885b">No, gracias</button>
+      </div>
+    </div>
+  </div>
 </div>
