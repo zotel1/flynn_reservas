@@ -55,3 +55,5 @@ export class Hero implements OnInit, OnDestroy {
     clearInterval(this.intervalo);
   }
 }
+
+
