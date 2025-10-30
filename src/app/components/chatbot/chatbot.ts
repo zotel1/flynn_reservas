@@ -156,7 +156,7 @@ export class Chatbot {
   }
 
   remainingQuestionsText(): string {
-    const remaining = this.MAX_QUESTIONS - this.userQuestionCount;
+    const remaining = (this.MAX_QUESTIONS - this.userQuestionCount) / 2;
     if (remaining > 0) {
       return `Te quedan ${remaining} pregunta${remaining > 1 ? 's' : ''} 🍀`;
     } else {
