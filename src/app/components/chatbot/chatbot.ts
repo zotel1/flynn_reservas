@@ -32,9 +32,10 @@ export class Chatbot {
   showLimitModal = false;
   localData: FlynnIntent[] = [];
 
-  // ✅ límites actualizados
-  private readonly MAX_QUESTIONS = 12;
+  // === CONFIGURACIONES ===
+  private readonly MAX_QUESTIONS = 10;
   private readonly MAX_CHARACTERS = 100;
+  private readonly INSTAGRAM_URL = 'https://www.instagram.com/crissigel/';
 
   private readonly API_URL =
     window.location.hostname === 'localhost'
@@ -86,14 +87,13 @@ export class Chatbot {
       return;
     }
 
-    // ✅ Validación de longitud
+    // Validaciones
     if (text.length > this.MAX_CHARACTERS) {
       this.addBotMessage(`⚠️ Escribí menos de ${this.MAX_CHARACTERS} caracteres, por favor.`);
       this.userMessage = '';
       return;
     }
 
-    // ✅ Límite de interacciones
     if (this.userQuestionCount >= this.MAX_QUESTIONS) {
       this.showLimitModal = true;
       return;
@@ -113,7 +113,7 @@ export class Chatbot {
       return;
     }
 
-    // 1️⃣ Intento de respuesta local
+    // Intento de respuesta local
     const localResponse = this.matchLocalIntent(lower);
     if (localResponse) {
       this.addBotMessage(localResponse);
@@ -121,7 +121,7 @@ export class Chatbot {
       return;
     }
 
-    // 2️⃣ Si no hay coincidencia local, usar Gemini
+    // Si no hay coincidencia local, usar Gemini
     try {
       const response = await fetch(this.API_URL, {
         method: 'POST',
@@ -180,20 +180,22 @@ export class Chatbot {
     this.showLimitModal = false;
     this.router.navigate(['/reservas']);
   }
+onDeclineReserve() {
+  this.showLimitModal = false;
 
-  onDeclineReserve() {
-    this.showLimitModal = false;
-
-    // ✅ Si ya alcanzó el límite, cerrar página
-    if (this.userQuestionCount >= this.MAX_QUESTIONS) {
-      this.addBotMessage('¡Gracias por charlar conmigo! 🍀 Cerrando la sesión...');
-      setTimeout(() => {
-        window.close(); // intenta cerrar pestaña
-        window.location.href = '/'; // fallback a la página principal
-      }, 2000);
-    } else {
-      this.addBotMessage('¡Entendido! 🍀 Si más adelante querés hacer una reserva, estoy acá.');
-      this.userQuestionCount = 0;
-    }
+  // ✅ Si ya alcanzó el límite, redirige a Instagram
+  if (this.userQuestionCount >= this.MAX_QUESTIONS) {
+    this.addBotMessage('¡Gracias por charlar conmigo! 🍀 Te invito a seguirnos en Instagram 💚');
+    setTimeout(() => {
+      window.location.href = this.INSTAGRAM_URL; // redirige directo al Instagram
+    }, 2500);
+  } else {
+    this.addBotMessage('¡Entendido! 🍀 Si más adelante querés hacer una reserva, seguinos en Instagram 💚');
+    setTimeout(() => {
+      window.location.href = this.INSTAGRAM_URL; // también redirige al Instagram
+    }, 2000);
+    this.userQuestionCount = 0;
   }
 }
+}
+
