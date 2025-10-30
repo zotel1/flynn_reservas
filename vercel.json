@@ -5,7 +5,7 @@
   "outputDirectory": "dist/flynn-reservas",
   "functions": {
     "api/**/*.ts": {
-      "runtime": "nodejs20.x"
+      "runtime": "vercel-node@20.0.0"
     }
   },
   "routes": [
