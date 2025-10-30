@@ -11,6 +11,12 @@ interface Message {
   timestamp: Date;
 }
 
+interface FlynnIntent {
+  tag: string;
+  patterns: string[];
+  responses: string[];
+}
+
 @Component({
   selector: 'app-chatbot',
   standalone: true,
@@ -24,8 +30,8 @@ export class Chatbot {
   isTyping = false;
   userQuestionCount = 0;
   showLimitModal = false;
+  localData: FlynnIntent[] = [];
 
-  // Detectar automáticamente entorno (local o producción)
   private readonly API_URL =
     window.location.hostname === 'localhost'
       ? 'http://localhost:4000/api/gemini'
@@ -33,8 +39,19 @@ export class Chatbot {
 
   constructor(private router: Router) {}
 
-  ngOnInit() {
+  async ngOnInit() {
     this.welcomeMessage();
+    await this.loadLocalData();
+  }
+
+  async loadLocalData() {
+    try {
+      const response = await fetch('assets/flynn_data.json');
+      this.localData = await response.json();
+      console.log('✅ Datos locales cargados:', this.localData.length, 'intenciones');
+    } catch (error) {
+      console.error('⚠️ Error al cargar datos locales:', error);
+    }
   }
 
   welcomeMessage() {
@@ -52,46 +69,48 @@ export class Chatbot {
     const text = this.userMessage.trim();
     if (!text) return;
 
-    // Reinicio manual del chat
     if (text.toLowerCase().includes('reiniciar') || text.toLowerCase().includes('borrar')) {
       this.welcomeMessage();
       this.userMessage = '';
       try {
-        await fetch(this.API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ message: 'reiniciar' }),
-        });
+        await fetch(this.API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: 'reiniciar' }) });
       } catch (_) {}
       return;
     }
 
-    // Validaciones
-    if (text.length > 60) {
-      this.addBotMessage('⚠️ Escribí menos de 60 caracteres, por favor.');
+    if (text.length > 80) {
+      this.addBotMessage('⚠️ Escribí menos de 80 caracteres, por favor.');
       this.userMessage = '';
       return;
     }
 
-    if (this.userQuestionCount >= 6) {
+    if (this.userQuestionCount >= 8) {
       this.showLimitModal = true;
       return;
     }
 
-    // Agregar mensaje del usuario
     this.addUserMessage(text);
     this.userMessage = '';
     this.userQuestionCount++;
     this.isTyping = true;
 
-    // Si menciona reservas, abre modal
     const lower = text.toLowerCase();
+
     if (lower.includes('reserva') || lower.includes('reservar') || lower.includes('mesa')) {
       this.isTyping = false;
       this.showLimitModal = true;
       return;
     }
 
+    // 1️⃣ Intento de respuesta local
+    const localResponse = this.matchLocalIntent(lower);
+    if (localResponse) {
+      this.addBotMessage(localResponse);
+      this.isTyping = false;
+      return;
+    }
+
+    // 2️⃣ Si no hay coincidencia local, usa Gemini
     try {
       const response = await fetch(this.API_URL, {
         method: 'POST',
@@ -102,7 +121,6 @@ export class Chatbot {
         }),
       });
 
-      // Previene errores si el backend responde vacío o lento
       if (!response.ok) {
         this.addBotMessage('⚠️ No pude conectar con el servidor. Intentá más tarde.');
         return;
@@ -118,7 +136,16 @@ export class Chatbot {
     }
   }
 
-  // === Utilidades ===
+  matchLocalIntent(input: string): string | null {
+    for (const intent of this.localData) {
+      if (intent.patterns.some((p) => input.includes(p))) {
+        const responses = intent.responses;
+        return responses[Math.floor(Math.random() * responses.length)];
+      }
+    }
+    return null;
+  }
+
   addUserMessage(text: string) {
     this.messages.push({
       id: Date.now().toString(),
@@ -137,7 +164,6 @@ export class Chatbot {
     });
   }
 
-  // === Modal ===
   onConfirmReserve() {
     this.showLimitModal = false;
     this.router.navigate(['/reservas']);

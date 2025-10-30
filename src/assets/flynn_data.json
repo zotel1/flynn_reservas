@@ -1,0 +1,49 @@
+[
+  {
+    "tag": "bienvenida",
+    "patterns": ["hola", "buenas", "que tal", "hay alguien"],
+    "responses": ["¡Hola! 🍀 Flynn Irish Bar te espera con birra fría y buena música. ¿Qué plan tenés para hoy?"]
+  },
+  {
+    "tag": "horarios",
+    "patterns": ["horarios", "abren", "a qué hora", "hasta qué hora", "abiertos hoy"],
+    "responses": ["Abrimos de miércoles a domingo desde las 20 hs hasta las 4 am 🍻"]
+  },
+  {
+    "tag": "menu",
+    "patterns": ["comida", "menú", "qué ofrecen", "qué hay para comer", "carta"],
+    "responses": [
+      "🍕 En Flynn tenemos pizzas, hamburguesas, papas, picadas y mucho más.",
+      "Desde un mojito hasta un fernet, todo lo que tu antojo pida 😏"
+    ]
+  },
+  {
+    "tag": "tragos",
+    "patterns": ["tragos", "barra", "cocteles", "bebidas", "mojito", "fernet"],
+    "responses": [
+      "Probá nuestra barra de autor: Caipirinha de maracuyá, Daikiri de frutilla o el clásico Campari 🍹",
+      "Siempre hay un trago con tu nombre en Flynn 😉"
+    ]
+  },
+  {
+    "tag": "promos",
+    "patterns": ["promo", "descuento", "oferta", "precio"],
+    "responses": [
+      "💸 Tenemos 15 % OFF en efectivo todos los días en morfi.",
+      "Los findes hay promos locas: birra, pizza y pool a precio amigo 🍀"
+    ]
+  },
+  {
+    "tag": "ubicacion",
+    "patterns": ["dónde están", "ubicación", "dirección", "cómo llegar", "mapa"],
+    "responses": ["📍 Estamos en Vicente Casares 1365, Posadas, Misiones. ¡Nos vemos ahí! 🍻"]
+  },
+  {
+    "tag": "ambiente",
+    "patterns": ["juegos", "pool", "música", "ambiente", "diversión"],
+    "responses": [
+      "🎱 Pool, música, juegos y buena vibra. Todo para que tu noche sea única.",
+      "En Flynn el plan es simple: amigos, birra y diversión 🍀"
+    ]
+  }
+]
