@@ -1,6 +1,11 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 
-// Historial limitado a las últimas 8 interacciones
+// === Registro simple en memoria para limitar accesos ===
+const accessLog: Record<string, { count: number; lastAccess: number }> = {};
+const MAX_REQUESTS_PER_DAY = 3;
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
+// === Historial limitado a las últimas 8 interacciones ===
 let conversationHistory: { role: string; parts: { text: string }[] }[] = [];
 
 module.exports = async function handler(req: VercelRequest, res: VercelResponse) {
@@ -8,12 +13,35 @@ module.exports = async function handler(req: VercelRequest, res: VercelResponse)
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
+  // === Lógica de conteo por IP ===
+  const ip = req.headers['x-forwarded-for']?.toString().split(',')[0] || 'unknown';
+  const now = Date.now();
+
+  if (!accessLog[ip]) {
+    accessLog[ip] = { count: 1, lastAccess: now };
+  } else {
+    const elapsed = now - accessLog[ip].lastAccess;
+    if (elapsed > ONE_DAY_MS) {
+      // Reinicia cada 24h
+      accessLog[ip] = { count: 1, lastAccess: now };
+    } else {
+      accessLog[ip].count++;
+    }
+  }
+
+  if (accessLog[ip].count > MAX_REQUESTS_PER_DAY) {
+    return res.status(429).json({
+      reply: '🍀 Alcanzaste el límite de conversaciones por hoy. ¡Volvé mañana para seguir charlando!',
+    });
+  }
+
+  // === Validaciones generales ===
   const { message, history } = req.body || {};
   if (!message || typeof message !== 'string') {
     return res.status(400).json({ error: 'Mensaje vacío o inválido' });
   }
 
-  // Permitir reiniciar conversación
+  // Reiniciar conversación
   if (message.toLowerCase().includes('reiniciar') || message.toLowerCase().includes('borrar')) {
     conversationHistory = [];
     return res.status(200).json({
@@ -27,7 +55,7 @@ module.exports = async function handler(req: VercelRequest, res: VercelResponse)
   }
 
   try {
-    // === PERSONALIDAD DEL BOT ===
+    // === Personalidad del bot ===
     const systemPrompt = `
 Sos Flynn Assistant 🍀, el asistente virtual del Flynn Irish Pub en Posadas, Misiones.
 Tu estilo es cálido, cercano y con acento del litoral argentino.
@@ -38,7 +66,7 @@ Si te preguntan algo fuera del contexto del bar, respondé: "Perdón 🍀, eso n
 Usuario dice: "${message}"
 `.trim();
 
-    // Actualizar historial (máx. 8 mensajes)
+    // === Historial limitado (máx. 8 mensajes) ===
     const recentMessages = (history || [])
       .slice(-8)
       .map((m: any) => ({
@@ -50,7 +78,7 @@ Usuario dice: "${message}"
     recentMessages.push({ role: 'user', parts: [{ text: message }] });
     conversationHistory = [...conversationHistory, ...recentMessages].slice(-8);
 
-    // Endpoint actualizado a Gemini 2.5 Flash
+    // === Endpoint de Gemini 2.5 Flash ===
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
     const response = await fetch(endpoint, {
@@ -82,6 +110,8 @@ Usuario dice: "${message}"
     return res.status(200).json({ reply });
   } catch (err: any) {
     console.error('🔥 Error interno:', err);
-    return res.status(500).json({ error: err.message || 'Error interno del servidor' });
+    return res.status(500).json({
+      error: err.message || 'Error interno del servidor',
+    });
   }
 };
