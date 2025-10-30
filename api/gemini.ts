@@ -8,7 +8,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
+<<<<<<< HEAD
   const { message, history } = req.body || {};
+=======
+
+  const { message } = req.body || {};
+>>>>>>> e2c52718b0681fa3a3b9015ceed1abe65d122310
   if (!message || typeof message !== 'string') {
     return res.status(400).json({ error: 'Mensaje vacío o inválido' });
   }
@@ -63,6 +68,8 @@ Usuario dice: "${message}"
         ],
       }),
     });
+
+    
 
     if (!response.ok) {
       const text = await response.text();
