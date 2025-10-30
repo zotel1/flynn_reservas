@@ -1,33 +1,11 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
   "framework": "angular",
   "buildCommand": "npm run build",
   "outputDirectory": "dist/flynn_reservas/browser",
-  "cleanUrls": true,
-  "trailingSlash": false,
-  "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1.ts" },
-    {
-      "src": "/(.*)\\.(js|mjs|css|ico|png|jpg|jpeg|gif|svg|webp|json)",
-      "headers": {
-        "Cache-Control": "public, max-age=31536000, immutable"
-      },
-      "continue": true
-    },
-    { "src": "/(.*)", "dest": "/index.html" }
-  ],
-  "headers": [
-    {
-      "source": "/(.*)\\.(js|mjs)",
-      "headers": [
-        { "key": "Content-Type", "value": "application/javascript; charset=utf-8" }
-      ]
-    },
-    {
-      "source": "/(.*)\\.html",
-      "headers": [
-        { "key": "Content-Type", "value": "text/html; charset=utf-8" }
-      ]
-    }
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api/$1.ts" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
