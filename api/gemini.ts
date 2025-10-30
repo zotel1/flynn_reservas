@@ -3,17 +3,12 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 // Historial limitado a las últimas 8 interacciones
 let conversationHistory: { role: string; parts: { text: string }[] }[] = [];
 
-export default async function handler(req: VercelRequest, res: VercelResponse) {
+module.exports = async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Método no permitido' });
   }
 
-<<<<<<< HEAD
   const { message, history } = req.body || {};
-=======
-
-  const { message } = req.body || {};
->>>>>>> e2c52718b0681fa3a3b9015ceed1abe65d122310
   if (!message || typeof message !== 'string') {
     return res.status(400).json({ error: 'Mensaje vacío o inválido' });
   }
@@ -26,7 +21,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
   }
 
-  const GEMINI_API_KEY = process.env['GEMINI_API_KEY'];
+  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
   if (!GEMINI_API_KEY) {
     return res.status(500).json({ error: 'Falta GEMINI_API_KEY en el entorno' });
   }
@@ -41,7 +36,7 @@ Si te preguntan sobre reservas, recordá que pueden hacerse desde el sitio web.
 No respondas preguntas sobre política, religión o temas personales.
 Si el usuario pregunta algo fuera del contexto del bar, decí: "Perdón 🍀, eso no lo sé, pero puedo contarte sobre el bar o sus eventos."
 Usuario dice: "${message}"
-    `.trim();
+`.trim();
 
     // Actualizar historial (máx. 8 mensajes)
     const recentMessages = (history || [])
@@ -69,8 +64,6 @@ Usuario dice: "${message}"
       }),
     });
 
-    
-
     if (!response.ok) {
       const text = await response.text();
       console.error('❌ Error en Gemini:', text);
@@ -91,7 +84,8 @@ Usuario dice: "${message}"
     console.error('🔥 Error interno:', err);
     return res.status(500).json({ error: err.message || 'Error interno del servidor' });
   }
-}
+};
+
 
 
 /*import type { VercelRequest, VercelResponse } from '@vercel/node';
