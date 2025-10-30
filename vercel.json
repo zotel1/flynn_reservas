@@ -4,7 +4,34 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist/flynn_reservas/browser",
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1.ts" },
-    { "src": "/(.*)", "dest": "/index.html" }
+    {
+      "src": "/api/(.*)",
+      "dest": "/api/$1.ts"
+    },
+    {
+      "src": "/(.*)",
+      "headers": {
+        "Cache-Control": "public, max-age=31536000, immutable"
+      },
+      "continue": true
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)\\.js",
+      "headers": [
+        { "key": "Content-Type", "value": "application/javascript; charset=utf-8" }
+      ]
+    },
+    {
+      "source": "/(.*)\\.mjs",
+      "headers": [
+        { "key": "Content-Type", "value": "application/javascript; charset=utf-8" }
+      ]
+    }
   ]
 }
