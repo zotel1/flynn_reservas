@@ -32,6 +32,7 @@ export class Chatbot {
   showLimitModal = false;
   localData: FlynnIntent[] = [];
 
+  private readonly MAX_QUESTIONS = 16;
   private readonly API_URL =
     window.location.hostname === 'localhost'
       ? 'http://localhost:4000/api/gemini'
@@ -48,7 +49,6 @@ export class Chatbot {
     try {
       const response = await fetch('assets/flynn_data.json');
       this.localData = await response.json();
-      console.log('✅ Datos locales cargados:', this.localData.length, 'intenciones');
     } catch (error) {
       console.error('⚠️ Error al cargar datos locales:', error);
     }
@@ -69,22 +69,28 @@ export class Chatbot {
     const text = this.userMessage.trim();
     if (!text) return;
 
+    // Reinicio manual del chat
     if (text.toLowerCase().includes('reiniciar') || text.toLowerCase().includes('borrar')) {
       this.welcomeMessage();
       this.userMessage = '';
       try {
-        await fetch(this.API_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: 'reiniciar' }) });
+        await fetch(this.API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: 'reiniciar' }),
+        });
       } catch (_) {}
       return;
     }
 
+    // Validaciones
     if (text.length > 80) {
       this.addBotMessage('⚠️ Escribí menos de 80 caracteres, por favor.');
       this.userMessage = '';
       return;
     }
 
-    if (this.userQuestionCount >= 8) {
+    if (this.userQuestionCount >= this.MAX_QUESTIONS) {
       this.showLimitModal = true;
       return;
     }
@@ -96,6 +102,7 @@ export class Chatbot {
 
     const lower = text.toLowerCase();
 
+    // Si menciona reservas, abrir modal
     if (lower.includes('reserva') || lower.includes('reservar') || lower.includes('mesa')) {
       this.isTyping = false;
       this.showLimitModal = true;
@@ -105,12 +112,14 @@ export class Chatbot {
     // 1️⃣ Intento de respuesta local
     const localResponse = this.matchLocalIntent(lower);
     if (localResponse) {
-      this.addBotMessage(localResponse);
+      this.addBotMessage(
+        `${localResponse} (${this.remainingQuestionsText()})`
+      );
       this.isTyping = false;
       return;
     }
 
-    // 2️⃣ Si no hay coincidencia local, usa Gemini
+    // 2️⃣ Si no hay coincidencia local, usar Gemini
     try {
       const response = await fetch(this.API_URL, {
         method: 'POST',
@@ -127,7 +136,7 @@ export class Chatbot {
       }
 
       const data = await response.json();
-      this.addBotMessage(data.reply || 'No pude entenderte 🍀');
+      this.addBotMessage(`${data.reply || 'No pude entenderte 🍀'} (${this.remainingQuestionsText()})`);
     } catch (error) {
       console.error('Error al conectar con Gemini:', error);
       this.addBotMessage('⚠️ Error al conectar con el asistente. Intentá más tarde.');
@@ -144,6 +153,16 @@ export class Chatbot {
       }
     }
     return null;
+  }
+
+  remainingQuestionsText(): string {
+    const remaining = this.MAX_QUESTIONS - this.userQuestionCount;
+    if (remaining > 0) {
+      return `Te quedan ${remaining} pregunta${remaining > 1 ? 's' : ''} 🍀`;
+    } else {
+      this.showLimitModal = true;
+      return 'Ya usaste todas tus preguntas 🍀';
+    }
   }
 
   addUserMessage(text: string) {
@@ -164,6 +183,7 @@ export class Chatbot {
     });
   }
 
+  // === MODAL ===
   onConfirmReserve() {
     this.showLimitModal = false;
     this.router.navigate(['/reservas']);
@@ -171,7 +191,16 @@ export class Chatbot {
 
   onDeclineReserve() {
     this.showLimitModal = false;
-    this.addBotMessage('¡Entendido! 🍀 Si más adelante querés hacer una reserva, estoy acá.');
-    this.userQuestionCount = 0;
+
+    if (this.userQuestionCount >= this.MAX_QUESTIONS) {
+      this.addBotMessage('¡Gracias por charlar conmigo! 🍀 Cerrando la sesión...');
+      setTimeout(() => {
+        window.close(); // intenta cerrar pestaña
+        window.location.href = '/'; // fallback a la página principal
+      }, 2000);
+    } else {
+      this.addBotMessage('¡Entendido! 🍀 Si más adelante querés hacer una reserva, estoy acá.');
+      this.userQuestionCount = 0;
+    }
   }
 }
