@@ -103,7 +103,7 @@ export class Chatbot {
     const lower = text.toLowerCase();
 
     // Si menciona reservas, abrir modal
-    if (lower.includes('reserva') || lower.includes('reservar') || lower.includes('mesa')) {
+    if (lower.includes('reserva') || lower.includes('reservar')){ //|| lower.includes('mesa')) {
       this.isTyping = false;
       this.showLimitModal = true;
       return;
@@ -156,7 +156,7 @@ export class Chatbot {
   }
 
   remainingQuestionsText(): string {
-    const remaining = (this.MAX_QUESTIONS - this.userQuestionCount) / 2;
+    const remaining = (this.MAX_QUESTIONS - this.userQuestionCount) / 2 + 0.5;
     if (remaining > 0) {
       return `Te quedan ${remaining} pregunta${remaining > 1 ? 's' : ''} 🍀`;
     } else {
