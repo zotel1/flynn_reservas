@@ -21,7 +21,7 @@ module.exports = async function handler(req: VercelRequest, res: VercelResponse)
     });
   }
 
-  const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
+  const GEMINI_API_KEY = process.env['GEMINI_API_KEY'] as string | undefined;
   if (!GEMINI_API_KEY) {
     return res.status(500).json({ error: 'Falta GEMINI_API_KEY en el entorno' });
   }

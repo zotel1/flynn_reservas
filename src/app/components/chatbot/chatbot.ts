@@ -25,6 +25,12 @@ export class Chatbot {
   userQuestionCount = 0;
   showLimitModal = false;
 
+  // Detectar automáticamente entorno (local o producción)
+  private readonly API_URL =
+    window.location.hostname === 'localhost'
+      ? 'http://localhost:4000/api/gemini'
+      : '/api/gemini';
+
   constructor(private router: Router) {}
 
   ngOnInit() {
@@ -50,6 +56,13 @@ export class Chatbot {
     if (text.toLowerCase().includes('reiniciar') || text.toLowerCase().includes('borrar')) {
       this.welcomeMessage();
       this.userMessage = '';
+      try {
+        await fetch(this.API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: 'reiniciar' }),
+        });
+      } catch (_) {}
       return;
     }
 
@@ -71,6 +84,7 @@ export class Chatbot {
     this.userQuestionCount++;
     this.isTyping = true;
 
+    // Si menciona reservas, abre modal
     const lower = text.toLowerCase();
     if (lower.includes('reserva') || lower.includes('reservar') || lower.includes('mesa')) {
       this.isTyping = false;
@@ -79,15 +93,20 @@ export class Chatbot {
     }
 
     try {
-      //const response = await fetch('/api/gemini', {
-      const response = await fetch('http://localhost:4000/api/gemini', {  
-      method: 'POST',
+      const response = await fetch(this.API_URL, {
+        method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: text,
           history: this.messages.map((m) => ({ text: m.text, isBot: m.isBot })),
         }),
       });
+
+      // Previene errores si el backend responde vacío o lento
+      if (!response.ok) {
+        this.addBotMessage('⚠️ No pude conectar con el servidor. Intentá más tarde.');
+        return;
+      }
 
       const data = await response.json();
       this.addBotMessage(data.reply || 'No pude entenderte 🍀');
