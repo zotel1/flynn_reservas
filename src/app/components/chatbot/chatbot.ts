@@ -16,7 +16,7 @@ interface Message {
   standalone: true,
   imports: [CommonModule, FormsModule, DatePipe, Footer],
   templateUrl: './chatbot.html',
-  styleUrls: ['./chatbot.css']
+  styleUrls: ['./chatbot.css'],
 })
 export class Chatbot {
   messages: Message[] = [];
@@ -28,26 +28,34 @@ export class Chatbot {
   constructor(private router: Router) {}
 
   ngOnInit() {
-    this.messages.push({
-      id: '1',
-      text: '¡Bienvenido a Flynn Irish Pub! 🍀 Soy tu asistente virtual. Puedo ayudarte con información sobre horarios, eventos, menú o reservas. ¿En qué te gustaría que te ayude hoy?',
-      isBot: true,
-      timestamp: new Date(),
-    });
+    this.welcomeMessage();
+  }
+
+  welcomeMessage() {
+    this.messages = [
+      {
+        id: '1',
+        text: '¡Bienvenido a Flynn Irish Pub! 🍀 Soy tu asistente virtual. Puedo ayudarte con horarios, eventos, menú o reservas. ¿En qué te ayudo hoy?',
+        isBot: true,
+        timestamp: new Date(),
+      },
+    ];
   }
 
   async sendMessage() {
     const text = this.userMessage.trim();
-
     if (!text) return;
 
+    // Reinicio manual del chat
+    if (text.toLowerCase().includes('reiniciar') || text.toLowerCase().includes('borrar')) {
+      this.welcomeMessage();
+      this.userMessage = '';
+      return;
+    }
+
+    // Validaciones
     if (text.length > 60) {
-      this.messages.push({
-        id: Date.now().toString(),
-        text: '⚠️ Tu mensaje es demasiado largo. Por favor, escribí en menos de 60 caracteres.',
-        isBot: true,
-        timestamp: new Date(),
-      });
+      this.addBotMessage('⚠️ Escribí menos de 60 caracteres, por favor.');
       this.userMessage = '';
       return;
     }
@@ -57,20 +65,13 @@ export class Chatbot {
       return;
     }
 
-    const userMsg: Message = {
-      id: Date.now().toString(),
-      text,
-      isBot: false,
-      timestamp: new Date(),
-    };
-
-    this.messages.push(userMsg);
+    // Agregar mensaje del usuario
+    this.addUserMessage(text);
     this.userMessage = '';
     this.userQuestionCount++;
     this.isTyping = true;
 
     const lower = text.toLowerCase();
-
     if (lower.includes('reserva') || lower.includes('reservar') || lower.includes('mesa')) {
       this.isTyping = false;
       this.showLimitModal = true;
@@ -78,37 +79,46 @@ export class Chatbot {
     }
 
     try {
-      const response = await fetch('https://flynn-reservas.vercel.app/api/gemini.js', {
-        method: 'POST',
+      //const response = await fetch('/api/gemini', {
+      const response = await fetch('http://localhost:4000/api/gemini', {  
+      method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           message: text,
-          history: this.messages.map(m => ({ text: m.text, isBot: m.isBot })),
+          history: this.messages.map((m) => ({ text: m.text, isBot: m.isBot })),
         }),
       });
 
       const data = await response.json();
-
-      this.messages.push({
-        id: (Date.now() + 1).toString(),
-        text: data.reply || 'No pude entenderte, podrías repetirlo 🍀',
-        isBot: true,
-        timestamp: new Date(),
-      });
+      this.addBotMessage(data.reply || 'No pude entenderte 🍀');
     } catch (error) {
       console.error('Error al conectar con Gemini:', error);
-      this.messages.push({
-        id: (Date.now() + 2).toString(),
-        text: '⚠️ Ocurrió un error al conectar con el asistente. Intentá más tarde.',
-        isBot: true,
-        timestamp: new Date(),
-      });
+      this.addBotMessage('⚠️ Error al conectar con el asistente. Intentá más tarde.');
     } finally {
       this.isTyping = false;
     }
   }
 
-  // === ACCIONES DEL MODAL ===
+  // === Utilidades ===
+  addUserMessage(text: string) {
+    this.messages.push({
+      id: Date.now().toString(),
+      text,
+      isBot: false,
+      timestamp: new Date(),
+    });
+  }
+
+  addBotMessage(text: string) {
+    this.messages.push({
+      id: (Date.now() + 1).toString(),
+      text,
+      isBot: true,
+      timestamp: new Date(),
+    });
+  }
+
+  // === Modal ===
   onConfirmReserve() {
     this.showLimitModal = false;
     this.router.navigate(['/reservas']);
@@ -116,12 +126,7 @@ export class Chatbot {
 
   onDeclineReserve() {
     this.showLimitModal = false;
-    this.messages.push({
-      id: Date.now().toString(),
-      text: '¡Entendido! 🍀 Si más adelante querés hacer una reserva, estaré aquí para ayudarte.',
-      isBot: true,
-      timestamp: new Date(),
-    });
+    this.addBotMessage('¡Entendido! 🍀 Si más adelante querés hacer una reserva, estoy acá.');
     this.userQuestionCount = 0;
   }
 }
