@@ -32,7 +32,10 @@ export class Chatbot {
   showLimitModal = false;
   localData: FlynnIntent[] = [];
 
-  private readonly MAX_QUESTIONS = 16;
+  // ✅ límites actualizados
+  private readonly MAX_QUESTIONS = 12;
+  private readonly MAX_CHARACTERS = 100;
+
   private readonly API_URL =
     window.location.hostname === 'localhost'
       ? 'http://localhost:4000/api/gemini'
@@ -83,13 +86,14 @@ export class Chatbot {
       return;
     }
 
-    // Validaciones
-    if (text.length > 80) {
-      this.addBotMessage('⚠️ Escribí menos de 80 caracteres, por favor.');
+    // ✅ Validación de longitud
+    if (text.length > this.MAX_CHARACTERS) {
+      this.addBotMessage(`⚠️ Escribí menos de ${this.MAX_CHARACTERS} caracteres, por favor.`);
       this.userMessage = '';
       return;
     }
 
+    // ✅ Límite de interacciones
     if (this.userQuestionCount >= this.MAX_QUESTIONS) {
       this.showLimitModal = true;
       return;
@@ -103,7 +107,7 @@ export class Chatbot {
     const lower = text.toLowerCase();
 
     // Si menciona reservas, abrir modal
-    if (lower.includes('reserva') || lower.includes('reservar')){ //|| lower.includes('mesa')) {
+    if (lower.includes('reserva') || lower.includes('reservar')) {
       this.isTyping = false;
       this.showLimitModal = true;
       return;
@@ -112,9 +116,7 @@ export class Chatbot {
     // 1️⃣ Intento de respuesta local
     const localResponse = this.matchLocalIntent(lower);
     if (localResponse) {
-      this.addBotMessage(
-        `${localResponse} (${this.remainingQuestionsText()})`
-      );
+      this.addBotMessage(localResponse);
       this.isTyping = false;
       return;
     }
@@ -136,7 +138,7 @@ export class Chatbot {
       }
 
       const data = await response.json();
-      this.addBotMessage(`${data.reply || 'No pude entenderte 🍀'} (${this.remainingQuestionsText()})`);
+      this.addBotMessage(data.reply || 'No pude entenderte 🍀');
     } catch (error) {
       console.error('Error al conectar con Gemini:', error);
       this.addBotMessage('⚠️ Error al conectar con el asistente. Intentá más tarde.');
@@ -153,16 +155,6 @@ export class Chatbot {
       }
     }
     return null;
-  }
-
-  remainingQuestionsText(): string {
-    const remaining = (this.MAX_QUESTIONS - this.userQuestionCount) / 2 + 0.5;
-    if (remaining > 0) {
-      return `Te quedan ${remaining} pregunta${remaining > 1 ? 's' : ''} 🍀`;
-    } else {
-      this.showLimitModal = true;
-      return 'Ya usaste todas tus preguntas 🍀';
-    }
   }
 
   addUserMessage(text: string) {
@@ -192,6 +184,7 @@ export class Chatbot {
   onDeclineReserve() {
     this.showLimitModal = false;
 
+    // ✅ Si ya alcanzó el límite, cerrar página
     if (this.userQuestionCount >= this.MAX_QUESTIONS) {
       this.addBotMessage('¡Gracias por charlar conmigo! 🍀 Cerrando la sesión...');
       setTimeout(() => {
