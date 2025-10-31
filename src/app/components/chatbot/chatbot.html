@@ -23,7 +23,7 @@
   <div class="chat-input">
     <input
       [(ngModel)]="userMessage"
-      maxlength="30"
+      maxlength="150"
       placeholder="Escribí tu mensaje..."
       (keyup.enter)="sendMessage()" />
     <button (click)="sendMessage()" class="font-title">Enviar</button>

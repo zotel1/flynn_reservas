@@ -38,7 +38,7 @@ export class Chatbot {
 
   // === CONFIGURACIONES ===
   private readonly MAX_QUESTIONS = 10;
-  private readonly MAX_CHARACTERS = 120;
+  private readonly MAX_CHARACTERS = 150;
   private readonly INSTAGRAM_URL = 'https://www.instagram.com/crissigel/';
   private readonly API_URL =
     window.location.hostname === 'localhost'
