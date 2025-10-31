@@ -1,0 +1,72 @@
+{
+    "categorias": [
+        {
+            "nombre": "Dias y Horarios de Cocina",
+            "items": [
+                {
+                    "dia": "Lunes",
+                    "horario": "Cerrado"
+                },
+                {
+                    "dia": "Martes",
+                    "horario": "Cerrado"
+                },
+                {},
+                {
+                    "dia": "Miércoles",
+                    "horario": "20:00 - 02:00"
+                },
+                {
+                    "dia": "Jueves",
+                    "horario": "20:00 - 02:00"
+                },
+                {
+                    "dia": "Viernes",
+                    "horario": "20:00 - 02:00"
+                },
+                {
+                    "dia": "Sábado",
+                    "horario": "20:00 - 02:00"
+                },
+                {
+                    "dia": "Domingo",
+                    "horario": "20:00 - 02:00"
+                }
+            ]
+        },
+        {
+            "nombre": "Dias y Horarios del Bar",
+            "items": [
+                {
+                    "dia": "Lunes",
+                    "horario": "Cerrado"
+                },
+                {
+                    "dia": "Martes",
+                    "horario": "Cerrado"
+                },
+                {},
+                {
+                    "dia": "Miércoles",
+                    "horario": "20:00 - 04:00"
+                },
+                {
+                    "dia": "Jueves",
+                    "horario": "20:00 - 04:00"
+                },
+                {
+                    "dia": "Viernes",
+                    "horario": "20:00 - 04:00"
+                },
+                {
+                    "dia": "Sábado",
+                    "horario": "20:00 - 04:00"
+                },
+                {
+                    "dia": "Domingo",
+                    "horario": "20:00 - 04:00"
+                }
+            ]
+        }
+    ]
+}

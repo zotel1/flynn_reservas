@@ -1,0 +1,338 @@
+{
+  "categorias": [
+    {
+      "nombre": "Postres",
+      "items": [
+        { "nombre": "Alfajor Blanco", "precio": 2500, "tipo": "dulce", "vegetariano": true, "sinTacc": false },
+        { "nombre": "Alfajor Block", "precio": 2500, "tipo": "dulce", "vegetariano": true, "sinTacc": false },
+        { "nombre": "Alfajor Bon o Bon", "precio": 2500, "tipo": "dulce", "vegetariano": true, "sinTacc": false },
+        { "nombre": "Alfajor Chocolina", "precio": 2500, "tipo": "dulce", "vegetariano": true, "sinTacc": false },
+        { "nombre": "Alfajor Corazon de Fresa", "precio": 2500, "tipo": "dulce", "vegetariano": true, "sinTacc": false },
+        { "nombre": "Alfajor Kinder", "precio": 2500, "tipo": "dulce", "vegetariano": true, "sinTacc": false },
+        { "nombre": "Alfajor de Licor", "precio": 2500, "tipo": "dulce", "vegetariano": true, "sinTacc": false },
+        { "nombre": "Alfajor de Membrillo", "precio": 2500, "tipo": "dulce", "vegetariano": true, "sinTacc": false },
+        { "nombre": "Alfajor Negro", "precio": 2500, "tipo": "dulce", "vegetariano": true, "sinTacc": false },
+        { "nombre": "Alfajor Oreo", "precio": 2500, "tipo": "dulce", "vegetariano": true, "sinTacc": false },
+        { "nombre": "Alfajor Tentacion", "precio": 2500, "tipo": "dulce", "vegetariano": true, "sinTacc": false },
+        { "nombre": "Alfajor Triple Blanco", "precio": 2500, "tipo": "dulce", "vegetariano": true, "sinTacc": false }
+        
+      ]
+    },
+    {
+      "nombre": "Bebidas por medida",
+      "items": [
+        { "nombre": "Medida Bailey's", "precio": 5800, "alcohol": true },
+        { "nombre": "Medida Fernet Branca", "precio": 4800, "alcohol": true },
+        { "nombre": "Medida Gin Beefeater", "precio": 5300, "alcohol": true },
+        { "nombre": "Medida Jagermeister", "precio": 5500, "alcohol": true },
+        { "nombre": "Medida Rom Havana Club", "precio": 5300, "alcohol": true },
+        { "nombre": "Medida Tequila Jose Cuervo", "precio": 5500, "alcohol": true }
+      ]
+    },
+    {
+      "nombre": "Bebidas sin alcohol",
+      "items": [
+        { "nombre": "Agua Mineral", "precio": 3500, "alcohol": false },
+        { "nombre": "Agua Mineral con Gas", "precio": 3500, "alcohol": false },
+        { "nombre": "Coca Cola Sin azucar 1,5 lts ", "precio": 7500, "alcohol": false },
+        { "nombre": "Coca Cola 1,5 lts", "precio": 7500, "alcohol": false },
+        { "nombre": "Coca Cola Zero Chica", "precio": 5000, "alcohol": false },
+        { "nombre": "Fanta 1,5 lts", "precio": 7500, "alcohol": false },
+        { "nombre": "Levite Mango 1,5 lts", "precio": 5500, "alcohol": false },
+        { "nombre": "Levite Manzana 1,5 lts", "precio": 5500, "alcohol": false },
+        { "nombre": "Levite Naranja 1,5 lts", "precio": 5500, "alcohol": false },
+        { "nombre": "Levite Pera 1,5 lts", "precio": 5500, "alcohol": false },
+        { "nombre": "Levite Pomelo 1,5 lts", "precio": 5500, "alcohol": false },
+        { "nombre": "Speed", "precio": 5000, "alcohol": false },
+        { "nombre": "Sprite 1,5 lts", "precio": 3500, "alcohol": false },
+        { "nombre": "Fanta Guarana chica", "precio": 5000, "alcohol": false },
+        { "nombre": "Heineken Sin Alcohol 355ml", "precio": 4000, "alcohol": false },
+        { "nombre": "Heineken Sin Alcohol 473ml", "precio": 4000, "alcohol": false }
+    ]
+},
+    {
+      "nombre": "Cervezas Latas",
+      "items": [
+        { "nombre": "Guiness", "precio": 8800, "alcohol": true },
+        { "nombre": "Heineken Sin Alcohol 355ml", "precio": 4000, "alcohol": false },
+        { "nombre": "Heineken Sin Alcohol 473ml", "precio": 4000, "alcohol": false },
+        { "nombre": "Heineken Lata 473ml", "precio": 5500, "alcohol": true },
+        { "nombre": "Rabieta Golden Aleman 473ml", "precio": 5500, "alcohol": true },
+        { "nombre": "Rabieta Ipa 473ml", "precio": 5500, "alcohol": true },
+        { "nombre": "Rabieta Apa 473ml", "precio": 5500, "alcohol": true },
+        { "nombre": "Rabieta Irish Red Alemana 473ml", "precio": 5500, "alcohol": true },
+        { "nombre": "Rabieta Red Honey 473ml", "precio": 5500, "alcohol": true },
+        { "nombre": "Rabieta Red Ipa 473ml", "precio": 5500, "alcohol": true },
+        { "nombre": "Rabieta Weeheavy 473ml", "precio": 5500, "alcohol": true }       
+      ]
+    },
+    {
+      "nombre": "Cervezas Nacionales",
+      "items": [
+        { "nombre": "Amstel 1L", "precio": 7500, "alcohol": true },
+        { "nombre": "Grolsch 1L", "precio": 9000, "alcohol": true },
+        { "nombre": "Heineken 1L", "precio": 9500, "alcohol": true },
+        { "nombre": "Imperial Apa 1L", "precio": 8500, "alcohol": true },
+        { "nombre": "Imperial Golden 1L", "precio": 8500, "alcohol": true },
+        { "nombre": "Imperial Ipa 1L", "precio": 8500, "alcohol": true },
+        { "nombre": "Imperial Lager 1L", "precio": 8500, "alcohol": true },
+        { "nombre": "Miller 1L", "precio": 8000, "alcohol": true },
+        { "nombre": "Palermo 1L", "precio": 7000, "alcohol": true },
+        { "nombre": "Santa Fe 1L", "precio": 75000, "alcohol": true },
+        { "nombre": "Schneider 1L", "precio": 7000, "alcohol": true },
+        { "nombre": "Rabieta Apa 710cc", "precio": 8800, "alcohol": true },
+        { "nombre": "Rabieta Golden Alemana 710cc", "precio": 8800, "alcohol": true },
+        { "nombre": "Rabieta Red Alemana 710cc", "precio": 8800, "alcohol": true },
+        { "nombre": "Rabieta Ipa 710cc", "precio": 8800, "alcohol": true },
+        { "nombre": "Rabieta Red Honey 710cc", "precio": 8800, "alcohol": true },
+        { "nombre": "Rabieta Wee Heavy 710cc", "precio": 8800, "alcohol": true },
+        { "nombre": "Rabieta Red Red Ipa 710cc", "precio": 8800, "alcohol": true }
+      ]
+    },
+    {
+      "nombre": "Cervezas Tiradas",
+      "items": [
+        { "nombre": "Brauart Amber", "medidas": ["1/2 pinta", "pinta"], "precioPromedio": 4900 },
+        { "nombre": "Brauart Especial", "medidas": ["1/2 pinta", "pinta"], "precioPromedio": 4900 },
+        { "nombre": "Brauart Golden", "medidas": ["1/2 pinta", "pinta"], "precioPromedio": 4900 },
+        { "nombre": "Brauart Ipa", "medidas": ["1/2 pinta", "pinta"], "precioPromedio": 4900 },
+        { "nombre": "Brauart Red Honey", "medidas": ["1/2 pinta", "pinta"], "precioPromedio": 4900 },
+        { "nombre": "Tablita de Cervezas", "medidas": ["1/2 pinta", "pinta"], "precioPromedio": 9000 },
+        { "nombre": "Hoppy Pils 2x1", "medidas": ["pinta"], "precioPromedio": 4900 },
+        { "nombre": "Heineken Tirada 2x1", "medidas": ["1/2 pinta", "pinta"], "precioPromedio": 5000 }
+      ]
+    },
+    {
+      "nombre": "Cigarrillos",
+      "items": [
+        { "nombre": "Cigarrillos Lucky Strike 10", "precio": 4000 },
+        { "nombre": "Cigarrillos Marlboro 10", "precio": 4000 },
+        { "nombre": "Cigarrillos Philip Morris 10", "precio": 4000 }
+      ]
+    },
+    {
+      "nombre": "Cocteles",
+      "items": [
+        { "nombre": "Fernet con Coca", "precio": 8500, "alcohol": true },
+        { "nombre": "Caipirinha", "precio": 8500, "alcohol": true },
+        { "nombre": "Caipirinha de Maracuyá", "precio": 8500, "alcohol": true },
+        { "nombre": "Caipiroska", "precio": 9500, "alcohol": true },
+        { "nombre": "Caipiroska de Maracuyá", "precio": 10000, "alcohol": true },
+        { "nombre": "Campari", "precio": 8500, "alcohol": true },
+        { "nombre": "Cuba Libre", "precio": 9000, "alcohol": true },
+        { "nombre": "Daiquiri", "precio": 10000, "alcohol": true },
+        { "nombre": "Gin tonic Copon", "precio": 10000, "alcohol": true },
+        { "nombre": "Jameson Lemon", "precio": 9500, "alcohol": true },
+        { "nombre": "Malibu Punch", "precio": 9500, "alcohol": true },
+        { "nombre": "Margarita", "precio": 9500, "alcohol": true },
+        { "nombre": "Martini", "precio": 9000, "alcohol": true },
+        { "nombre": "Mojito", "precio": 9000, "alcohol": true },
+        { "nombre": "Negroni", "precio": 8500, "alcohol": true },
+        { "nombre": "Fernet Buhero con Cola", "precio": 6000, "alcohol": true },
+        { "nombre": "Campari Tonic", "precio": 8500, "alcohol": true },
+        { "nombre": "Buhero 2x1", "precio": 6000, "alcohol": true }
+      ]
+    },
+    {
+        "nombre": "Ensaladas",
+        "items": [
+          { "nombre": "Ensalada Caesar", "precio": 10000, "vegetariano": false, "sinTacc": true },
+          { "nombre": "Ensalada Capresse", "precio": 9000, "vegetariano": true, "sinTacc": true },
+          { "nombre": "Ensalada Mixta", "precio": 8000, "vegetariano": true, "sinTacc": true },
+          { "nombre": "Ensalada Rucula", "precio": 9000, "vegetariano": true, "sinTacc": true }
+        ]
+    },
+    {
+        "nombre": "Espumantes",
+        "items": [
+          { "nombre": "Champaña San Telmo Dulce 750ml", "precio": 19000, "alcohol": true },
+          { "nombre": "Champaña San Telmo Extra B 750ml", "precio": 19000, "alcohol": true },
+          { "nombre": "Chandon Aperitif", "precio": 23500, "alcohol": true },
+          { "nombre": "Chandon Delice", "precio": 24000, "alcohol": true },
+          { "nombre": "Chandon Demi sec", "precio": 23500, "alcohol": true },
+          { "nombre": "Chandon Extra Brut", "precio": 23500, "alcohol": true },
+          { "nombre": "Chandon Rose", "precio": 23500, "alcohol": true }
+
+        ]
+    },{
+      "nombre": "Hamburguesas",
+      "items": [
+        { "nombre": "Hamburg Completa Grande", "precio": 14500 },
+        { "nombre": "Hamburg Completa Paty", "precio": 10500 },
+        { "nombre": "Hamburg Especial Grande", "precio": 14000 },
+        { "nombre": "Hamburg Especial Paty", "precio": 10000 },
+        { "nombre": "Hamburg Flynn Grande", "precio": 16500 },
+        { "nombre": "Hamburg Flynn Paty", "precio": 12000 },
+        { "nombre": "Hamburg Simple Grande", "precio": 13500 },
+        { "nombre": "Hamburg Simple Paty", "precio": 9500 },
+        { "nombre": "Medallón Extra Hamb Grande", "precio": 7500 },
+        { "nombre": "Medallón Extra Paty", "precio": 5000 }
+      ]
+    },
+    {
+      "nombre": "Lomos",
+      "items": [
+        { "nombre": "Lomo Completo", "precio": 18000 },
+        { "nombre": "Lomo Especial", "precio": 16500 },
+        { "nombre": "Lomo Flynn", "precio": 19000 },
+        { "nombre": "Lomo Simple", "precio": 16000 },
+        { "nombre": "Lomo Medallón Extra", "precio": 11000 }
+      ]
+    },
+    {
+      "nombre": "Milanesas de Lomo",
+      "items": [
+        { "nombre": "Milanesa Caballo con Mixta", "precio": 15000 },
+        { "nombre": "Milanesa con Mixta", "precio": 14000 },
+        { "nombre": "Milanesa con Papas", "precio": 14000 },
+        { "nombre": "Milanesa Napolitana con Mixta", "precio": 15500 },
+        { "nombre": "Milanesa Napolitana con Papas", "precio": 15500 },
+        { "nombre": "Milanesa Caballo con Papas", "precio": 15000 }
+      ]
+    },
+    {
+      "nombre": "Papas",
+      "items": [
+        { "nombre": "Papas a la Provenzal Chica", "precio": 9500 },
+        { "nombre": "Papas a la Provenzal Grande", "precio": 10500 },
+        { "nombre": "Papas con Cheddar Chica", "precio": 9500 },
+        { "nombre": "Papas con Cheddar Grande", "precio": 10500 },
+        { "nombre": "Papas con Cheddar y Panceta Chica", "precio": 11000 },
+        { "nombre": "Papas con Cheddar y Panceta Grande", "precio": 11500 },
+        { "nombre": "Papas Chicas", "precio": 8000 },
+        { "nombre": "Papas Grandes", "precio": 9000 },
+        { "nombre": "Papas Gratinadas Chica", "precio": 9500 },
+        { "nombre": "Papas Gratinadas Grande", "precio": 10500 },
+        { "nombre": "Papas Provenzal Gratinadas Chicas", "precio": 9500 },
+        { "nombre": "Papas Provenzal Gratinadas Grande", "precio": 10500 }
+      ]
+    },
+    {
+      "nombre": "Para Picar",
+      "items": [
+        { "nombre": "Aceitunas", "precio": 3000 },
+        { "nombre": "Alitas de Pollo", "precio": 10000 },
+        { "nombre": "Maní King", "precio": 2500 },
+        { "nombre": "Picada Caliente Chica", "precio": 25700 },
+        { "nombre": "Picada Caliente Mediana", "precio": 33700 },
+        { "nombre": "Picada Caliente Grande", "precio": 39700 },
+        { "nombre": "Picada Fría Chica", "precio": 24700 },
+        { "nombre": "Picada Fría Mediana", "precio": 32700 },
+        { "nombre": "Picada Fría Grande", "precio": 38700 },
+        { "nombre": "Rabas", "precio": 16000 }
+      ]
+    },
+    {
+      "nombre": "Pizzas",
+      "items": [
+        { "nombre": "Extra Queso Mitad", "precio": 6500 },
+        { "nombre": "Extra Queso", "precio": 9000 },
+        { "nombre": "Pizza Anchoas con Roquefort Grande", "precio": 22000 },
+        { "nombre": "Pizza Anchoas con Roquefort Mitad", "precio": 16000 },
+        { "nombre": "Pizza Atún Grande", "precio": 22000 },
+        { "nombre": "Pizza Atún Mitad", "precio": 16000 },
+        { "nombre": "Pizza Calabresa Grande", "precio": 20000 },
+        { "nombre": "Pizza Calabresa Mitad", "precio": 14000 },
+        { "nombre": "Pizza Capresse Grande", "precio": 20000 },
+        { "nombre": "Pizza Capresse Mitad", "precio": 14000 },
+        { "nombre": "Pizza Champignon Grande", "precio": 22000 },
+        { "nombre": "Pizza Champignon Mitad", "precio": 16000 },
+        { "nombre": "Pizza Cuatro Quesos Grande", "precio": 22000 },
+        { "nombre": "Pizza Cuatro Quesos Mitad", "precio": 16000 },
+        { "nombre": "Pizza Flynn Grande", "precio": 22000 },
+        { "nombre": "Pizza Flynn Mitad", "precio": 16000 },
+        { "nombre": "Pizza Fugazzeta con Jamón Grande", "precio": 22000 },
+        { "nombre": "Pizza Fugazzeta con Jamón Mitad", "precio": 16000 },
+        { "nombre": "Pizza Fugazzeta Grande", "precio": 19000 },
+        { "nombre": "Pizza Fugazzeta Mitad", "precio": 13000 },
+        { "nombre": "Pizza Jamón y Morrón Grande", "precio": 20000 },
+        { "nombre": "Pizza Jamón y Morrón Mitad", "precio": 14000 },
+        { "nombre": "Pizza Lomito Grande", "precio": 23000 },
+        { "nombre": "Pizza Lomito Mitad", "precio": 17000 },
+        { "nombre": "Pizza Muzza Grande", "precio": 16000 },
+        { "nombre": "Pizza Muzza con Jamón Grande", "precio": 17500 },
+        { "nombre": "Pizza Muzza Mitad", "precio": 10000 },
+        { "nombre": "Pizza Napolitana con Jamón Grande", "precio": 20000 },
+        { "nombre": "Pizza Napolitana con Jamón Mitad", "precio": 14000 },
+        { "nombre": "Pizza Panceta Grande", "precio": 23000 },
+        { "nombre": "Pizza Panceta Mitad", "precio": 17000 },
+        { "nombre": "Pizza Rellena Chica", "precio": 17000 },
+        { "nombre": "Pizza Rellena Grande", "precio": 23000 },
+        { "nombre": "Pizza Roquefort Grande", "precio": 22000 },
+        { "nombre": "Pizza Roquefort Mitad", "precio": 16000 },
+        { "nombre": "Pizza Rúcula Grande", "precio": 20000 },
+        { "nombre": "Pizza Rúcula Mitad", "precio": 14000 },
+        { "nombre": "Pizza Tropical Grande", "precio": 23000 },
+        { "nombre": "Pizza Tropical Mitad", "precio": 17000 },
+        { "nombre": "Rodizio", "precio": 14500 }
+      ]
+    },
+    {
+      "nombre": "Pool",
+      "items": [
+        { "nombre": "Ficha de Pool", "precio": 4000 },
+        { "nombre": "Ficha", "precio": 4300 }
+      ]
+    },
+    {
+      "nombre": "Sandwich y Tostados",
+      "items": [
+        { "nombre": "Sandwich de Miga", "precio": 8000 },
+        { "nombre": "Sandwich Milanesa Completo", "precio": 17500 },
+        { "nombre": "Sandwich Primavera", "precio": 9000 },
+        { "nombre": "Tostado Flynn", "precio": 10500 },
+        { "nombre": "Tostado Gratinado", "precio": 9500 },
+        { "nombre": "Tostado Simple", "precio": 8500 }
+      ]
+    },
+    {
+      "nombre": "Varios",
+      "items": [
+        { "nombre": "Cubierto", "precio": 0 },
+        { "nombre": "Vaso Heineken", "precio": 15000 }
+      ]
+    },
+    {
+      "nombre": "Vinos",
+      "items": [
+        { "nombre": "Alaris Blanco Dulce 750ml", "precio": 12000 },
+        { "nombre": "Alaris Rosé 750ml", "precio": 12000 },
+        { "nombre": "Alma Mora Malbec 750ml", "precio": 13000 },
+        { "nombre": "Cordero con Piel de Lobo", "precio": 12000 },
+        { "nombre": "Dada Art Malbec 750ml", "precio": 12500 },
+        { "nombre": "Descorche Vino", "precio": 20000 },
+        { "nombre": "DV Catena Cab. Malbec", "precio": 29000 },
+        { "nombre": "DV Catena Malbec Malbec", "precio": 32000 },
+        { "nombre": "Familia Gascon Malbec 750ml", "precio": 12000 },
+        { "nombre": "La Celia Res Malbec 750ml", "precio": 12500 },
+        { "nombre": "Latitud 33 Cabernet", "precio": 14000 },
+        { "nombre": "Latitud 33 Malbec", "precio": 16000 },
+        { "nombre": "Navarro Correa Privado Malbec", "precio": 12500 },
+        { "nombre": "Navarro Correa Reserva Malbec 750ml", "precio": 14000 },
+        { "nombre": "Nicasia Malbec", "precio": 13500 },
+        { "nombre": "Norton Cosecha Tardía", "precio": 12000 },
+        { "nombre": "Perro Callejero", "precio": 13000 },
+        { "nombre": "Rutini Malbec", "precio": 32000 },
+        { "nombre": "Saint Felicien Malbec", "precio": 19000 },
+        { "nombre": "Trapiche Reserva Malbec 750ml", "precio": 14500 },
+        { "nombre": "Trumpeter Malbec", "precio": 16000 }
+      ]
+    },
+    {
+      "nombre": "Whiskys",
+      "items": [
+        { "nombre": "Ballantine's", "precio": 9500 },
+        { "nombre": "Chivas 12 Años", "precio": 10000 },
+        { "nombre": "Jack Daniel’s", "precio": 9500 },
+        { "nombre": "Jack Daniel’s Honey", "precio": 10000 },
+        { "nombre": "Jameson", "precio": 9500 },
+        { "nombre": "Johnnie Walker Black", "precio": 10500 },
+        { "nombre": "Johnnie Walker Double Black", "precio": 11500 },
+        { "nombre": "Johnnie Walker Red", "precio": 10000 }
+      ]
+    }
+    
+    
+    
+  ]
+}
