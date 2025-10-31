@@ -65,7 +65,6 @@ export class Chatbot {
       this.flynnMenu = await menuRes.json();
       this.flynnHorarios = await horariosRes.json();
 
-      // Unificamos todo el conocimiento local
       this.flynnKnowledge = {
         ...this.flynnMenu,
         horarios: this.flynnHorarios,
@@ -95,6 +94,7 @@ export class Chatbot {
     const text = this.userMessage.trim();
     if (!text) return;
 
+    // Reiniciar conversación
     if (text.toLowerCase().includes('reiniciar') || text.toLowerCase().includes('borrar')) {
       this.welcomeMessage();
       this.userMessage = '';
@@ -106,6 +106,7 @@ export class Chatbot {
       return;
     }
 
+    // Validaciones
     if (text.length > this.MAX_CHARACTERS) {
       this.addBotMessage(`⚠️ Escribí menos de ${this.MAX_CHARACTERS} caracteres, por favor.`);
       this.userMessage = '';
@@ -124,21 +125,38 @@ export class Chatbot {
 
     const lower = text.toLowerCase();
 
+    // Si menciona reservas → abrir modal
     if (lower.includes('reserva') || lower.includes('reservar')) {
       this.isTyping = false;
       this.showLimitModal = true;
       return;
     }
 
-    // === 1️⃣ Intentar respuesta local ===
-    const localResponse = this.matchLocalIntent(lower) || this.findInMenu(lower) || this.findInHorarios(lower);
-    if (localResponse) {
-      this.addBotMessage(localResponse);
+    // === PRIORIDAD 1: Menú ===
+    const menuResponse = this.findInMenu(lower);
+    if (menuResponse) {
+      this.addBotMessage(menuResponse);
       this.isTyping = false;
       return;
     }
 
-    // === 2️⃣ Si no hay coincidencia local, usar Gemini ===
+    // === PRIORIDAD 2: Horarios ===
+    const horarioResponse = this.findInHorarios(lower);
+    if (horarioResponse) {
+      this.addBotMessage(horarioResponse);
+      this.isTyping = false;
+      return;
+    }
+
+    // === PRIORIDAD 3: Intenciones básicas (hola, gracias, etc.) ===
+    const intentResponse = this.matchLocalIntent(lower);
+    if (intentResponse) {
+      this.addBotMessage(intentResponse);
+      this.isTyping = false;
+      return;
+    }
+
+    // === PRIORIDAD 4: Gemini ===
     try {
       const response = await fetch(this.API_URL, {
         method: 'POST',
@@ -178,9 +196,27 @@ export class Chatbot {
   // === BÚSQUEDA EN MENÚ ===
   findInMenu(input: string): string | null {
     if (!this.flynnMenu?.categorias) return null;
+
+    // detecta palabras clave sobre comidas especiales
+    const sinTacc = ['sin tacc', 'celíac', 'celiaco', 'celiaca'];
+    const vegetariano = ['vegetariana', 'vegetariano', 'sin carne', 'vegana', 'vegano'];
+    const sinSalsa = ['sin salsa', 'salsa aparte'];
+
+    if (sinTacc.some((k) => input.includes(k))) {
+      return '🍀 Tenemos opciones sin TACC, como papas, ensaladas y algunas pizzas especiales. Consultá al mozo al llegar.';
+    }
+    if (vegetariano.some((k) => input.includes(k))) {
+      return '🥗 Contamos con opciones vegetarianas como pizzas capresse, rúcúla o fugazzeta, además de ensaladas.';
+    }
+    if (sinSalsa.some((k) => input.includes(k))) {
+      return '🍟 Podés pedir cualquier plato sin salsa, nuestros cocineros te lo preparan a gusto.';
+    }
+
+    // búsqueda de ítems específicos
     for (const categoria of this.flynnMenu.categorias) {
       for (const item of categoria.items) {
-        if (input.includes(item.nombre.toLowerCase().split(' ')[0])) {
+        const nombreLower = item.nombre.toLowerCase();
+        if (input.includes(nombreLower.split(' ')[0])) {
           return `🍀 Tenemos ${item.nombre} en la sección ${categoria.nombre}, a $${item.precio.toLocaleString('es-AR')}.`;
         }
       }
@@ -190,14 +226,16 @@ export class Chatbot {
 
   // === BÚSQUEDA EN HORARIOS ===
   findInHorarios(input: string): string | null {
-    if (input.includes('horario') || input.includes('abr')) {
+    if (!this.flynnHorarios) return null;
+    const keys = ['horario', 'abr', 'cerr', 'dias', 'cuándo', 'cuando'];
+    if (keys.some((k) => input.includes(k))) {
       const { dias, apertura, cierre } = this.flynnHorarios;
-      return `🕓 Abrimos de ${dias} de ${apertura} a ${cierre}. ¡Te esperamos! 🍀`;
+      return `🕓 Abrimos ${dias} de ${apertura} a ${cierre}. ¡Te esperamos! 🍀`;
     }
     return null;
   }
 
-  // === MENSAJES ===
+  // === MANEJO DE MENSAJES ===
   addUserMessage(text: string) {
     this.messages.push({ id: Date.now().toString(), text, isBot: false, timestamp: new Date() });
   }
