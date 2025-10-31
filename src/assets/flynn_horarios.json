@@ -1,72 +1,17 @@
 {
-    "categorias": [
-        {
-            "nombre": "Dias y Horarios de Cocina",
-            "items": [
-                {
-                    "dia": "Lunes",
-                    "horario": "Cerrado"
-                },
-                {
-                    "dia": "Martes",
-                    "horario": "Cerrado"
-                },
-                {},
-                {
-                    "dia": "Miércoles",
-                    "horario": "20:00 - 02:00"
-                },
-                {
-                    "dia": "Jueves",
-                    "horario": "20:00 - 02:00"
-                },
-                {
-                    "dia": "Viernes",
-                    "horario": "20:00 - 02:00"
-                },
-                {
-                    "dia": "Sábado",
-                    "horario": "20:00 - 02:00"
-                },
-                {
-                    "dia": "Domingo",
-                    "horario": "20:00 - 02:00"
-                }
-            ]
-        },
-        {
-            "nombre": "Dias y Horarios del Bar",
-            "items": [
-                {
-                    "dia": "Lunes",
-                    "horario": "Cerrado"
-                },
-                {
-                    "dia": "Martes",
-                    "horario": "Cerrado"
-                },
-                {},
-                {
-                    "dia": "Miércoles",
-                    "horario": "20:00 - 04:00"
-                },
-                {
-                    "dia": "Jueves",
-                    "horario": "20:00 - 04:00"
-                },
-                {
-                    "dia": "Viernes",
-                    "horario": "20:00 - 04:00"
-                },
-                {
-                    "dia": "Sábado",
-                    "horario": "20:00 - 04:00"
-                },
-                {
-                    "dia": "Domingo",
-                    "horario": "20:00 - 04:00"
-                }
-            ]
-        }
-    ]
+  "dias": "miércoles a domingo",
+  "apertura": "20:00",
+  "cierre": "04:00",
+  "detalle": {
+    "cocina": {
+      "dias": "miércoles a domingo",
+      "horario": "20:00 - 02:00"
+    },
+    "bar": {
+      "dias": "miércoles a domingo",
+      "horario": "20:00 - 04:00"
+    },
+    "lunes": "cerrado",
+    "martes": "cerrado"
+  }
 }
