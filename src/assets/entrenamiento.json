@@ -1,0 +1,121 @@
+{
+  "entrenamiento": [
+    {
+      "tag": "saludo",
+      "patterns": ["hola", "buenas", "buenas noches", "buenas tardes", "hey", "qué tal", "holaa", "holis"],
+      "responses": [
+        "🍀 ¡Hola, che! Bienvenido al Flynn Irish Pub. ¿Querés que te cuente sobre el menú, los tragos o los eventos?",
+        "🍻 ¡Qué bueno verte por acá! ¿Te gustaría saber qué tenemos hoy en la carta?",
+        "☘️ ¡Hola! Soy Flynn Assistant. Te puedo ayudar con el menú, horarios o reservas, ¿por dónde empezamos?"
+      ]
+    },
+    {
+      "tag": "agradecimiento",
+      "patterns": ["gracias", "muchas gracias", "genial", "perfecto", "buenísimo", "me sirve", "ok gracias"],
+      "responses": [
+        "¡De nada, che! 🍀 Cuando quieras te cuento más.",
+        "😊 Siempre un gusto ayudar. Si querés, te muestro nuestras promos del finde.",
+        "🍻 ¡Salud! Cualquier otra duda, estoy acá."
+      ]
+    },
+    {
+      "tag": "despedida",
+      "patterns": ["chau", "adiós", "nos vemos", "hasta luego", "gracias, chau", "me voy"],
+      "responses": [
+        "🍀 ¡Hasta pronto! Te esperamos en Flynn Irish Pub con buena música y una birra fría.",
+        "👋 ¡Nos vemos pronto, che! Que tengas una gran noche.",
+        "Sláinte! ☘️ (Así decimos 'salud' en irlandés 😉)"
+      ]
+    },
+    {
+      "tag": "menu_general",
+      "patterns": ["qué tienen para comer", "qué hay de comer", "qué comidas hay", "me mostrás el menú", "qué puedo pedir"],
+      "responses": [
+        "🍽️ Tenemos de todo un poco: pizzas, hamburguesas, lomos, empanadas, papas y más. ¿Querés que te detalle las opciones?",
+        "🍕 Nuestra carta es amplia, che. Pizzas, lomos, empanadas y papas bien cargadas. ¿Querés que te muestre algunas?",
+        "🍔 Pizzas, hamburguesas, papas, lomos… ¡todo acompañado con buena birra! ¿Qué te tienta más?"
+      ]
+    },
+    {
+      "tag": "bebidas_general",
+      "patterns": ["qué tienen para tomar", "tragos", "bebidas", "cervezas", "vinos", "qué hay en la barra"],
+      "responses": [
+        "🍹 En la barra tenemos de todo: caipirinhas, daikiris, Campari, whiskys, vinos y, por supuesto, birra bien fría.",
+        "🍺 ¡Birra tirada, whiskys, vinos, gin y tragos de autor! ¿Querés que te tire algunas recomendaciones?",
+        "🍷 Tenemos una selección de tragos clásicos y especiales. ¿Buscás algo suave o más fuerte?"
+      ]
+    },
+    {
+      "tag": "bebidas_precios",
+      "patterns": ["cuánto cuesta una cerveza", "precio de la birra", "cuánto sale un trago", "precios bebidas", "cuánto vale un vino"],
+      "responses": [
+        "🍺 Los precios pueden variar según el tipo, pero la pinta arranca desde los $3.500 aprox. ¿Querés que te diga opciones de tragos?",
+        "💸 Una pinta está entre $3.000 y $4.000. También tenemos promos los fines de semana 🍀",
+        "🍷 Nuestros vinos van desde $12.000 y los tragos de autor desde $5.500."
+      ]
+    },
+    {
+      "tag": "promociones",
+      "patterns": ["promos", "promociones", "descuentos", "ofertas", "promo del día"],
+      "responses": [
+        "🎉 ¡Los findes hay promos locas! Birra, pizza y pool a precio amigo 🍀",
+        "🍻 Tenemos promos de cerveza y pizza los viernes y sábados. Ideal para venir con amigos.",
+        "🍕 Promos combinadas de comida y bebida durante los fines de semana. ¡Consultá al mozo por las opciones!"
+      ]
+    },
+    {
+      "tag": "ambiente",
+      "patterns": ["cómo es el lugar", "hay música", "ponen rock", "hay pool", "se puede bailar", "ambiente"],
+      "responses": [
+        "🎶 ¡Flynn tiene alma de pub irlandés! Hay rock, buena birra, pool y gente copada.",
+        "🍀 El bar tiene música en vivo, tragos, luces cálidas y un ambiente bien irlandés.",
+        "🎸 Sí, hay música rock, luces bajas y mesas para charlar o jugar al pool. ¡Un clásico del Flynn!"
+      ]
+    },
+    {
+      "tag": "reservas",
+      "patterns": ["cómo hago una reserva", "quiero reservar", "puedo reservar mesa", "reserva para hoy"],
+      "responses": [
+        "📅 Las reservas se hacen desde la web o por Instagram. Si querés, te llevo a la página de reservas 🍀",
+        "🍻 Te puedo redirigir al formulario de reservas para asegurarte una mesa. ¿Querés hacerlo ahora?",
+        "📆 ¡Claro! Te ayudamos con eso. Hacelo desde la sección *Reservas* del sitio o pedilo por mensaje directo."
+      ]
+    },
+    {
+      "tag": "sin_tacc",
+      "patterns": ["sin tacc", "celíaco", "celiaco", "celíaca", "celiaca", "tienen opciones sin gluten"],
+      "responses": [
+        "🍀 Sí, tenemos opciones sin TACC como papas, ensaladas y algunas pizzas especiales. Avisale al mozo y te orienta.",
+        "🥗 ¡Claro! Hay opciones sin gluten disponibles. Recomendamos consultar al staff al llegar.",
+        "🍞 Tenemos platos adaptables sin TACC, no te preocupes. El equipo te puede indicar los seguros."
+      ]
+    },
+    {
+      "tag": "vegetariano",
+      "patterns": ["vegetariano", "vegano", "sin carne", "hay opciones veganas", "comida vegetariana"],
+      "responses": [
+        "🥦 Sí, tenemos pizzas capresse, rúcula, fugazzeta y ensaladas frescas 🍀",
+        "🥗 Hay varias opciones vegetarianas en el menú. Las pizzas y ensaladas son un éxito.",
+        "🌱 ¡Totalmente! Pizzas sin carne y opciones verdes bien sabrosas."
+      ]
+    },
+    {
+      "tag": "otros_datos",
+      "patterns": ["dónde están", "dirección", "ubicación", "cómo llegar", "mapa"],
+      "responses": [
+        "📍 Estamos en Corrientes, Argentina 🍀. Buscanos como *Flynn Irish Bar* en Google Maps.",
+        "🚶‍♂️ Flynn Irish Pub queda en pleno centro de Corrientes. ¡Ideal para venir caminando o en taxi!",
+        "🗺️ Podés encontrarnos fácilmente en Google Maps. ¡Te esperamos con una pinta fría!"
+      ]
+    },
+    {
+      "tag": "contacto",
+      "patterns": ["teléfono", "whatsapp", "instagram", "redes sociales"],
+      "responses": [
+        "📱 Podés escribirnos por Instagram 👉 [@flynnirishbar](https://www.instagram.com/flynnirishbar/)",
+        "📞 Por ahora atendemos reservas y consultas vía Instagram o directamente en el bar.",
+        "📲 Nuestro principal canal es Instagram, ahí publicamos eventos, promos y novedades."
+      ]
+    }
+  ]
+}

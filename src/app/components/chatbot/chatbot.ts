@@ -248,7 +248,7 @@ export class Chatbot {
 
   // === SI PIDE "OTRAS OPCIONES" DE UN TEMA PREVIO ===
   if (masOpciones.some((k) => input.includes(k)) && this.currentTopic === 'comidas') {
-    const pizzas = this.flynnMenu.categorias.find((c) =>
+    const pizzas = this.flynnMenu.categorias.find((c:any) =>
       c.nombre.toLowerCase().includes('pizza')
     );
     if (pizzas) {
@@ -270,7 +270,7 @@ export class Chatbot {
 
   // === SI HABLA DE PIZZAS O EMPANADAS PERO SIN MATCH EXACTO ===
   if (input.includes('pizza')) {
-    const pizzas = this.flynnMenu.categorias.find((c) =>
+    const pizzas = this.flynnMenu.categorias.find((c:any) =>
       c.nombre.toLowerCase().includes('pizza')
     );
     if (pizzas) {
@@ -281,7 +281,7 @@ export class Chatbot {
   }
 
   if (input.includes('empanad')) {
-    const empanadas = this.flynnMenu.categorias.find((c) =>
+    const empanadas = this.flynnMenu.categorias.find((c:any) =>
       c.nombre.toLowerCase().includes('empanada')
     );
     if (empanadas) {
