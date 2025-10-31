@@ -218,36 +218,81 @@ export class Chatbot {
     return null;
   }
 
-  // === Búsqueda en menú ===
   findInMenu(input: string): string | null {
-    if (!this.flynnMenu?.categorias) return null;
+  if (!this.flynnMenu?.categorias) return null;
 
-    const sinTacc = ['sin tacc', 'celíac', 'celiaco', 'celiaca'];
-    const vegetariano = ['vegetariana', 'vegetariano', 'sin carne', 'vegana', 'vegano'];
-    const sinSalsa = ['sin salsa', 'salsa aparte'];
+  const sinTacc = ['sin tacc', 'celíac', 'celiaco', 'celiaca'];
+  const vegetariano = ['vegetariana', 'vegetariano', 'sin carne', 'vegana', 'vegano'];
+  const sinSalsa = ['sin salsa', 'salsa aparte'];
+  const masOpciones = ['otras', 'más', 'variedades', 'diferentes', 'distintas'];
 
-    if (sinTacc.some((k) => input.includes(k))) {
-      return '🍀 Tenemos opciones sin TACC, como papas, ensaladas y algunas pizzas especiales. Consultá al mozo al llegar.';
-    }
-    if (vegetariano.some((k) => input.includes(k))) {
-      return '🥗 Contamos con opciones vegetarianas como pizzas capresse, rúcula o fugazzeta, además de ensaladas.';
-    }
-    if (sinSalsa.some((k) => input.includes(k))) {
-      return '🍟 Podés pedir cualquier plato sin salsa, nuestros cocineros te lo preparan a gusto.';
-    }
-
-    for (const categoria of this.flynnMenu.categorias) {
-      for (const item of categoria.items) {
-        const nombreLower = item.nombre.toLowerCase();
-        if (input.includes(nombreLower.split(' ')[0])) {
-          this.currentTopic = 'comidas';
-          return `🍀 Tenemos ${item.nombre} en la sección ${categoria.nombre}, a $${item.precio.toLocaleString('es-AR')}.`;
-        }
-      }
-    }
-    return null;
+  // === OPCIONES ESPECIALES ===
+  if (sinTacc.some((k) => input.includes(k))) {
+    return '🍀 Tenemos opciones sin TACC, como papas, ensaladas y algunas pizzas especiales. Consultá al mozo al llegar.';
+  }
+  if (vegetariano.some((k) => input.includes(k))) {
+    return '🥗 Contamos con opciones vegetarianas como pizzas capresse, rúcula o fugazzeta, además de ensaladas.';
+  }
+  if (sinSalsa.some((k) => input.includes(k))) {
+    return '🍟 Podés pedir cualquier plato sin salsa, nuestros cocineros te lo preparan a gusto.';
   }
 
+  // === DETECCIÓN DE CATEGORÍA ===
+  let categoriaDetectada = null;
+  for (const categoria of this.flynnMenu.categorias) {
+    if (input.includes(categoria.nombre.toLowerCase())) {
+      categoriaDetectada = categoria;
+      break;
+    }
+  }
+
+  // === SI PIDE "OTRAS OPCIONES" DE UN TEMA PREVIO ===
+  if (masOpciones.some((k) => input.includes(k)) && this.currentTopic === 'comidas') {
+    const pizzas = this.flynnMenu.categorias.find((c) =>
+      c.nombre.toLowerCase().includes('pizza')
+    );
+    if (pizzas) {
+      const lista = pizzas.items.map((p: any) => `• ${p.nombre} ($${p.precio.toLocaleString('es-AR')})`).join('\n');
+      return `🍕 Claro, mirá todas nuestras pizzas disponibles:\n${lista}\n🍀 ¡Elegí la que más te guste!`;
+    }
+  }
+
+  // === BÚSQUEDA POR PALABRA CLAVE DE PRODUCTO ===
+  for (const categoria of this.flynnMenu.categorias) {
+    for (const item of categoria.items) {
+      const nombreLower = item.nombre.toLowerCase();
+      if (input.includes(nombreLower.split(' ')[0])) {
+        this.currentTopic = 'comidas';
+        return `🍀 Tenemos ${item.nombre} en la sección ${categoria.nombre}, a $${item.precio.toLocaleString('es-AR')}.`;
+      }
+    }
+  }
+
+  // === SI HABLA DE PIZZAS O EMPANADAS PERO SIN MATCH EXACTO ===
+  if (input.includes('pizza')) {
+    const pizzas = this.flynnMenu.categorias.find((c) =>
+      c.nombre.toLowerCase().includes('pizza')
+    );
+    if (pizzas) {
+      const lista = pizzas.items.map((p: any) => `• ${p.nombre} ($${p.precio.toLocaleString('es-AR')})`).join('\n');
+      this.currentTopic = 'comidas';
+      return `🍕 Estas son algunas de nuestras pizzas:\n${lista}`;
+    }
+  }
+
+  if (input.includes('empanad')) {
+    const empanadas = this.flynnMenu.categorias.find((c) =>
+      c.nombre.toLowerCase().includes('empanada')
+    );
+    if (empanadas) {
+      const lista = empanadas.items.map((e: any) => `• ${e.nombre} ($${e.precio.toLocaleString('es-AR')})`).join('\n');
+      this.currentTopic = 'comidas';
+      return `🥟 Tenemos varias empanadas:\n${lista}\n🍀 Podés pedirlas individuales o por docena.`;
+    }
+  }
+
+  return null;
+}
   // === Búsqueda en horarios ===
   findInHorarios(input: string): string | null {
     if (!this.flynnHorarios?.categorias) return null;
