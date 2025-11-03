@@ -1,0 +1,62 @@
+{
+  "categorias": [
+    {
+      "nombre": "Postres",
+      "items": [
+        { "nombre": "Alfajor Blanco", "precio": 2500, "categoria": "Postres", "receta": "Clásico alfajor argentino con tapas de masa dulce, relleno de dulce de leche y baño de chocolate blanco.", "tags": ["dulce", "tradicional", "argentino"] },
+        { "nombre": "Alfajor Block", "precio": 2500, "categoria": "Postres", "receta": "Alfajor tipo bloque con galleta crocante, dulce de leche y baño de chocolate semiamargo.", "tags": ["dulce", "chocolate"] },
+        { "nombre": "Alfajor Bon o Bon", "precio": 2500, "categoria": "Postres", "receta": "Alfajor inspirado en el bombón Bon o Bon, relleno de crema de maní y dulce de leche.", "tags": ["dulce", "maní", "chocolate"] },
+        { "nombre": "Alfajor Chocolina", "precio": 2500, "categoria": "Postres", "receta": "Alfajor con base de galletas Chocolina, relleno de dulce de leche y baño de chocolate.", "tags": ["dulce", "chocolate"] },
+        { "nombre": "Alfajor Corazón de Fresa", "precio": 2500, "categoria": "Postres", "receta": "Alfajor con relleno de dulce de leche y mermelada de fresa, cubierto de chocolate blanco.", "tags": ["dulce", "frutal"] },
+        { "nombre": "Alfajor Kinder", "precio": 2500, "categoria": "Postres", "receta": "Versión artesanal del clásico Kinder, con leche condensada y chocolate blanco.", "tags": ["dulce", "chocolate", "infantil"] },
+        { "nombre": "Alfajor de Licor", "precio": 2500, "categoria": "Postres", "receta": "Alfajor relleno con dulce de leche aromatizado con licor, cobertura de chocolate amargo.", "tags": ["dulce", "licor", "chocolate"] },
+        { "nombre": "Alfajor de Membrillo", "precio": 2500, "categoria": "Postres", "receta": "Alfajor de dulce de membrillo y dulce de leche, equilibrio entre dulce y ácido.", "tags": ["dulce", "frutal", "tradicional"] },
+        { "nombre": "Alfajor Negro", "precio": 2500, "categoria": "Postres", "receta": "Alfajor con masa de cacao, relleno de dulce de leche y cobertura de chocolate negro.", "tags": ["dulce", "chocolate", "intenso"] },
+        { "nombre": "Alfajor Oreo", "precio": 2500, "categoria": "Postres", "receta": "Alfajor con galletas de cacao y relleno de crema blanca, al estilo Oreo.", "tags": ["dulce", "chocolate"] }
+      ]
+    },
+    {
+      "nombre": "Bebidas por Medida",
+      "items": [
+        { "nombre": "Medida Bailey's", "precio": 5800, "categoria": "Bebidas por Medida", "receta": "Licor irlandés de crema y whisky, servido frío, suave y aromático.", "tags": ["licor", "crema", "alcohol", "irlandés"] },
+        { "nombre": "Medida Fernet Branca", "precio": 4800, "categoria": "Bebidas por Medida", "receta": "Licor amargo italiano de hierbas, muy popular en Argentina.", "tags": ["bitter", "hierbas", "fernet"] },
+        { "nombre": "Medida Gin Beefeater", "precio": 5300, "categoria": "Bebidas por Medida", "receta": "Gin londinense con notas cítricas y florales, ideal para gin tonic.", "tags": ["gin", "londres", "cítrico"] },
+        { "nombre": "Medida Jägermeister", "precio": 5500, "categoria": "Bebidas por Medida", "receta": "Licor herbal alemán con 56 hierbas, especias y frutas, servido bien frío.", "tags": ["licor", "alemán", "herbal"] },
+        { "nombre": "Medida Ron Havana Club", "precio": 5300, "categoria": "Bebidas por Medida", "receta": "Ron cubano añejado con notas de vainilla y caña dulce.", "tags": ["ron", "dulce", "cubano"] },
+        { "nombre": "Medida Tequila Jose Cuervo", "precio": 5500, "categoria": "Bebidas por Medida", "receta": "Tequila reposado servido con limón y sal, clásico mexicano.", "tags": ["tequila", "mexicano", "shot"] }
+      ]
+    },
+    {
+      "nombre": "Bebidas sin Alcohol",
+      "items": [
+        { "nombre": "Agua Mineral", "precio": 3500, "categoria": "Bebidas sin Alcohol", "receta": "Agua natural embotellada, sin gas, ideal para acompañar comidas.", "tags": ["agua", "natural", "refrescante"] },
+        { "nombre": "Agua Mineral con Gas", "precio": 3500, "categoria": "Bebidas sin Alcohol", "receta": "Agua con gas, refrescante y liviana.", "tags": ["agua", "con gas", "refrescante"] },
+        { "nombre": "Coca Cola 1.5L", "precio": 7500, "categoria": "Bebidas sin Alcohol", "receta": "Gaseosa cola clásica, refrescante y dulce.", "tags": ["gaseosa", "refrescante", "cola"] },
+        { "nombre": "Coca Cola Sin Azúcar", "precio": 7500, "categoria": "Bebidas sin Alcohol", "receta": "Versión sin azúcar de la clásica Coca Cola, sabor original sin calorías.", "tags": ["gaseosa", "sin azúcar"] },
+        { "nombre": "Sprite 1.5L", "precio": 3500, "categoria": "Bebidas sin Alcohol", "receta": "Gaseosa lima-limón sin colorantes, ideal para tragos.", "tags": ["gaseosa", "limón", "sin alcohol"] },
+        { "nombre": "Speed", "precio": 5000, "categoria": "Bebidas sin Alcohol", "receta": "Bebida energizante con cafeína y taurina, ideal para mezclar con alcohol.", "tags": ["energizante", "cafeína", "refrescante"] },
+        { "nombre": "Heineken Sin Alcohol 473ml", "precio": 4000, "categoria": "Bebidas sin Alcohol", "receta": "Cerveza sin alcohol con el mismo sabor balanceado de Heineken.", "tags": ["cerveza", "sin alcohol"] }
+      ]
+    },
+    {
+      "nombre": "Cervezas Latas",
+      "items": [
+        { "nombre": "Guinness", "precio": 8800, "categoria": "Cervezas Latas", "receta": "Cerveza negra irlandesa con cuerpo cremoso y notas de café y cacao.", "tags": ["cerveza", "negra", "irlandesa"] },
+        { "nombre": "Heineken Lata 473ml", "precio": 5500, "categoria": "Cervezas Latas", "receta": "Lager premium dorada, con sabor suave y final refrescante.", "tags": ["cerveza", "lager", "refrescante"] },
+        { "nombre": "Rabieta Golden Ale 473ml", "precio": 5500, "categoria": "Cervezas Latas", "receta": "Cerveza artesanal dorada con notas a miel y pan.", "tags": ["cerveza", "dorada", "artesanal"] },
+        { "nombre": "Rabieta IPA 473ml", "precio": 5500, "categoria": "Cervezas Latas", "receta": "India Pale Ale con amargor intenso y aroma cítrico.", "tags": ["cerveza", "IPA", "lúpulo"] },
+        { "nombre": "Rabieta Red Honey 473ml", "precio": 5500, "categoria": "Cervezas Latas", "receta": "Cerveza roja con miel, sabor dulce y tostado.", "tags": ["cerveza", "roja", "miel"] }
+      ]
+    },
+    {
+      "nombre": "Cervezas Nacionales",
+      "items": [
+        { "nombre": "Amstel 1L", "precio": 7500, "categoria": "Cervezas Nacionales", "receta": "Lager suave y equilibrada, importada de Holanda.", "tags": ["cerveza", "lager", "suave"] },
+        { "nombre": "Heineken 1L", "precio": 9500, "categoria": "Cervezas Nacionales", "receta": "Cerveza lager premium con espuma densa y sabor balanceado.", "tags": ["cerveza", "lager", "premium"] },
+        { "nombre": "Imperial Ipa 1L", "precio": 8500, "categoria": "Cervezas Nacionales", "receta": "IPA argentina con lúpulo aromático y cuerpo dorado.", "tags": ["cerveza", "IPA", "argentina"] },
+        { "nombre": "Miller 1L", "precio": 8000, "categoria": "Cervezas Nacionales", "receta": "Lager estadounidense de cuerpo ligero y sabor suave.", "tags": ["cerveza", "lager", "suave"] },
+        { "nombre": "Rabieta Apa 710cc", "precio": 8800, "categoria": "Cervezas Nacionales", "receta": "American Pale Ale artesanal, balanceada entre amargor y dulzura.", "tags": ["cerveza", "APA", "artesanal"] }
+      ]
+    }
+  ]
+}
