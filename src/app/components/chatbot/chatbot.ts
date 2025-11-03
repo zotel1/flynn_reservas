@@ -171,6 +171,29 @@ export class Chatbot {
       ${JSON.stringify(this.flynnKnowledge).slice(0, 1500)} 
       `.trim();
 
+            // === Intentar obtener contexto semántico desde Qdrant ===
+      let semanticContext = "";
+      try {
+        const searchRes = await fetch('/api/searchMenu', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ query: text }),
+        });
+
+        if (searchRes.ok) {
+          const data = await searchRes.json();
+          if (data.items?.length) {
+            const contextItems = data.items
+              .map((i: any) => `${i.nombre} - ${i.receta || 'sin descripción'} ($${i.precio})`)
+              .join('\n');
+            semanticContext = `Resultados del menú más relevantes:\n${contextItems}\n`;
+          }
+        }
+      } catch (err) {
+        console.error("⚠️ Error al consultar Qdrant:", err);
+      }
+
+
       const response = await fetch(this.API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
