@@ -162,17 +162,22 @@ export class Chatbot {
       return;
     }
 
+    let semanticContext = "";
+
     // === Gemini ===
     try {
+
+      
       const context = `
       Sos Flynn Assistant 🍀, asistente virtual del Flynn Irish Pub.
       Tema actual del usuario: ${this.currentTopic || 'general'}.
-      Estos son algunos datos locales del bar:
-      ${JSON.stringify(this.flynnKnowledge).slice(0, 1500)} 
+        Estos son algunos datos del bar:
+      ${semanticContext || JSON.stringify(this.flynnKnowledge).slice(0, 1000)}
       `.trim();
 
+
             // === Intentar obtener contexto semántico desde Qdrant ===
-      let semanticContext = "";
+  
       try {
         const searchRes = await fetch('/api/searchMenu', {
           method: 'POST',
