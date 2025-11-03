@@ -144,6 +144,161 @@
         { "nombre": "Papas Flynn", "precio": 12000, "categoria": "Papas", "receta": "Mix de papas fritas con cheddar, panceta y verdeo, receta de la casa.", "tags": ["papas", "cheddar", "panceta", "especialidad"] }
       ]
     }
-
+    ,
+    {
+      "nombre": "Para Picar",
+      "items": [
+        { "nombre": "Aceitunas", "precio": 3000, "categoria": "Para Picar", "receta": "Aceitunas verdes marinadas en especias y aceite de oliva. Entrada clásica para acompañar cervezas.", "tags": ["entrada", "aceitunas", "aperitivo"] },
+        { "nombre": "Alitas de Pollo", "precio": 10000, "categoria": "Para Picar", "receta": "Alitas fritas bañadas en salsa barbacoa o picante, crujientes y sabrosas.", "tags": ["pollo", "barbacoa", "entrada", "picante"] },
+        { "nombre": "Maní King", "precio": 2500, "categoria": "Para Picar", "receta": "Maní tostado con sal, ideal como snack para acompañar tragos o cervezas.", "tags": ["snack", "maní", "salado"] },
+        { "nombre": "Picada Caliente", "precio": 33700, "categoria": "Para Picar", "receta": "Variedad de carnes, papas fritas, salchichas y provoleta caliente para compartir.", "tags": ["picada", "compartir", "caliente"] },
+        { "nombre": "Picada Fría", "precio": 32700, "categoria": "Para Picar", "receta": "Jamones, quesos, salames y aceitunas. Ideal para acompañar vino o cerveza.", "tags": ["picada", "fría", "fiambres"] },
+        { "nombre": "Rabas", "precio": 16000, "categoria": "Para Picar", "receta": "Anillos de calamar rebozados, fritos y servidos con alioli.", "tags": ["mariscos", "rabas", "entrada"] }
+      ]
+    },
+    {
+  "nombre": "Pizzas",
+  "items": [
+    { "nombre": "Extra Queso Mitad", "precio": 6500, "categoria": "Pizzas", "receta": "Mitad de pizza con extra de mozzarella fundida, ideal para compartir o agregar a otra mitad.", "tags": ["pizza", "queso", "extra", "mitad"] },
+    { "nombre": "Extra Queso", "precio": 9000, "categoria": "Pizzas", "receta": "Pizza entera con extra de queso mozzarella fundido, cremosa y abundante.", "tags": ["pizza", "queso", "extra"] },
+    { "nombre": "Pizza Anchoas con Roquefort Grande", "precio": 22000, "categoria": "Pizzas", "receta": "Pizza grande con salsa de tomate, queso roquefort y filetes de anchoas.", "tags": ["pizza", "anchoas", "roquefort", "salada"] },
+    { "nombre": "Pizza Anchoas con Roquefort Mitad", "precio": 16000, "categoria": "Pizzas", "receta": "Mitad de pizza con queso roquefort y anchoas sobre base de tomate.", "tags": ["pizza", "anchoas", "roquefort", "mitad"] },
+    { "nombre": "Pizza Atún Grande", "precio": 22000, "categoria": "Pizzas", "receta": "Pizza grande con atún, cebolla y mozzarella, sabor mediterráneo clásico.", "tags": ["pizza", "atún", "mariscos", "grande"] },
+    { "nombre": "Pizza Atún Mitad", "precio": 16000, "categoria": "Pizzas", "receta": "Mitad de pizza con atún y cebolla, ideal para combinar sabores.", "tags": ["pizza", "atún", "cebolla", "mitad"] },
+    { "nombre": "Pizza Calabresa Grande", "precio": 20000, "categoria": "Pizzas", "receta": "Pizza con salsa, mozzarella y rodajas de longaniza calabresa picante.", "tags": ["pizza", "calabresa", "picante", "grande"] },
+    { "nombre": "Pizza Calabresa Mitad", "precio": 14000, "categoria": "Pizzas", "receta": "Mitad de pizza calabresa con mozzarella y salsa de tomate.", "tags": ["pizza", "calabresa", "mitad"] },
+    { "nombre": "Pizza Capresse Grande", "precio": 20000, "categoria": "Pizzas", "receta": "Pizza grande con tomate fresco, mozzarella, albahaca y oliva.", "tags": ["pizza", "capresse", "vegetariana", "italiana"] },
+    { "nombre": "Pizza Capresse Mitad", "precio": 14000, "categoria": "Pizzas", "receta": "Mitad de pizza con tomate, mozzarella y albahaca.", "tags": ["pizza", "capresse", "mitad", "vegetariana"] },
+    { "nombre": "Pizza Champignon Grande", "precio": 22000, "categoria": "Pizzas", "receta": "Pizza con mozzarella, hongos champignon salteados y toque de ajo.", "tags": ["pizza", "champignon", "hongos", "grande"] },
+    { "nombre": "Pizza Champignon Mitad", "precio": 16000, "categoria": "Pizzas", "receta": "Mitad de pizza con champignon fresco y mozzarella fundida.", "tags": ["pizza", "hongos", "mitad", "vegetariana"] },
+    { "nombre": "Pizza Cuatro Quesos Grande", "precio": 22000, "categoria": "Pizzas", "receta": "Mozzarella, roquefort, parmesano y provolone sobre base de salsa.", "tags": ["pizza", "queso", "cuatro quesos", "grande"] },
+    { "nombre": "Pizza Cuatro Quesos Mitad", "precio": 16000, "categoria": "Pizzas", "receta": "Mitad con combinación de quesos mozzarella, roquefort, parmesano y provolone.", "tags": ["pizza", "queso", "mitad", "mixta"] },
+    { "nombre": "Pizza Flynn Grande", "precio": 22000, "categoria": "Pizzas", "receta": "Especialidad de la casa: mozzarella, panceta, verdeo y salsa de tomate.", "tags": ["pizza", "flynn", "panceta", "verdeo", "especialidad"] },
+    { "nombre": "Pizza Flynn Mitad", "precio": 16000, "categoria": "Pizzas", "receta": "Mitad de la pizza Flynn, con panceta, verdeo y mozzarella fundida.", "tags": ["pizza", "flynn", "mitad", "especialidad"] },
+    { "nombre": "Pizza Fugazzeta con Jamón Grande", "precio": 22000, "categoria": "Pizzas", "receta": "Pizza rellena con cebolla caramelizada, mozzarella y jamón.", "tags": ["pizza", "fugazzeta", "jamón", "rellena"] },
+    { "nombre": "Pizza Fugazzeta con Jamón Mitad", "precio": 16000, "categoria": "Pizzas", "receta": "Mitad de pizza fugazzeta con jamón y mozzarella.", "tags": ["pizza", "fugazzeta", "jamón", "mitad"] },
+    { "nombre": "Pizza Fugazzeta Grande", "precio": 19000, "categoria": "Pizzas", "receta": "Pizza rellena de cebolla y mozzarella, sin salsa de tomate.", "tags": ["pizza", "fugazzeta", "cebolla", "queso"] },
+    { "nombre": "Pizza Fugazzeta Mitad", "precio": 13000, "categoria": "Pizzas", "receta": "Mitad de pizza fugazzeta con cebolla y queso fundido.", "tags": ["pizza", "cebolla", "mitad"] },
+    { "nombre": "Pizza Jamón y Morrón Grande", "precio": 20000, "categoria": "Pizzas", "receta": "Pizza clásica con jamón cocido, morrones y mozzarella.", "tags": ["pizza", "jamón", "morrones", "clásica"] },
+    { "nombre": "Pizza Jamón y Morrón Mitad", "precio": 14000, "categoria": "Pizzas", "receta": "Mitad de pizza con jamón, morrón y queso fundido.", "tags": ["pizza", "jamón", "mitad", "morrones"] },
+    { "nombre": "Pizza Lomito Grande", "precio": 23000, "categoria": "Pizzas", "receta": "Pizza gourmet con lomito, mozzarella y salsa de tomate artesanal.", "tags": ["pizza", "lomito", "gourmet"] },
+    { "nombre": "Pizza Lomito Mitad", "precio": 17000, "categoria": "Pizzas", "receta": "Mitad de pizza con lomito y mozzarella, ideal para combinar sabores.", "tags": ["pizza", "lomito", "mitad"] },
+    { "nombre": "Pizza Muzza Grande", "precio": 16000, "categoria": "Pizzas", "receta": "Pizza tradicional con abundante mozzarella y salsa de tomate.", "tags": ["pizza", "mozzarella", "tradicional"] },
+    { "nombre": "Pizza Muzza con Jamón Grande", "precio": 17500, "categoria": "Pizzas", "receta": "Pizza de muzza con fetas de jamón cocido y orégano.", "tags": ["pizza", "jamón", "mozzarella", "clásica"] },
+    { "nombre": "Pizza Muzza Mitad", "precio": 10000, "categoria": "Pizzas", "receta": "Mitad de pizza con mozzarella fundida y base de tomate.", "tags": ["pizza", "mozzarella", "mitad"] },
+    { "nombre": "Pizza Napolitana con Jamón Grande", "precio": 20000, "categoria": "Pizzas", "receta": "Pizza napolitana con rodajas de tomate, jamón y mozzarella.", "tags": ["pizza", "napolitana", "jamón", "italiana"] },
+    { "nombre": "Pizza Napolitana con Jamón Mitad", "precio": 14000, "categoria": "Pizzas", "receta": "Mitad de pizza napolitana con jamón y tomate fresco.", "tags": ["pizza", "napolitana", "mitad", "tomate"] },
+    { "nombre": "Pizza Panceta Grande", "precio": 23000, "categoria": "Pizzas", "receta": "Pizza con panceta ahumada, mozzarella y oliva. Intensa y sabrosa.", "tags": ["pizza", "panceta", "ahumada", "grande"] },
+    { "nombre": "Pizza Panceta Mitad", "precio": 17000, "categoria": "Pizzas", "receta": "Mitad de pizza con panceta crocante y mozzarella fundida.", "tags": ["pizza", "panceta", "mitad"] },
+    { "nombre": "Pizza Rellena Chica", "precio": 17000, "categoria": "Pizzas", "receta": "Pizza rellena doble masa con mozzarella y jamón, porción chica.", "tags": ["pizza", "rellena", "jamón", "queso"] },
+    { "nombre": "Pizza Rellena Grande", "precio": 23000, "categoria": "Pizzas", "receta": "Pizza rellena grande de doble masa, con mozzarella, jamón y verdeo.", "tags": ["pizza", "rellena", "grande", "doble masa"] },
+    { "nombre": "Pizza Roquefort Grande", "precio": 22000, "categoria": "Pizzas", "receta": "Pizza con base de mozzarella y queso roquefort, sabor intenso.", "tags": ["pizza", "roquefort", "queso azul"] },
+    { "nombre": "Pizza Roquefort Mitad", "precio": 16000, "categoria": "Pizzas", "receta": "Mitad de pizza roquefort con mozzarella fundida y oliva.", "tags": ["pizza", "roquefort", "mitad"] },
+    { "nombre": "Pizza Rúcula Grande", "precio": 20000, "categoria": "Pizzas", "receta": "Pizza con rúcula, jamón crudo, parmesano y oliva.", "tags": ["pizza", "rúcula", "jamón crudo", "liviana"] },
+    { "nombre": "Pizza Rúcula Mitad", "precio": 14000, "categoria": "Pizzas", "receta": "Mitad de pizza rúcula con jamón crudo y parmesano.", "tags": ["pizza", "rúcula", "mitad", "jamón crudo"] },
+    { "nombre": "Pizza Tropical Grande", "precio": 23000, "categoria": "Pizzas", "receta": "Pizza con jamón, mozzarella y ananá, mezcla de dulce y salado.", "tags": ["pizza", "tropical", "ananá", "dulce"] },
+    { "nombre": "Pizza Tropical Mitad", "precio": 17000, "categoria": "Pizzas", "receta": "Mitad de pizza tropical con jamón y ananá.", "tags": ["pizza", "tropical", "mitad"] },
+    { "nombre": "Rodizio", "precio": 14500, "categoria": "Pizzas", "receta": "Rodizio libre de pizzas, distintas variedades servidas en porciones.", "tags": ["pizza", "rodizio", "variedades", "libre"] }
   ]
 }
+,
+    {
+      "nombre": "Pool",
+      "items": [
+        { "nombre": "Ficha de Pool", "precio": 4000, "categoria": "Pool", "receta": "Acceso a una partida de pool en mesa profesional.", "tags": ["juego", "pool", "entretenimiento"] }
+      ]
+    },
+    {
+      "nombre": "Sandwich y Tostados",
+      "items": [
+        { "nombre": "Sandwich de Miga", "precio": 8000, "categoria": "Sandwich y Tostados", "receta": "Sandwich triple de miga con jamón, queso y tomate. Fresco y clásico.", "tags": ["sandwich", "miga", "fiambre"] },
+        { "nombre": "Sandwich Primavera", "precio": 9000, "categoria": "Sandwich y Tostados", "receta": "Sandwich vegetal con tomate, lechuga, huevo y zanahoria rallada.", "tags": ["sandwich", "vegetariano", "liviano"] },
+        { "nombre": "Tostado Flynn", "precio": 10500, "categoria": "Sandwich y Tostados", "receta": "Pan de campo con jamón, queso y huevo, gratinado al horno.", "tags": ["tostado", "jamón", "queso", "gratinado"] },
+        { "nombre": "Tostado Simple", "precio": 8500, "categoria": "Sandwich y Tostados", "receta": "Tostado clásico de jamón y queso con pan dorado.", "tags": ["tostado", "simple", "jamón", "queso"] }
+      ]
+    },
+    {
+      "nombre": "Varios",
+      "items": [
+        { "nombre": "Cubierto", "precio": 0, "categoria": "Varios", "receta": "Incluye servicio de mesa, pan y utensilios.", "tags": ["servicio", "cubierto"] },
+        { "nombre": "Vaso Heineken", "precio": 15000, "categoria": "Varios", "receta": "Vaso coleccionable Heineken edición especial.", "tags": ["vaso", "souvenir", "heineken"] }
+      ]
+    },
+    {
+      "nombre": "Vinos",
+      "items": [
+        { "nombre": "Alaris Blanco Dulce 750ml", "precio": 12000, "categoria": "Vinos", "receta": "Vino blanco dulce con notas a frutas tropicales y final suave.", "tags": ["vino", "blanco", "dulce"] },
+        { "nombre": "Cordero con Piel de Lobo", "precio": 12000, "categoria": "Vinos", "receta": "Malbec argentino con cuerpo medio y taninos suaves.", "tags": ["vino", "malbec", "argentino"] },
+        { "nombre": "Trumpeter Malbec", "precio": 16000, "categoria": "Vinos", "receta": "Malbec intenso con aroma a frutas rojas y madera.", "tags": ["vino", "malbec", "tinto"] },
+        { "nombre": "Rutini Malbec", "precio": 32000, "categoria": "Vinos", "receta": "Vino de alta gama, intenso y elegante, con crianza en roble.", "tags": ["vino", "malbec", "premium"] },
+        { "nombre": "Saint Felicien Malbec", "precio": 19000, "categoria": "Vinos", "receta": "Vino tinto con aroma a frutas maduras y especias.", "tags": ["vino", "tinto", "malbec"] }
+      ]
+    },
+    {
+      "nombre": "Whiskys",
+      "items": [
+        { "nombre": "Jameson", "precio": 9500, "categoria": "Whiskys", "receta": "Whisky irlandés triple destilado, suave y equilibrado, ideal para tragos o solo.", "tags": ["whisky", "irlandés", "suave"] },
+        { "nombre": "Jack Daniel’s", "precio": 9500, "categoria": "Whiskys", "receta": "Whisky americano Tennessee, sabor dulce con notas a roble y vainilla.", "tags": ["whisky", "americano", "vainilla"] },
+        { "nombre": "Chivas 12 Años", "precio": 10000, "categoria": "Whiskys", "receta": "Blended escocés de 12 años, aroma floral y sabor redondo.", "tags": ["whisky", "escocés", "blend"] },
+        { "nombre": "Johnnie Walker Black", "precio": 10500, "categoria": "Whiskys", "receta": "Escocés ahumado de 12 años, ideal para los amantes del sabor intenso.", "tags": ["whisky", "ahumado", "escocés"] },
+        { "nombre": "Ballantine’s", "precio": 9500, "categoria": "Whiskys", "receta": "Blend escocés equilibrado con notas de miel y vainilla.", "tags": ["whisky", "escocés", "suave", "miel"] }
+      ]
+    }
+    ,
+    {
+      "nombre": "Jugos y Licuados",
+      "items": [
+        { "nombre": "Jugo de Naranja", "precio": 5500 },
+        { "nombre": "Jugo de Pomelo", "precio": 5500 },
+        { "nombre": "Jugo de Manzana", "precio": 5500 },
+        { "nombre": "Licuado de Banana", "precio": 6000 },
+        { "nombre": "Licuado de Frutilla", "precio": 6000 },
+        { "nombre": "Licuado de Durazno", "precio": 6000 },
+        { "nombre": "Licuado de Manzana", "precio": 6000 },
+        { "nombre": "Licuado de Naranja", "precio": 6000 },
+        { "nombre": "Licuado Mixto", "precio": 6500 }
+      ]
+    },
+    {
+      "nombre": "Paletas Frutales",
+      "items": [
+        { "nombre": "Paleta de Frutilla", "precio": 2500 },
+        { "nombre": "Paleta de Limón", "precio": 2500 },
+        { "nombre": "Paleta de Ananá", "precio": 2500 },
+        { "nombre": "Paleta de Naranja", "precio": 2500 },
+        { "nombre": "Paleta de Frutas Tropicales", "precio": 2500 }
+      ]
+    },
+    {
+      "nombre": "Paletas Rellenas",
+      "items": [
+        { "nombre": "Paleta de Dulce de Leche", "precio": 3000 },
+        { "nombre": "Paleta de Chocolate Blanco", "precio": 3000 },
+        { "nombre": "Paleta de Frutilla con Crema", "precio": 3000 },
+        { "nombre": "Paleta de Vainilla con Dulce de Leche", "precio": 3000 }
+      ]
+    },
+    {
+      "nombre": "Empanadas",
+      "items": [
+        { "nombre": "Empanada de Carne", "precio": 2200 },
+        { "nombre": "Empanada de Pollo", "precio": 2200 },
+        { "nombre": "Empanada Capresse", "precio": 2200 },
+        { "nombre": "Empanada de Jamón y Queso", "precio": 2200 },
+        { "nombre": "Empanada Árabe", "precio": 2300 }
+      ]
+    },
+    {
+      "nombre": "Promos",
+      "items": [
+        { "nombre": "Promo 2x1 Heineken Tirada", "precio": 5000 },
+        { "nombre": "Promo Hoppy Pils 2x1", "precio": 4900 },
+        { "nombre": "Promo Hamburg Flynn + Papas", "precio": 18500 },
+        { "nombre": "Promo Lomo Flynn + Bebida", "precio": 21000 },
+        { "nombre": "Promo Pizza Flynn + 2 Cervezas", "precio": 27000 }
+      ]
+    }
+  ]
+}
+
+
