@@ -58,5 +58,92 @@
         { "nombre": "Rabieta Apa 710cc", "precio": 8800, "categoria": "Cervezas Nacionales", "receta": "American Pale Ale artesanal, balanceada entre amargor y dulzura.", "tags": ["cerveza", "APA", "artesanal"] }
       ]
     }
+    ,
+    {
+      "nombre": "Cervezas Tiradas",
+      "items": [
+        { "nombre": "Brauart Amber", "precio": 4900, "categoria": "Cervezas Tiradas", "receta": "Cerveza ámbar artesanal con notas a caramelo y leve amargor, servida tirada en pinta o media pinta.", "tags": ["cerveza", "amber", "tirada", "artesanal"] },
+        { "nombre": "Brauart Especial", "precio": 4900, "categoria": "Cervezas Tiradas", "receta": "Cerveza rubia liviana de cuerpo suave, con espuma cremosa y final refrescante.", "tags": ["cerveza", "dorada", "suave"] },
+        { "nombre": "Brauart Golden", "precio": 4900, "categoria": "Cervezas Tiradas", "receta": "Golden Ale equilibrada, de aroma frutal y final seco.", "tags": ["cerveza", "golden", "ale", "tirada"] },
+        { "nombre": "Brauart Ipa", "precio": 4900, "categoria": "Cervezas Tiradas", "receta": "India Pale Ale de tirada con aroma a lúpulo y sabor amargo intenso.", "tags": ["cerveza", "IPA", "lúpulo", "tirada"] },
+        { "nombre": "Brauart Red Honey", "precio": 4900, "categoria": "Cervezas Tiradas", "receta": "Cerveza roja con miel artesanal, de sabor dulce y cuerpo medio.", "tags": ["cerveza", "roja", "miel", "artesanal"] },
+        { "nombre": "Tablita de Cervezas", "precio": 9000, "categoria": "Cervezas Tiradas", "receta": "Degustación de 4 estilos diferentes de cerveza tirada, ideal para compartir.", "tags": ["cerveza", "degustación", "tirada", "artesanal"] },
+        { "nombre": "Hoppy Pils 2x1", "precio": 4900, "categoria": "Cervezas Tiradas", "receta": "Pilsner artesanal con notas herbales y amargor suave, servida en promoción 2x1.", "tags": ["cerveza", "pilsner", "tirada", "promoción"] },
+        { "nombre": "Heineken Tirada 2x1", "precio": 5000, "categoria": "Cervezas Tiradas", "receta": "Cerveza Heineken servida tirada, ligera y refrescante, promoción 2x1.", "tags": ["cerveza", "heineken", "tirada", "promoción"] }
+      ]
+    },
+    {
+      "nombre": "Cigarrillos",
+      "items": [
+        { "nombre": "Cigarrillos Lucky Strike 10", "precio": 4000, "categoria": "Cigarrillos", "receta": "Cigarrillos suaves con mezcla de tabacos rubios, aroma equilibrado.", "tags": ["cigarrillo", "tabaco", "rubio"] },
+        { "nombre": "Cigarrillos Marlboro 10", "precio": 4000, "categoria": "Cigarrillos", "receta": "Tabaco americano clásico de sabor medio y aroma persistente.", "tags": ["cigarrillo", "tabaco", "americano"] },
+        { "nombre": "Cigarrillos Philip Morris 10", "precio": 4000, "categoria": "Cigarrillos", "receta": "Cigarrillo rubio de cuerpo medio con tabacos seleccionados.", "tags": ["cigarrillo", "tabaco", "rubio"] }
+      ]
+    },
+    {
+      "nombre": "Cocteles",
+      "items": [
+        { "nombre": "Campari Tonic", "precio": 8500, "categoria": "Cocteles", "receta": "Campari con agua tónica, rodajas de naranja y hielo. Ideal para el verano.", "tags": ["campari", "tónica", "amargo", "refrescante"] },
+        { "nombre": "Cuba Libre", "precio": 9000, "categoria": "Cocteles", "receta": "Ron oscuro, cola y lima, un clásico cubano refrescante y dulce.", "tags": ["ron", "cola", "cítrico", "caribeño"] },
+        { "nombre": "Daiquiri de Frutilla", "precio": 10000, "categoria": "Cocteles", "receta": "Ron, frutilla, azúcar y hielo licuado. Frutal y dulce.", "tags": ["ron", "frutilla", "dulce"] },
+        { "nombre": "Jameson Lemon", "precio": 9500, "categoria": "Cocteles", "receta": "Whisky Jameson con jugo de limón y soda, fresco y ligero.", "tags": ["whisky", "limón", "refrescante"] },
+        { "nombre": "Margarita", "precio": 9500, "categoria": "Cocteles", "receta": "Tequila, triple sec y jugo de lima, con borde salado. Un clásico mexicano.", "tags": ["tequila", "cítrico", "mexicano"] },
+        { "nombre": "Martini", "precio": 9000, "categoria": "Cocteles", "receta": "Gin con vermut seco y aceituna, servido bien frío. Elegancia en copa.", "tags": ["gin", "vermut", "aperitivo"] },
+        { "nombre": "Negroni", "precio": 8500, "categoria": "Cocteles", "receta": "Mezcla de gin, Campari y vermut rojo. Sabor amargo y sofisticado.", "tags": ["campari", "gin", "amargo", "clásico"] }
+      ]
+    },
+    {
+      "nombre": "Ensaladas",
+      "items": [
+        { "nombre": "Ensalada Caesar", "precio": 10000, "categoria": "Ensaladas", "receta": "Mix de verdes, pollo grillado, crutones, queso parmesano y aderezo Caesar.", "tags": ["ensalada", "pollo", "parmesano", "liviana"] },
+        { "nombre": "Ensalada Capresse", "precio": 9000, "categoria": "Ensaladas", "receta": "Tomate fresco, mozzarella y albahaca, con aceite de oliva. Clásico italiano.", "tags": ["ensalada", "vegetariana", "italiana"] },
+        { "nombre": "Ensalada Mixta", "precio": 8000, "categoria": "Ensaladas", "receta": "Lechuga, tomate, zanahoria y cebolla, fresca y natural.", "tags": ["ensalada", "vegetariana", "liviana"] },
+        { "nombre": "Ensalada Rúcula", "precio": 9000, "categoria": "Ensaladas", "receta": "Rúcula, tomate cherry, parmesano y oliva. Simple y sabrosa.", "tags": ["ensalada", "rúcula", "vegetariana"] }
+      ]
+    },
+    {
+      "nombre": "Espumantes",
+      "items": [
+        { "nombre": "Chandon Extra Brut", "precio": 23500, "categoria": "Espumantes", "receta": "Espumante argentino seco con aroma a frutas blancas y burbuja fina.", "tags": ["espumante", "vino", "brut"] },
+        { "nombre": "Chandon Rose", "precio": 23500, "categoria": "Espumantes", "receta": "Versión rosada del Chandon, con notas a frutilla y cereza.", "tags": ["espumante", "rosé", "vino"] },
+        { "nombre": "Chandon Delice", "precio": 24000, "categoria": "Espumantes", "receta": "Espumante dulce con aroma floral, ideal para aperitivo.", "tags": ["espumante", "dulce", "floral"] },
+        { "nombre": "Champaña San Telmo Dulce", "precio": 19000, "categoria": "Espumantes", "receta": "Espumante argentino dulce, burbujas finas y sabor afrutado.", "tags": ["espumante", "dulce", "afrutado"] }
+      ]
+    },
+    {
+      "nombre": "Hamburguesas",
+      "items": [
+        { "nombre": "Hamburg Flynn Grande", "precio": 16500, "categoria": "Hamburguesas", "receta": "Doble medallón de carne con panceta, cheddar y salsa Flynn en pan artesanal.", "tags": ["hamburguesa", "carne", "panceta"] },
+        { "nombre": "Hamburg Completa Paty", "precio": 10500, "categoria": "Hamburguesas", "receta": "Hamburguesa clásica con jamón, queso, lechuga, tomate y huevo.", "tags": ["hamburguesa", "clásica", "completa"] },
+        { "nombre": "Hamburg Especial Grande", "precio": 14000, "categoria": "Hamburguesas", "receta": "Carne vacuna, panceta, queso y huevo frito. Estilo casero.", "tags": ["hamburguesa", "carne", "especial"] },
+        { "nombre": "Hamburg Simple Paty", "precio": 9500, "categoria": "Hamburguesas", "receta": "Hamburguesa simple con carne, queso y pan de brioche.", "tags": ["hamburguesa", "simple", "clásica"] }
+      ]
+    },
+    {
+      "nombre": "Lomos",
+      "items": [
+        { "nombre": "Lomo Flynn", "precio": 19000, "categoria": "Lomos", "receta": "Sándwich de lomo completo con jamón, queso, huevo y verduras frescas.", "tags": ["lomo", "sándwich", "completo"] },
+        { "nombre": "Lomo Especial", "precio": 16500, "categoria": "Lomos", "receta": "Pan artesanal, lomo vacuno, panceta, huevo y cheddar.", "tags": ["lomo", "carne", "completo"] },
+        { "nombre": "Lomo Simple", "precio": 16000, "categoria": "Lomos", "receta": "Versión clásica de lomo con jamón y queso.", "tags": ["lomo", "clásico"] }
+      ]
+    },
+    {
+      "nombre": "Milanesas de Lomo",
+      "items": [
+        { "nombre": "Milanesa Napolitana con Papas", "precio": 15500, "categoria": "Milanesas de Lomo", "receta": "Milanesa de lomo con salsa, jamón, queso y papas fritas.", "tags": ["milanesa", "napolitana", "carne"] },
+        { "nombre": "Milanesa Caballo con Mixta", "precio": 15000, "categoria": "Milanesas de Lomo", "receta": "Milanesa de lomo con huevo frito y ensalada mixta.", "tags": ["milanesa", "caballo", "ensalada"] },
+        { "nombre": "Milanesa con Papas", "precio": 14000, "categoria": "Milanesas de Lomo", "receta": "Milanesa de lomo empanada con papas fritas clásicas.", "tags": ["milanesa", "carne", "papas"] }
+      ]
+    },
+    {
+      "nombre": "Papas",
+      "items": [
+        { "nombre": "Papas con Cheddar y Panceta", "precio": 11500, "categoria": "Papas", "receta": "Papas fritas con cheddar fundido y panceta crocante.", "tags": ["papas", "queso", "panceta"] },
+        { "nombre": "Papas Provenzal", "precio": 9500, "categoria": "Papas", "receta": "Papas doradas con ajo y perejil. Sabor casero.", "tags": ["papas", "ajo", "perejil"] },
+        { "nombre": "Papas Gratinadas", "precio": 10500, "categoria": "Papas", "receta": "Papas al horno con salsa bechamel y queso gratinado.", "tags": ["papas", "queso", "gratinadas"] },
+        { "nombre": "Papas Flynn", "precio": 12000, "categoria": "Papas", "receta": "Mix de papas fritas con cheddar, panceta y verdeo, receta de la casa.", "tags": ["papas", "cheddar", "panceta", "especialidad"] }
+      ]
+    }
+
   ]
 }
