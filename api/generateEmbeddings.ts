@@ -1,95 +1,84 @@
-import fs from "fs";
-import path from "path";
-import "dotenv/config";
-import OpenAI from "openai";
 import { QdrantClient } from "@qdrant/js-client-rest";
+import fs from "fs";
+import "dotenv/config";
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY!,
-});
-
-const qdrant = new QdrantClient({
-  url: process.env.QDRANT_API_URL!,
-  apiKey: process.env.QDRANT_API_KEY!,
-});
-
+const GEMINI_API_KEY = process.env.GEMINI_API_KEY!;
+const QDRANT_URL = process.env.QDRANT_API_URL!;
+const QDRANT_API_KEY = process.env.QDRANT_API_KEY!;
 const COLLECTION_NAME = process.env.COLLECTION_NAME || "flynn_menu_embeddings";
+const FILE_PATH = "./flynn_menu_enriched.json"; // tu archivo enriquecido
 
-interface Item {
-  nombre: string;
-  precio: number;
-  categoria: string;
-  receta?: string;
-  tags?: string[];
-}
+const client = new QdrantClient({
+  url: QDRANT_URL,
+  apiKey: QDRANT_API_KEY,
+});
 
-interface Categoria {
-  nombre: string;
-  items: Item[];
-}
+async function generateEmbedding(text: string): Promise<number[]> {
+  const response = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/text-embedding-004:embedContent?key=${GEMINI_API_KEY}`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "models/text-embedding-004",
+        content: { parts: [{ text }] },
+      }),
+    }
+  );
 
-interface FlynnMenu {
-  categorias: Categoria[];
+  if (!response.ok) {
+    const text = await response.text();
+    throw new Error(`Error generando embedding: ${text}`);
+  }
+
+  const data = await response.json();
+  return data.embedding?.values || [];
 }
 
 async function main() {
-  const filePath = path.resolve("assets/flynn_menu_full.json");
-  const raw = fs.readFileSync(filePath, "utf-8");
-  const menu: FlynnMenu = JSON.parse(raw);
+  const data = JSON.parse(fs.readFileSync(FILE_PATH, "utf-8"));
 
-  console.log("📦 Archivo JSON cargado:", filePath);
-
-  // 🔹 Crear colección si no existe
-  const collections = await qdrant.getCollections();
-  const exists = collections.collections.some((c) => c.name === COLLECTION_NAME);
-
-  if (!exists) {
-    console.log("🧩 Creando colección en Qdrant...");
-    await qdrant.createCollection(COLLECTION_NAME, {
-      vectors: { size: 1536, distance: "Cosine" },
+  // Crear colección (si no existe)
+  try {
+    await client.getCollection(COLLECTION_NAME);
+    console.log("✅ Colección ya existente:", COLLECTION_NAME);
+  } catch {
+    console.log("📦 Creando nueva colección...");
+    await client.createCollection(COLLECTION_NAME, {
+      vectors: {
+        size: 768, // tamaño estándar de Gemini embeddings
+        distance: "Cosine",
+      },
     });
   }
 
-  // 🔹 Convertir los ítems del menú a embeddings
-  const allItems: Item[] = menu.categorias.flatMap((c) =>
-    c.items.map((item) => ({
-      ...item,
-      categoria: c.nombre,
-    }))
-  );
+  let points: any[] = [];
+  let id = 1;
 
-  console.log(`📚 Generando embeddings para ${allItems.length} ítems...`);
+  for (const categoria of data.categorias) {
+    for (const item of categoria.items) {
+      const texto = `${item.nombre}. ${item.receta || ""}. ${categoria.nombre}`;
+      const vector = await generateEmbedding(texto);
 
-  for (const [i, item] of allItems.entries()) {
-    const text = `${item.nombre}. ${item.receta || ""} Categoría: ${item.categoria}. Tags: ${(item.tags || []).join(", ")}.`;
-    const embeddingResponse = await openai.embeddings.create({
-      model: "text-embedding-3-small",
-      input: text,
-    });
-
-    const vector = embeddingResponse.data[0].embedding;
-
-    // Subir cada ítem a Qdrant
-    await qdrant.upsert(COLLECTION_NAME, {
-      points: [
-        {
-          id: i + 1,
-          vector,
-          payload: {
-            nombre: item.nombre,
-            categoria: item.categoria,
-            precio: item.precio,
-            receta: item.receta,
-            tags: item.tags,
-          },
+      points.push({
+        id: id++,
+        vector,
+        payload: {
+          categoria: categoria.nombre,
+          nombre: item.nombre,
+          precio: item.precio,
+          receta: item.receta || "",
+          tags: item.tags || [],
         },
-      ],
-    });
+      });
 
-    console.log(`✅ Insertado [${i + 1}/${allItems.length}] → ${item.nombre}`);
+      console.log(`🧠 Procesado: ${item.nombre}`);
+    }
   }
 
-  console.log("🎉 Embeddings generados y subidos correctamente a Qdrant!");
+  // Subir los puntos a Qdrant
+  await client.upsert(COLLECTION_NAME, { points });
+  console.log(`✅ ${points.length} items cargados en ${COLLECTION_NAME}`);
 }
 
 main().catch((err) => console.error("❌ Error:", err));
