@@ -43,45 +43,42 @@ export class Chatbot {
   private readonly MAX_QUESTIONS = 10;
   private readonly MAX_CHARACTERS = 150;
   private readonly INSTAGRAM_URL = 'https://www.instagram.com/crissigel/';
-  private readonly API_URL =
-    window.location.hostname === 'localhost'
-      ? 'http://localhost:4000/api/gemini'
-      : '/api/gemini';
+  private readonly API_URL = '/api/gemini';
 
   constructor(private router: Router) {}
 
   // === Inicialización ===
   async ngOnInit() {
     this.welcomeMessage();
-    await this.loadLocalData();
+  //  await this.loadLocalData();
   }
 
   // === Carga de datos locales ===
-  async loadLocalData() {
-    try {
-      const [dataRes, menuRes, horariosRes, entrenamientoRes] = await Promise.all([
-        fetch('assets/flynn_data.json'),
-        fetch('assets/flynn_menu.json'),
-        fetch('assets/flynn_horarios.json'),
-        fetch('assets/entrenamiento.json'),
-      ]);
+  //async loadLocalData() {
+   // try {
+     // const [dataRes, menuRes, horariosRes, entrenamientoRes] = await Promise.all([
+       // fetch('assets/flynn_data.json'),
+      //  fetch('assets/flynn_menu.json'),
+      //  fetch('assets/flynn_horarios.json'),
+      //  fetch('assets/entrenamiento.json'),
+     // ]);
 
-      this.localData = await dataRes.json();
-      this.flynnMenu = await menuRes.json();
-      this.flynnHorarios = await horariosRes.json();
-      this.flynnTraining = await entrenamientoRes.json();
+     // this.localData = await dataRes.json();
+     // this.flynnMenu = await menuRes.json();
+     // this.flynnHorarios = await horariosRes.json();
+     // this.flynnTraining = await entrenamientoRes.json();
 
-      this.flynnKnowledge = {
-        ...this.flynnMenu,
-        horarios: this.flynnHorarios,
-        data: this.localData,
-      };
+     // this.flynnKnowledge = {
+      //  ...this.flynnMenu,
+      //  horarios: this.flynnHorarios,
+      //  data: this.localData,
+     // };
 
-      console.log('🧠 Datos locales cargados correctamente:', this.flynnKnowledge);
-    } catch (error) {
-      console.error('⚠️ Error al cargar datos locales:', error);
-    }
-  }
+    //  console.log('🧠 Datos locales cargados correctamente:', this.flynnKnowledge);
+   // } catch (error) {
+     // console.error('⚠️ Error al cargar datos locales:', error);
+  //  }
+  //}
 
   // === Mensaje inicial ===
   welcomeMessage() {
@@ -164,21 +161,7 @@ export class Chatbot {
 
     let semanticContext = "";
 
-    // === Gemini ===
     try {
-
-      
-      const context = `
-      Sos Flynn Assistant 🍀, asistente virtual del Flynn Irish Pub.
-      Tema actual del usuario: ${this.currentTopic || 'general'}.
-        Estos son algunos datos del bar:
-      ${semanticContext || JSON.stringify(this.flynnKnowledge).slice(0, 1000)}
-      `.trim();
-
-
-            // === Intentar obtener contexto semántico desde Qdrant ===
-  
-      try {
         const searchRes = await fetch('/api/searchMenu', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
@@ -198,6 +181,22 @@ export class Chatbot {
         console.error("⚠️ Error al consultar Qdrant:", err);
       }
 
+
+    // === Gemini ===
+    try {
+
+      
+      const context = `
+      Sos Flynn Assistant 🍀, asistente virtual del Flynn Irish Pub.
+      Tema actual del usuario: ${this.currentTopic || 'general'}.
+        Estos son algunos datos del bar:
+      ${semanticContext || JSON.stringify(this.flynnKnowledge).slice(0, 1000)}
+      `.trim();
+
+
+            // === Intentar obtener contexto semántico desde Qdrant ===
+  
+      
 
       const response = await fetch(this.API_URL, {
         method: 'POST',
