@@ -81,7 +81,7 @@ Usuario dice: "${message}"
     // === Endpoint de Gemini 2.5 Flash ===
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
 
-    const response = await fetch(endpoint, {
+    /*const response = await fetch(endpoint, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -90,7 +90,20 @@ Usuario dice: "${message}"
           ...conversationHistory,
         ],
       }),
-    });
+    });*/
+
+    const response = await fetch(endpoint, {
+  method: 'POST',
+  headers: { 'Content-Type': 'application/json' },
+  body: JSON.stringify({
+    contents: [
+      { role: 'system', parts: [{ text: systemPrompt }] },
+      ...conversationHistory,
+      { role: 'user', parts: [{ text: message }] },
+    ],
+  }),
+});
+
 
     if (!response.ok) {
       const text = await response.text();
