@@ -9,7 +9,7 @@ dotenv.config();
 const QDRANT_URL = process.env["QDRANT_URL"]!;
 const QDRANT_API_KEY = process.env["QDRANT_API_KEY"]!;
 const GEMINI_API_KEY = process.env["GEMINI_API_KEY"]!;
-const COLLECTION_NAME = "flynn_bar_beta";
+const COLLECTION_NAME = "menu-flynn-collection";
 
 const genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
 const embedModel = genAI.getGenerativeModel({ model: "text-embedding-004" });

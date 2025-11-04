@@ -39,46 +39,26 @@ export class Chatbot {
   flynnKnowledge: any = {};
   currentTopic: string | null = null; // memoria temática simple
 
-  // === Configuraciones ===
+  // === Configuración general ===
   private readonly MAX_QUESTIONS = 10;
   private readonly MAX_CHARACTERS = 150;
+
+  // 🧠 URLs dinámicas: local (ng serve) o Vercel
+  private readonly BASE_URL =
+    window.location.hostname === 'localhost'
+      ? 'https://flynn-reservas.vercel.app'
+      : '';
+
+  private readonly SEARCH_MENU_URL = `${this.BASE_URL}/api/searchMenu`;
+  private readonly API_URL = `${this.BASE_URL}/api/gemini`;
   private readonly INSTAGRAM_URL = 'https://www.instagram.com/crissigel/';
-  private readonly API_URL = '/api/gemini';
 
   constructor(private router: Router) {}
 
   // === Inicialización ===
   async ngOnInit() {
     this.welcomeMessage();
-  //  await this.loadLocalData();
   }
-
-  // === Carga de datos locales ===
-  //async loadLocalData() {
-   // try {
-     // const [dataRes, menuRes, horariosRes, entrenamientoRes] = await Promise.all([
-       // fetch('assets/flynn_data.json'),
-      //  fetch('assets/flynn_menu.json'),
-      //  fetch('assets/flynn_horarios.json'),
-      //  fetch('assets/entrenamiento.json'),
-     // ]);
-
-     // this.localData = await dataRes.json();
-     // this.flynnMenu = await menuRes.json();
-     // this.flynnHorarios = await horariosRes.json();
-     // this.flynnTraining = await entrenamientoRes.json();
-
-     // this.flynnKnowledge = {
-      //  ...this.flynnMenu,
-      //  horarios: this.flynnHorarios,
-      //  data: this.localData,
-     // };
-
-    //  console.log('🧠 Datos locales cargados correctamente:', this.flynnKnowledge);
-   // } catch (error) {
-     // console.error('⚠️ Error al cargar datos locales:', error);
-  //  }
-  //}
 
   // === Mensaje inicial ===
   welcomeMessage() {
@@ -146,57 +126,37 @@ export class Chatbot {
       return;
     }
 
-    // === Prioridad de respuestas locales ===
-    const localResponse =
-      this.matchLocalIntent(lower) ||
-      this.matchTrainingIntent(lower) ||
-      this.findInMenu(lower) ||
-      this.findInHorarios(lower);
-
-    if (localResponse) {
-      this.addBotMessage(localResponse);
-      this.isTyping = false;
-      return;
-    }
-
-    let semanticContext = "";
+    // === Lógica de búsqueda semántica en Qdrant ===
+    let semanticContext = '';
 
     try {
-        const searchRes = await fetch('/api/searchMenu', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ query: text }),
-        });
+      const searchRes = await fetch(this.SEARCH_MENU_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ query: text }),
+      });
 
-        if (searchRes.ok) {
-          const data = await searchRes.json();
-          if (data.items?.length) {
-            const contextItems = data.items
-              .map((i: any) => `${i.nombre} - ${i.receta || 'sin descripción'} ($${i.precio})`)
-              .join('\n');
-            semanticContext = `Resultados del menú más relevantes:\n${contextItems}\n`;
-          }
+      if (searchRes.ok) {
+        const data = await searchRes.json();
+        if (data.items?.length) {
+          const contextItems = data.items
+            .map((i: any) => `${i.nombre} - ${i.receta || 'sin descripción'} ($${i.precio})`)
+            .join('\n');
+          semanticContext = `Resultados del menú más relevantes:\n${contextItems}\n`;
         }
-      } catch (err) {
-        console.error("⚠️ Error al consultar Qdrant:", err);
       }
-
+    } catch (err) {
+      console.error('⚠️ Error al consultar Qdrant:', err);
+    }
 
     // === Gemini ===
     try {
-
-      
       const context = `
-      Sos Flynn Assistant 🍀, asistente virtual del Flynn Irish Pub.
-      Tema actual del usuario: ${this.currentTopic || 'general'}.
+        Sos Flynn Assistant 🍀, asistente virtual del Flynn Irish Pub.
+        Tema actual del usuario: ${this.currentTopic || 'general'}.
         Estos son algunos datos del bar:
-      ${semanticContext || JSON.stringify(this.flynnKnowledge).slice(0, 1000)}
+        ${semanticContext || 'Sin contexto adicional'}
       `.trim();
-
-
-            // === Intentar obtener contexto semántico desde Qdrant ===
-  
-      
 
       const response = await fetch(this.API_URL, {
         method: 'POST',
@@ -220,126 +180,6 @@ export class Chatbot {
     } finally {
       this.isTyping = false;
     }
-  }
-
-  // === Intenciones básicas ===
-  matchLocalIntent(input: string): string | null {
-    for (const intent of this.localData) {
-      if (intent.patterns.some((p) => input.includes(p))) {
-        const responses = intent.responses;
-        return responses[Math.floor(Math.random() * responses.length)];
-      }
-    }
-    return null;
-  }
-
-  // === Entrenamiento personalizado ===
-  matchTrainingIntent(input: string): string | null {
-    if (!this.flynnTraining?.entrenamiento) return null;
-
-    for (const entry of this.flynnTraining.entrenamiento) {
-      if (entry.patterns.some((p:any) => input.includes(p))) {
-        return entry.responses[Math.floor(Math.random() * entry.responses.length)];
-      }
-    }
-    return null;
-  }
-
-  findInMenu(input: string): string | null {
-  if (!this.flynnMenu?.categorias) return null;
-
-  const sinTacc = ['sin tacc', 'celíac', 'celiaco', 'celiaca'];
-  const vegetariano = ['vegetariana', 'vegetariano', 'sin carne', 'vegana', 'vegano'];
-  const sinSalsa = ['sin salsa', 'salsa aparte'];
-  const masOpciones = ['otras', 'más', 'variedades', 'diferentes', 'distintas'];
-
-  // === OPCIONES ESPECIALES ===
-  if (sinTacc.some((k) => input.includes(k))) {
-    return '🍀 Tenemos opciones sin TACC, como papas, ensaladas y algunas pizzas especiales. Consultá al mozo al llegar.';
-  }
-  if (vegetariano.some((k) => input.includes(k))) {
-    return '🥗 Contamos con opciones vegetarianas como pizzas capresse, rúcula o fugazzeta, además de ensaladas.';
-  }
-  if (sinSalsa.some((k) => input.includes(k))) {
-    return '🍟 Podés pedir cualquier plato sin salsa, nuestros cocineros te lo preparan a gusto.';
-  }
-
-  // === DETECCIÓN DE CATEGORÍA ===
-  let categoriaDetectada = null;
-  for (const categoria of this.flynnMenu.categorias) {
-    if (input.includes(categoria.nombre.toLowerCase())) {
-      categoriaDetectada = categoria;
-      break;
-    }
-  }
-
-  // === SI PIDE "OTRAS OPCIONES" DE UN TEMA PREVIO ===
-  if (masOpciones.some((k) => input.includes(k)) && this.currentTopic === 'comidas') {
-    const pizzas = this.flynnMenu.categorias.find((c:any) =>
-      c.nombre.toLowerCase().includes('pizza')
-    );
-    if (pizzas) {
-      const lista = pizzas.items.map((p: any) => `• ${p.nombre} ($${p.precio.toLocaleString('es-AR')})`).join('\n');
-      return `🍕 Claro, mirá todas nuestras pizzas disponibles:\n${lista}\n🍀 ¡Elegí la que más te guste!`;
-    }
-  }
-
-  // === BÚSQUEDA POR PALABRA CLAVE DE PRODUCTO ===
-  for (const categoria of this.flynnMenu.categorias) {
-    for (const item of categoria.items) {
-      const nombreLower = item.nombre.toLowerCase();
-      if (input.includes(nombreLower.split(' ')[0])) {
-        this.currentTopic = 'comidas';
-        return `🍀 Tenemos ${item.nombre} en la sección ${categoria.nombre}, a $${item.precio.toLocaleString('es-AR')}.`;
-      }
-    }
-  }
-
-  // === SI HABLA DE PIZZAS O EMPANADAS PERO SIN MATCH EXACTO ===
-  if (input.includes('pizza')) {
-    const pizzas = this.flynnMenu.categorias.find((c:any) =>
-      c.nombre.toLowerCase().includes('pizza')
-    );
-    if (pizzas) {
-      const lista = pizzas.items.map((p: any) => `• ${p.nombre} ($${p.precio.toLocaleString('es-AR')})`).join('\n');
-      this.currentTopic = 'comidas';
-      return `🍕 Estas son algunas de nuestras pizzas:\n${lista}`;
-    }
-  }
-
-  if (input.includes('empanad')) {
-    const empanadas = this.flynnMenu.categorias.find((c:any) =>
-      c.nombre.toLowerCase().includes('empanada')
-    );
-    if (empanadas) {
-      const lista = empanadas.items.map((e: any) => `• ${e.nombre} ($${e.precio.toLocaleString('es-AR')})`).join('\n');
-      this.currentTopic = 'comidas';
-      return `🥟 Tenemos varias empanadas:\n${lista}\n🍀 Podés pedirlas individuales o por docena.`;
-    }
-  }
-
-  return null;
-}
-  // === Búsqueda en horarios ===
-  findInHorarios(input: string): string | null {
-    if (!this.flynnHorarios?.categorias) return null;
-    const palabras = ['horario', 'abr', 'cerr', 'dias', 'cuándo', 'cuando'];
-
-    if (palabras.some((p) => input.includes(p))) {
-      let respuesta = '🕓 Nuestros horarios:\n';
-      for (const categoria of this.flynnHorarios.categorias) {
-        respuesta += `\n📋 ${categoria.nombre}:\n`;
-        for (const item of categoria.items) {
-          if (item.dia && item.horario) {
-            respuesta += `• ${item.dia}: ${item.horario}\n`;
-          }
-        }
-      }
-      this.currentTopic = 'horarios';
-      return respuesta.trim() + '\n🍀 ¡Te esperamos en Flynn!';
-    }
-
-    return null;
   }
 
   // === Manejo de mensajes ===
