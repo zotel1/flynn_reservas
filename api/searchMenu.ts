@@ -42,7 +42,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     });
 
     // 3) Devolver solo el payload útil
-    const items = results.map((p) => p.payload);
+    const items = results.map((p) => p.payload || {});
 
     return res.status(200).json({ items });
   } catch (err: any) {
