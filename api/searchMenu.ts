@@ -3,9 +3,9 @@ import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { QdrantClient } from '@qdrant/js-client-rest';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 
-const QDRANT_URL = process.env.QDRANT_URL!;
-const QDRANT_API_KEY = process.env.QDRANT_API_KEY!;
-const GEMINI_API_KEY = process.env.GEMINI_API_KEY!;
+const QDRANT_URL = process.env['QDRANT_URL']!;
+const QDRANT_API_KEY = process.env['QDRANT_API_KEY']!;
+const GEMINI_API_KEY = process.env['GEMINI_API_KEY']!;
 const COLLECTION_NAME = 'flynn_menu_gemini'; // tu colección en Qdrant
 
 // Inicializar clientes
