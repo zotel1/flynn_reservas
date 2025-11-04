@@ -8,7 +8,8 @@
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
-    "dev:api": "ts-node ./api/gemini.ts"
+    "dev:api": "ts-node ./api/gemini.ts",
+    "generate:embeddings": "tsx scripts/generateEmbeddings.ts"
   },
   "prettier": {
     "printWidth": 100,
@@ -56,6 +57,7 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "ts-node": "^10.9.2",
+    "tsx": "^4.20.6",
     "typescript": "~5.9.2"
   }
 }
