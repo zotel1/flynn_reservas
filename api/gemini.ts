@@ -101,3 +101,5 @@ Si te preguntan algo fuera del contexto del bar, respondé: "Perdón 🍀, eso n
     return res.status(500).json({ error: err.message || "Error interno del servidor" });
   }
 }
+
+
