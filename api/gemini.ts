@@ -9,11 +9,24 @@ const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 let conversationHistory: { role: string; parts: { text: string }[] }[] = [];
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
+  console.log("📥 [Gemini] Nueva solicitud recibida:", req.method);
+  console.log("📦 [Gemini] Body:", req.body);
+
   try {
+    // === Validación método HTTP ===
     if (req.method !== "POST") {
+      console.warn("⚠️ [Gemini] Método no permitido:", req.method);
       return res.status(405).json({ error: "Método no permitido" });
     }
 
+    // === Validación del cuerpo ===
+    const { message, history } = req.body || {};
+    if (!message || typeof message !== "string") {
+      console.error("❌ [Gemini] Mensaje vacío o inválido:", message);
+      return res.status(400).json({ error: "Mensaje vacío o inválido" });
+    }
+
+    // === Control de acceso por IP ===
     const ip = req.headers["x-forwarded-for"]?.toString().split(",")[0] || "unknown";
     const now = Date.now();
 
@@ -29,20 +42,21 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     }
 
     if (accessLog[ip].count > MAX_REQUESTS_PER_DAY) {
+      console.warn(`🚫 [Gemini] Límite diario alcanzado para IP ${ip}`);
       return res.status(429).json({
         reply: "🍀 Alcanzaste el límite de conversaciones por hoy. ¡Volvé mañana!",
       });
     }
 
-    const { message, history } = req.body || {};
-    if (!message || typeof message !== "string") {
-      return res.status(400).json({ error: "Mensaje vacío o inválido" });
-    }
-
+    // === Validar API Key ===
     const GEMINI_API_KEY = process.env["GEMINI_API_KEY"];
     if (!GEMINI_API_KEY) {
+      console.error("🚨 [Gemini] Falta GEMINI_API_KEY en el entorno");
       return res.status(500).json({ error: "Falta GEMINI_API_KEY en el entorno" });
     }
+
+    console.log("🔑 [Gemini] API key presente:", !!GEMINI_API_KEY);
+    console.log("👤 [Gemini] IP:", ip);
 
     // === Prompt del asistente ===
     const systemPrompt = `
@@ -66,6 +80,7 @@ Si te preguntan algo fuera del contexto del bar, respondé: "Perdón 🍀, eso n
 
     // === Endpoint de Gemini ===
     const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
+    console.log("🌐 [Gemini] Endpoint:", endpoint);
 
     const body = {
       contents: [
@@ -75,31 +90,39 @@ Si te preguntan algo fuera del contexto del bar, respondé: "Perdón 🍀, eso n
       ],
     };
 
+    // === Llamada a la API de Gemini ===
+    console.log("🚀 [Gemini] Enviando request...");
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
 
+    console.log("📡 [Gemini] Status:", response.status);
+
+    // === Log de respuesta cruda ===
+    const rawText = await response.text();
+    console.log("📨 [Gemini] Raw response:", rawText);
+
     if (!response.ok) {
-      const errorText = await response.text();
-      console.error("❌ Error en Gemini:", errorText);
-      return res.status(response.status).json({ error: errorText });
+      console.error("❌ [Gemini] Error HTTP:", response.status, rawText);
+      return res.status(response.status).json({ error: rawText });
     }
 
-    const data = await response.json();
+    // === Procesar respuesta JSON ===
+    const data = JSON.parse(rawText);
     const reply =
       data?.candidates?.[0]?.content?.parts?.[0]?.text ||
       "🍀 No pude generar una respuesta, intentá nuevamente.";
+
+    console.log("✅ [Gemini] Respuesta generada:", reply);
 
     conversationHistory.push({ role: "model", parts: [{ text: reply }] });
     conversationHistory = conversationHistory.slice(-8);
 
     return res.status(200).json({ reply });
   } catch (err: any) {
-    console.error("🔥 Error interno:", err);
+    console.error("🔥 [Gemini] Error interno:", err);
     return res.status(500).json({ error: err.message || "Error interno del servidor" });
   }
 }
-
-
