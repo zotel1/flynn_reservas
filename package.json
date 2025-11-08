@@ -1,15 +1,12 @@
 {
   "name": "flynn-reservas",
   "version": "0.0.0",
+  "type": "module",
   "scripts": {
-    "ng": "ng",
     "start": "ng serve",
-    "build:api": "tsc -p tsconfig.api.json",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test",
-    "dev:api": "ts-node ./api/gemini.ts",
-    "generate:embeddings": "tsx scripts/generateEmbeddings.ts"
+  "api": "ts-node --project tsconfig.server.json server-local.ts",
+  "dev": "concurrently \"npm run start\" \"npm run api\"",
+  "generate:embeddings": "tsx scripts/generateEmbeddings.ts"
   },
   "prettier": {
     "printWidth": 100,
@@ -36,7 +33,6 @@
     "@vercel/node": "^5.5.1",
     "@xenova/transformers": "^2.17.2",
     "dotenv": "^17.2.3",
-    "express": "^5.1.0",
     "node-fetch": "^3.3.2",
     "openai": "^6.7.0",
     "qdrant-client": "^0.0.1",
@@ -50,6 +46,9 @@
     "@types/express": "^5.0.5",
     "@types/jasmine": "~5.1.0",
     "@types/node": "^24.10.0",
+    "concurrently": "^9.2.1",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
     "jasmine-core": "~5.9.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",

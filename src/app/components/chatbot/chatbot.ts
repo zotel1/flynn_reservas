@@ -45,9 +45,9 @@ export class Chatbot {
 
   // 🧠 URLs dinámicas: local (ng serve) o Vercel
   private readonly BASE_URL =
-    window.location.hostname === 'localhost'
-      ? 'https://flynn-reservas.vercel.app'
-      : '';
+  window.location.hostname === 'localhost'
+    ? 'http://localhost:3000'
+    : '';
 
   private readonly SEARCH_MENU_URL = `${this.BASE_URL}/api/searchMenu`;
   private readonly API_URL = `${this.BASE_URL}/api/gemini`;
