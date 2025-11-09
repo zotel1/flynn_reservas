@@ -1,91 +1,86 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { z } from 'zod';
 import { getApisFromEnvTokens } from '../lib/google';
-import { appendReservaRow } from '../lib/sheets';
-import { buildEmailRaw } from '../lib/mailer';
 
 export const config = { runtime: 'nodejs20' };
 
-const schema = z.object({
-  nombre: z.string().min(2),
-  email: z.string().email(),
-  telefono: z.string().optional().default(''),
-  fecha: z.string(),   // yyyy-mm-dd
-  hora: z.string(),    // HH:mm
-  personas: z.coerce.number().int().positive(),
-  comentario: z.string().optional().default(''),
-  sitio: z.string().optional().default(''),
-});
+function parseLocalDateTime(fecha?: string, hora?: string): number {
+  if (!fecha) return NaN;
+  const [Y, M, D] = fecha.split('-').map(Number);
+  let hh = 0, mm = 0;
+  if (hora) [hh, mm] = hora.split(':').map(Number);
+  return new Date(Y, (M || 1) - 1, D || 1, hh || 0, mm || 0, 0).getTime();
+}
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   try {
-    if (req.method !== 'POST') return res.status(405).end();
-    // Seguridad simple (opcional)
     if (process.env.RESERVAS_API_KEY && req.headers['x-api-key'] !== process.env.RESERVAS_API_KEY) {
       return res.status(401).json({ ok: false, message: 'Unauthorized' });
     }
 
-    const parsed = schema.safeParse(req.body);
-    if (!parsed.success) return res.status(400).json({ ok: false, error: parsed.error.flatten() });
-
-    const { nombre, email, telefono, fecha, hora, personas, comentario, sitio } = parsed.data;
-    const { calendar, gmail, sheets } = getApisFromEnvTokens();
-    const CALENDAR_ID = process.env.CALENDAR_ID!;
+    const { sheets } = getApisFromEnvTokens();
     const SHEET_ID = process.env.SHEET_ID!;
-    const encargado = process.env.ENCARGADO_EMAIL!;
-    const tz = process.env.TZ || 'America/Argentina/Buenos_Aires';
+    const range = 'Reservas!A:Z';
 
-    // Construir inicio/fin (bloque 1h)
-    const start = new Date(`${fecha}T${hora}:00`);
-    const end = new Date(start.getTime() + 60 * 60 * 1000);
+    const desde = typeof req.query.desde === 'string' ? req.query.desde : '';
+    const hasta = typeof req.query.hasta === 'string' ? req.query.hasta : '';
+    const q     = (typeof req.query.q === 'string' ? req.query.q : '').trim().toLowerCase();
+    const order = (typeof req.query.order === 'string' ? req.query.order : 'desc').toLowerCase();
+    const page  = Math.max(1, parseInt(String(req.query.page || '1'), 10));
+    const pageSize = Math.min(200, Math.max(1, parseInt(String(req.query.pageSize || '50'), 10)));
 
-    // 1) Calendar
-    const ev = await calendar.events.insert({
-      calendarId: CALENDAR_ID,
-      requestBody: {
-        summary: `Reserva: ${nombre} (${personas})`,
-        description: `Sitio: ${sitio}\nTel: ${telefono}\nEmail: ${email}\nNotas: ${comentario || '-'}`,
-        start: { dateTime: start.toISOString(), timeZone: tz },
-        end:   { dateTime: end.toISOString(),   timeZone: tz },
-      }
-    });
-    const eventId = ev.data.id;
+    const resp = await sheets.spreadsheets.values.get({ spreadsheetId: SHEET_ID, range });
+    const rows = resp.data.values || [];
+    if (!rows.length) {
+      res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=600');
+      return res.status(200).json({ ok: true, count: 0, total: 0, page, pages: 0, items: [] });
+    }
 
-    // 2) Gmail (cliente + encargado)
-    const from = `Flynn Irish Pub <${encargado}>`;
-    const subject = `Confirmación de reserva - ${fecha} ${hora}`;
-    const htmlCliente = `
-      <h2>¡Gracias, ${nombre}!</h2>
-      <p>Tu reserva para <strong>${personas}</strong> persona(s) quedó agendada el <strong>${fecha} ${hora}</strong>.</p>
-      <p>Sitio: <b>${sitio || '-'}</b></p>
-      <p>Si necesitás reprogramar, respondé este correo.</p>
-    `;
-    const rawCliente   = buildEmailRaw({ from, to: email, subject, html: htmlCliente });
-    const rawEncargado = buildEmailRaw({
-      from, to: encargado,
-      subject: `[Nueva reserva] ${nombre} - ${fecha} ${hora}`,
-      html: `<p>Reserva nueva:</p><pre>${JSON.stringify(
-        { nombre, email, telefono, fecha, hora, personas, sitio, comentario },
-        null, 2
-      )}</pre>`
+    const headers = rows[0];
+    const data = rows.slice(1).map(r => {
+      const item: Record<string, any> = {};
+      headers.forEach((h, i) => item[h] = r[i] ?? '');
+      return item;
     });
 
-    await gmail.users.messages.send({ userId: 'me', requestBody: { raw: rawCliente }});
-    await gmail.users.messages.send({ userId: 'me', requestBody: { raw: rawEncargado }});
+    const minT = desde ? parseLocalDateTime(desde, '00:00') : -Infinity;
+    const maxT = hasta ? parseLocalDateTime(hasta, '23:59') :  Infinity;
 
-    // 3) Sheets (append)
-    const now = new Date().toISOString();
-    const ip = String(req.headers['x-forwarded-for'] || req.socket.remoteAddress || '');
-    const ua = String(req.headers['user-agent'] || '');
-    await appendReservaRow(sheets, SHEET_ID, [
-      now, nombre, email, telefono, fecha, hora, personas, comentario || '', eventId, 'SENT', ip, ua, sitio || ''
-    ]);
+    let filtered = data.filter((it: any) => {
+      const t = parseLocalDateTime(it.fecha, it.hora);
+      const okFecha = isNaN(t) ? true : (t >= minT && t <= maxT);
+      const okQ = !q ? true :
+        (`${it.nombre} ${it.email} ${it.telefono} ${it.comentario || ''} ${it.sitio || ''}`.toLowerCase().includes(q));
+      return okFecha && okQ;
+    });
 
-    // Cache corto para evitar duplicados por doble-submit
-    res.setHeader('Cache-Control', 'no-store');
-    return res.status(200).json({ ok: true, eventId });
+    filtered.sort((a: any, b: any) => {
+      const ta = parseLocalDateTime(a.fecha, a.hora);
+      const tb = parseLocalDateTime(b.fecha, b.hora);
+      const delta = (ta || 0) - (tb || 0);
+      return order === 'asc' ? delta : -delta;
+    });
+
+    const total = filtered.length;
+    const pages = Math.max(1, Math.ceil(total / pageSize));
+    const start = (page - 1) * pageSize;
+    const end   = start + pageSize;
+
+    const items = filtered.slice(start, end).map((r: any) => ({
+      timestamp: r.timestamp,
+      nombre: r.nombre,
+      email: r.email,
+      telefono: r.telefono,
+      fecha: r.fecha,
+      hora: r.hora,
+      personas: r.personas,
+      sitio: r.sitio || (r.comentario || '').match(/^\[(.*?)\]/)?.[1] || '',
+      comentario: r.comentario || '',
+      id_evento: r.id_evento || '',
+    }));
+
+    res.setHeader('Cache-Control', 's-maxage=60, stale-while-revalidate=600');
+    return res.status(200).json({ ok: true, count: items.length, total, page, pages, items });
   } catch (err: any) {
-    const msg = err?.message || 'Error creando la reserva';
-    return res.status(500).json({ ok: false, message: msg });
+    return res.status(500).json({ ok: false, message: err?.message || 'Error leyendo reservas' });
   }
 }

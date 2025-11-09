@@ -1,8 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { z } from 'zod';
-import { getApisFromEnvTokens } from '../lib/google';
-import { appendReservaRow } from '../lib/sheets';
-import { buildEmailRaw } from '../lib/mailer';
+import { getApisFromEnvTokens } from './lib/google';
+import { appendReservaRow } from './lib/sheets';
+import { buildEmailRaw } from './lib/mailer';
 
 export const config = { runtime: 'nodejs20' };
 
