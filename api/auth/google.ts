@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getAuthUrl } from '../lib/google';
+import { getAuthUrl } from '../../lib/google';
 
 //export const config = { runtime: 'nodejs20' };
 

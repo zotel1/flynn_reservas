@@ -1,5 +1,5 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getOAuthClient } from '../../lib/google';
+import { getOAuthClient } from '../../../lib/google';
 
 //export const config = { runtime: 'nodejs20' };
 
