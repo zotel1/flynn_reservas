@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, Validators, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
+import { firstValueFrom } from 'rxjs'; // NEW: mejor que toPromise
 
 @Component({
   selector: 'app-reservation-form',
@@ -68,25 +69,27 @@ export class ReservationForm implements OnInit {
       fecha: v.fecha,                 // yyyy-mm-dd
       hora: v.hora,                   // HH:mm
       personas: Number(v.personas),
-      comentario: `[${v.sitio}] ${v.notas || ''}`, // guardamos sitio + notas
+      comentario: `[${v.sitio}] ${v.notas || ''}`, // mantenemos sitio + notas en comentario
       sitio: v.sitio
     };
 
     try {
-      // Si más adelante protegemos con API key del lado server, podrías
-      // leer una key ingresada por el encargado desde localStorage.
       const headers = new HttpHeaders({
         'Content-Type': 'application/json'
+        // Si protegés /api/reservas con una API key en el futuro, podrías incluirla acá:
         // 'x-api-key': localStorage.getItem('RESERVAS_API_KEY') || ''
       });
 
-      await this.http.post('/api/reservas', payload, { headers }).toPromise();
+      // NEW: firstValueFrom en lugar de toPromise (mejor práctica con RxJS 7)
+      const res: any = await firstValueFrom(this.http.post('/api/reservas', payload, { headers }));
+
+      if (!res?.ok) throw new Error(res?.message || 'No se pudo crear la reserva');
 
       this.enviado = true;
       this.form.reset({ personas: 2 });
       this.sitioSeleccionado = null;
     } catch (e: any) {
-      this.error = e?.error?.message || 'No se pudo enviar la reserva. Probá nuevamente en unos minutos.';
+      this.error = e?.error?.message || e?.message || 'No se pudo enviar la reserva. Probá nuevamente.';
     } finally {
       this.cargando = false;
     }
