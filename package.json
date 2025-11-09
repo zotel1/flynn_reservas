@@ -3,11 +3,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "start": "ng serve",
-    "api": "ts-node --project tsconfig.server.json server-local.ts",
-    "dev": "concurrently \"npm run start\" \"npm run api\"",
-    "generate:embeddings": "tsx scripts/generateEmbeddings.ts"
-  },
+  "ng": "ng",
+  "start": "ng serve",
+  "build": "ng build --configuration production",
+  "api": "vercel dev --yes",
+  "dev": "concurrently \"ng serve\" \"npm run api\"",
+  "generate:embeddings": "tsx scripts/generateEmbeddings.ts"
+},
   "prettier": {
     "printWidth": 100,
     "singleQuote": true,
