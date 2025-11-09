@@ -3,7 +3,7 @@ import "dotenv/config";
 
 // === Control simple por IP ===
 const accessLog: Record<string, { count: number; lastAccess: number }> = {};
-const MAX_REQUESTS_PER_DAY = 3;
+const MAX_REQUESTS_PER_DAY = 10;
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 // === Historial de conversación (últimos 8 mensajes) ===
