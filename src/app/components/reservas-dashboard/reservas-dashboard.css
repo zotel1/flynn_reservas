@@ -1,0 +1,18 @@
+.dashboard { padding: 3rem 0; }
+.filtros .grid { display: grid; gap: 1rem; grid-template-columns: repeat(4, 1fr); }
+.filtros label { display: flex; flex-direction: column; gap: .25rem; }
+.acciones { display: flex; gap: .5rem; align-items: end; }
+.btn { padding: .6rem 1rem; border: none; cursor: pointer; border-radius: .5rem; }
+.btn.sec { background: #eee; }
+.cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin: 1rem 0 2rem; }
+.card { background: #0f172a; color: #fff; padding: 1rem; border-radius: .75rem; }
+.kpi { font-size: 1.8rem; margin: .25rem 0 0; }
+.tabla-wrapper { overflow: auto; }
+.tabla { width: 100%; border-collapse: collapse; }
+.tabla th, .tabla td { border-bottom: 1px solid #eee; padding: .6rem .5rem; text-align: left; }
+.tabla .nota { max-width: 360px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vacio, .error { margin-top: 1rem; }
+@media (max-width: 960px) {
+  .filtros .grid { grid-template-columns: 1fr 1fr; }
+  .cards { grid-template-columns: 1fr; }
+}
