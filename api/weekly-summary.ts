@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getApisFromEnvTokens } from './lib/google';
 
-export const config = { runtime: 'nodejs20' };
+//export const config = { runtime: 'nodejs20' };
 
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
   try {
