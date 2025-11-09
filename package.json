@@ -3,13 +3,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-  "ng": "ng",
-  "start": "ng serve",
-  "build": "ng build --configuration production",
-  "api": "vercel dev --yes",
-  "dev": "concurrently \"ng serve\" \"npm run api\"",
-  "generate:embeddings": "tsx scripts/generateEmbeddings.ts"
-},
+    "ng": "ng",
+    "start": "ng serve",
+    "build": "ng build --configuration production",
+    "api": "vercel dev --yes",
+    "dev": "concurrently \"ng serve\" \"npm run api\"",
+    "generate:embeddings": "tsx scripts/generateEmbeddings.ts"
+  },
   "prettier": {
     "printWidth": 100,
     "singleQuote": true,
@@ -35,11 +35,13 @@
     "@vercel/node": "^5.5.1",
     "@xenova/transformers": "^2.17.2",
     "dotenv": "^17.2.3",
+    "googleapis": "^165.0.0",
     "node-fetch": "^3.3.2",
     "openai": "^6.7.0",
     "qdrant-client": "^0.0.1",
     "rxjs": "~7.8.0",
-    "tslib": "^2.3.0"
+    "tslib": "^2.3.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@angular/build": "^20.3.7",
