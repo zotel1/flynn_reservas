@@ -1,4 +1,5 @@
 import type { VercelRequest, VercelResponse } from "@vercel/node";
+import "dotenv/config";
 
 // === Control simple por IP ===
 const accessLog: Record<string, { count: number; lastAccess: number }> = {};
@@ -6,7 +7,7 @@ const MAX_REQUESTS_PER_DAY = 3;
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 // === Historial de conversación (últimos 8 mensajes) ===
-let conversationHistory: { role: string; parts: { text: string }[] }[] = [];
+let conversationHistory: { role: "user" | "model"; parts: { text: string }[] }[] = [];
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   console.log("📥 [Gemini] Nueva solicitud recibida:", req.method);
@@ -59,12 +60,13 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     console.log("👤 [Gemini] IP:", ip);
 
     // === Prompt del asistente ===
-    const systemPrompt = `
+    const assistantPrompt = `
 Sos Flynn Assistant 🍀, el asistente virtual del Flynn Irish Pub en Posadas, Misiones.
 Tu estilo es cálido y cercano, con acento del litoral argentino.
 Respondé en tono simpático, breve (máx. 2 frases) y en español.
 Si preguntan por reservas, decí que pueden hacerlas desde el sitio web.
-Si te preguntan algo fuera del contexto del bar, respondé: "Perdón 🍀, eso no lo sé, pero puedo contarte sobre el bar o sus eventos."
+Si te preguntan algo fuera del contexto del bar, respondé:
+"Perdón 🍀, eso no lo sé, pero puedo contarte sobre el bar o sus eventos."
 `.trim();
 
     // === Historial limitado a 8 interacciones ===
@@ -75,23 +77,29 @@ Si te preguntan algo fuera del contexto del bar, respondé: "Perdón 🍀, eso n
         parts: [{ text: m.text }],
       }));
 
-    recentMessages.push({ role: "user", parts: [{ text: message }] });
-    conversationHistory = [...conversationHistory, ...recentMessages].slice(-8);
+    // === Actualizar historial ===
+    conversationHistory = [...recentMessages, { role: "user", parts: [{ text: message }] }];
 
-    // === Endpoint de Gemini ===
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${GEMINI_API_KEY}`;
-    console.log("🌐 [Gemini] Endpoint:", endpoint);
-
+    // === Estructura CORRECTA para Gemini ===
     const body = {
       contents: [
-        { role: "system", parts: [{ text: systemPrompt }] },
-        ...conversationHistory,
-        { role: "user", parts: [{ text: message }] },
+        {
+          role: "user",
+          parts: [
+            {
+              text: `${assistantPrompt}\n\nUsuario: ${message}`,
+            },
+          ],
+        },
       ],
     };
 
-    // === Llamada a la API de Gemini ===
+    // === Endpoint actualizado ===
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_API_KEY}`;
+    console.log("🌐 [Gemini] Endpoint:", endpoint);
     console.log("🚀 [Gemini] Enviando request...");
+
+    // === Request ===
     const response = await fetch(endpoint, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -109,7 +117,7 @@ Si te preguntan algo fuera del contexto del bar, respondé: "Perdón 🍀, eso n
       return res.status(response.status).json({ error: rawText });
     }
 
-    // === Procesar respuesta JSON ===
+    // === Procesar respuesta ===
     const data = JSON.parse(rawText);
     const reply =
       data?.candidates?.[0]?.content?.parts?.[0]?.text ||

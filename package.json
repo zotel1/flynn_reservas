@@ -4,9 +4,9 @@
   "type": "module",
   "scripts": {
     "start": "ng serve",
-  "api": "ts-node --project tsconfig.server.json server-local.ts",
-  "dev": "concurrently \"npm run start\" \"npm run api\"",
-  "generate:embeddings": "tsx scripts/generateEmbeddings.ts"
+    "api": "ts-node --project tsconfig.server.json server-local.ts",
+    "dev": "concurrently \"npm run start\" \"npm run api\"",
+    "generate:embeddings": "tsx scripts/generateEmbeddings.ts"
   },
   "prettier": {
     "printWidth": 100,

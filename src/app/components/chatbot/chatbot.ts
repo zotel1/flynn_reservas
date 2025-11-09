@@ -45,9 +45,10 @@ export class Chatbot {
 
   // 🧠 URLs dinámicas: local (ng serve) o Vercel
   private readonly BASE_URL =
-  window.location.hostname === 'localhost'
+  window.location.hostname.includes('localhost')
     ? 'http://localhost:3000'
-    : '';
+    : window.location.origin; // <-- clave para Vercel
+
 
   private readonly SEARCH_MENU_URL = `${this.BASE_URL}/api/searchMenu`;
   private readonly API_URL = `${this.BASE_URL}/api/gemini`;
@@ -57,6 +58,10 @@ export class Chatbot {
 
   // === Inicialización ===
   async ngOnInit() {
+    console.log('🤖 [Chatbot] Inicializado');
+    console.log('🌍 [Chatbot] BASE_URL:', this.BASE_URL);
+    console.log('🔗 [Chatbot] API_URL:', this.API_URL);
+    console.log('🔗 [Chatbot] SEARCH_MENU_URL:', this.SEARCH_MENU_URL);
     this.welcomeMessage();
   }
 
@@ -75,12 +80,14 @@ export class Chatbot {
   // === Envío de mensajes ===
   async sendMessage() {
     const text = this.userMessage.trim();
+    console.log('📝 [Chatbot] Usuario escribió:', text);
     if (!text) return;
 
     // Reinicio manual
     if (text.toLowerCase().includes('reiniciar') || text.toLowerCase().includes('borrar')) {
       this.welcomeMessage();
       this.userMessage = '';
+      console.log('♻️ [Chatbot] Reiniciando conversación...');
       await fetch(this.API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -91,12 +98,14 @@ export class Chatbot {
 
     // Validaciones
     if (text.length > this.MAX_CHARACTERS) {
+      console.warn('⚠️ [Chatbot] Mensaje demasiado largo.');
       this.addBotMessage(`⚠️ Escribí menos de ${this.MAX_CHARACTERS} caracteres, por favor.`);
       this.userMessage = '';
       return;
     }
 
     if (this.userQuestionCount >= this.MAX_QUESTIONS) {
+      console.warn('⚠️ [Chatbot] Límite de preguntas alcanzado.');
       this.showLimitModal = true;
       return;
     }
@@ -119,6 +128,8 @@ export class Chatbot {
       this.currentTopic = 'reservas';
     }
 
+    console.log('🎯 [Chatbot] Tema detectado:', this.currentTopic);
+
     // Si menciona reserva → modal
     if (this.currentTopic === 'reservas') {
       this.isTyping = false;
@@ -130,20 +141,29 @@ export class Chatbot {
     let semanticContext = '';
 
     try {
+      console.log('🔍 [Chatbot] Enviando búsqueda a Qdrant:', this.SEARCH_MENU_URL);
       const searchRes = await fetch(this.SEARCH_MENU_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ query: text }),
       });
 
+      console.log('📡 [Chatbot] Status búsqueda:', searchRes.status);
+
       if (searchRes.ok) {
         const data = await searchRes.json();
+        console.log('📦 [Chatbot] Datos recibidos de Qdrant:', data);
+        
         if (data.items?.length) {
+
           const contextItems = data.items
             .map((i: any) => `${i.nombre} - ${i.receta || 'sin descripción'} ($${i.precio})`)
             .join('\n');
           semanticContext = `Resultados del menú más relevantes:\n${contextItems}\n`;
         }
+      }else {
+        const error = await searchRes.text();
+        console.error('❌ [Chatbot] Error Qdrant:', error);
       }
     } catch (err) {
       console.error('⚠️ Error al consultar Qdrant:', err);
@@ -158,6 +178,12 @@ export class Chatbot {
         ${semanticContext || 'Sin contexto adicional'}
       `.trim();
 
+      console.log('💬 [Chatbot] Enviando mensaje a Gemini:', {
+        url: this.API_URL,
+        method: 'POST',
+        body: { message: `${context}\nUsuario: ${text}`, history: this.messages },
+      });
+
       const response = await fetch(this.API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -167,12 +193,17 @@ export class Chatbot {
         }),
       });
 
+      console.log('📡 [Chatbot] Status Gemini:', response.status);
+
       if (!response.ok) {
+        const errText = await response.text();
+        console.error('❌ [Chatbot] Error de Gemini:', errText);
         this.addBotMessage('⚠️ No pude conectar con el servidor. Intentá más tarde.');
         return;
       }
 
       const data = await response.json();
+      console.log('📦 [Chatbot] Respuesta Gemini:', data);
       this.addBotMessage(data.reply || 'No pude entenderte 🍀');
     } catch (error) {
       console.error('Error al conectar con Gemini:', error);
@@ -184,6 +215,7 @@ export class Chatbot {
 
   // === Manejo de mensajes ===
   addUserMessage(text: string) {
+    console.log('👤 [Chatbot] Usuario envió mensaje:', text);
     this.messages.push({
       id: Date.now().toString(),
       text,
@@ -193,6 +225,7 @@ export class Chatbot {
   }
 
   addBotMessage(text: string) {
+    console.log('🤖 [Chatbot] Bot responde:', text);
     this.messages.push({
       id: (Date.now() + 1).toString(),
       text,
