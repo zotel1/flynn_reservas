@@ -17,6 +17,7 @@
             <span>{{ s.nombre }}</span>
           </button>
         </div>
+        <small class="err" *ngIf="f.sitio.touched && f.sitio.invalid">Elegí un sector</small>
       </div>
 
       <!-- Datos personales -->
@@ -24,6 +25,9 @@
         <label>
           <span>Nombre completo</span>
           <input formControlName="nombre" type="text" placeholder="San Patricio 🍀" />
+          <small class="err" *ngIf="f.nombre.touched && f.nombre.invalid">
+            Ingresá tu nombre (mín. 2 caracteres).
+          </small>
         </label>
 
         <label>
@@ -34,21 +38,25 @@
         <label>
           <span>Email</span>
           <input formControlName="email" type="email" placeholder="tu@email.com" />
+          <small class="err" *ngIf="f.email.touched && f.email.invalid">Ingresá un email válido.</small>
         </label>
 
         <label>
           <span>Fecha</span>
           <input formControlName="fecha" type="date" />
+          <small class="err" *ngIf="f.fecha.touched && f.fecha.invalid">Elegí una fecha.</small>
         </label>
 
         <label>
           <span>Horario</span>
           <input formControlName="hora" type="time" />
+          <small class="err" *ngIf="f.hora.touched && f.hora.invalid">Elegí un horario.</small>
         </label>
 
         <label>
           <span>Personas</span>
           <input formControlName="personas" type="number" min="1" />
+          <small class="err" *ngIf="f.personas.touched && f.personas.invalid">Indicá la cantidad.</small>
         </label>
       </div>
 
@@ -61,11 +69,13 @@
       </div>
 
       <!-- Botón -->
-      <button class="btn" type="submit" [disabled]="cargando">
+      <button class="btn" type="submit" [disabled]="cargando || form.invalid">
         {{ cargando ? 'Enviando...' : 'Confirmar Reserva' }}
       </button>
 
-      <p class="ok" *ngIf="enviado">✅ ¡Reserva enviada con éxito!</p>
+      <!-- Mensajes -->
+      <p class="ok" *ngIf="enviado">✅ ¡Reserva enviada con éxito! Te enviamos un email de confirmación.</p>
+      <p class="error" *ngIf="error">⚠️ {{ error }}</p>
     </form>
   </div>
 </section>
