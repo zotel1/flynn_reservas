@@ -4,7 +4,7 @@ import { getApisFromEnvTokens } from './lib/google';
 import { appendReservaRow } from './lib/sheets';
 import { buildEmailRaw } from './lib/mailer';
 
-export const config = { runtime: 'nodejs20' };
+//export const config = { runtime: 'nodejs20' };
 
 const schema = z.object({
   nombre: z.string().min(2),

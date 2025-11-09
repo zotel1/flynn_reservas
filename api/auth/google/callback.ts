@@ -1,7 +1,7 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import { getOAuthClient } from '../../lib/google';
 
-export const config = { runtime: 'nodejs20' };
+//export const config = { runtime: 'nodejs20' };
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   const code = String(req.query.code || '');
