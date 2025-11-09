@@ -298,6 +298,48 @@
         { "nombre": "Promo Pizza Flynn + 2 Cervezas", "precio": 27000 }
       ]
     }
+    ,
+{
+  "nombre": "Horarios",
+  "items": [
+    {
+      "nombre": "Horario del Bar",
+      "categoria": "Horarios",
+      "receta": "El bar abre de miércoles a jueves de 20:00 hs a 03:00 hs, y de viernes a domingo de 20:00 hs a 04:00 hs.",
+      "tags": ["bar", "horarios", "nocturno", "apertura", "cierre"]
+    },
+    {
+      "nombre": "Horario de Cocina",
+      "categoria": "Horarios",
+      "receta": "La cocina abre de miércoles a domingo desde las 20:00 hs hasta las 02:00 hs.",
+      "tags": ["cocina", "horarios", "servicio", "comida"]
+    }
+  ]
+},
+{
+  "nombre": "Promociones",
+  "items": [
+    {
+      "nombre": "Descuento Cumpleaños Miércoles y Jueves",
+      "categoria": "Promociones",
+      "receta": "30% de descuento para cumpleañeros los días miércoles y jueves. Presentar DNI. No acumulable con otras promociones.",
+      "tags": ["descuento", "cumpleaños", "miércoles", "jueves", "no acumulable"]
+    },
+    {
+      "nombre": "Descuento Cumpleaños Viernes, Sábado y Domingo",
+      "categoria": "Promociones",
+      "receta": "20% de descuento para cumpleañeros los días viernes, sábado y domingo. Presentar DNI. No acumulable con otras promociones.",
+      "tags": ["descuento", "cumpleaños", "viernes", "sábado", "domingo", "no acumulable"]
+    },
+    {
+      "nombre": "Descuento Pago Efectivo",
+      "categoria": "Promociones",
+      "receta": "15% de descuento todos los días pagando en efectivo. No acumulable con otras promociones.",
+      "tags": ["descuento", "efectivo", "pago contado", "no acumulable"]
+    }
+  ]
+}
+
   ]
 }
 
