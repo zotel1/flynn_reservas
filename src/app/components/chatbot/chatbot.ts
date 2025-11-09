@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, NgZone } from '@angular/core';
 import { CommonModule, DatePipe } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -37,7 +37,7 @@ export class Chatbot {
   flynnHorarios: any = {};
   flynnTraining: any = {};
   flynnKnowledge: any = {};
-  currentTopic: string | null = null; // memoria temática simple
+  currentTopic: string | null = null;
 
   // === Configuración general ===
   private readonly MAX_QUESTIONS = 10;
@@ -45,16 +45,15 @@ export class Chatbot {
 
   // 🧠 URLs dinámicas: local (ng serve) o Vercel
   private readonly BASE_URL =
-  window.location.hostname.includes('localhost')
-    ? 'http://localhost:3000'
-    : window.location.origin; // <-- clave para Vercel
-
+    window.location.hostname.includes('localhost')
+      ? 'http://localhost:3000'
+      : window.location.origin;
 
   private readonly SEARCH_MENU_URL = `${this.BASE_URL}/api/searchMenu`;
   private readonly API_URL = `${this.BASE_URL}/api/gemini`;
   private readonly INSTAGRAM_URL = 'https://www.instagram.com/crissigel/';
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private zone: NgZone) {}
 
   // === Inicialización ===
   async ngOnInit() {
@@ -130,14 +129,13 @@ export class Chatbot {
 
     console.log('🎯 [Chatbot] Tema detectado:', this.currentTopic);
 
-    // Si menciona reserva → modal
     if (this.currentTopic === 'reservas') {
       this.isTyping = false;
       this.showLimitModal = true;
       return;
     }
 
-    // === Lógica de búsqueda semántica en Qdrant ===
+    // === Búsqueda semántica en Qdrant ===
     let semanticContext = '';
 
     try {
@@ -153,15 +151,14 @@ export class Chatbot {
       if (searchRes.ok) {
         const data = await searchRes.json();
         console.log('📦 [Chatbot] Datos recibidos de Qdrant:', data);
-        
-        if (data.items?.length) {
 
+        if (data.items?.length) {
           const contextItems = data.items
             .map((i: any) => `${i.nombre} - ${i.receta || 'sin descripción'} ($${i.precio})`)
             .join('\n');
           semanticContext = `Resultados del menú más relevantes:\n${contextItems}\n`;
         }
-      }else {
+      } else {
         const error = await searchRes.text();
         console.error('❌ [Chatbot] Error Qdrant:', error);
       }
@@ -216,21 +213,25 @@ export class Chatbot {
   // === Manejo de mensajes ===
   addUserMessage(text: string) {
     console.log('👤 [Chatbot] Usuario envió mensaje:', text);
-    this.messages.push({
-      id: Date.now().toString(),
-      text,
-      isBot: false,
-      timestamp: new Date(),
+    this.zone.run(() => {
+      this.messages.push({
+        id: Date.now().toString(),
+        text,
+        isBot: false,
+        timestamp: new Date(),
+      });
     });
   }
 
   addBotMessage(text: string) {
     console.log('🤖 [Chatbot] Bot responde:', text);
-    this.messages.push({
-      id: (Date.now() + 1).toString(),
-      text,
-      isBot: true,
-      timestamp: new Date(),
+    this.zone.run(() => {
+      this.messages.push({
+        id: (Date.now() + 1).toString(),
+        text,
+        isBot: true,
+        timestamp: new Date(),
+      });
     });
   }
 
