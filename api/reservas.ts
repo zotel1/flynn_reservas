@@ -4,15 +4,11 @@ import { getApisFromEnvTokens } from '../lib/google';
 import { appendReservaRow } from '../lib/sheets';
 import { buildEmailRaw } from '../lib/mailer';
 
-// -------- Helpers de fecha (evitamos toISOString con "Z") --------
-// NEW: pad a 2 dígitos
+// Helpers de fecha
 const pad = (n: number) => String(n).padStart(2, '0');
-
-// NEW: suma horas sobre fecha/hora "naive" y devuelve { fecha, horaSS }
 function addHours(fecha: string, horaHHmm: string, deltaH: number) {
   const [y, m, d] = fecha.split('-').map(Number);
   const [H, M] = horaHHmm.split(':').map(Number);
-  // Usamos UTC como base para no involucrar timezone del runtime
   const base = new Date(Date.UTC(y, m - 1, d, H, M, 0));
   base.setUTCHours(base.getUTCHours() + deltaH);
   const yy = base.getUTCFullYear();
@@ -23,7 +19,7 @@ function addHours(fecha: string, horaHHmm: string, deltaH: number) {
   return { fecha: `${yy}-${mm}-${dd}`, horaSS: `${HH}:${MM}:00` };
 }
 
-// -------- Validación payload --------
+// Validación payload
 const schema = z.object({
   nombre: z.string().min(2),
   email: z.string().email(),
@@ -43,12 +39,12 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(405).json({ ok: false, message: 'Method Not Allowed' });
     }
 
-    // Seguridad simple (opcional)
+    // Seguridad opcional
     if (process.env.RESERVAS_API_KEY && req.headers['x-api-key'] !== process.env.RESERVAS_API_KEY) {
       return res.status(401).json({ ok: false, message: 'Unauthorized' });
     }
 
-    // NEW: chequeo de envs críticas
+    // Envs críticas
     const must = [
       'GOOGLE_CLIENT_ID',
       'GOOGLE_CLIENT_SECRET',
@@ -63,7 +59,7 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
       return res.status(500).json({ ok: false, stage: 'env', message: 'Faltan variables', missing });
     }
 
-    // NEW: parse robusto del body
+    // Body
     const rawBody = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
     const parsed = schema.safeParse(rawBody);
     if (!parsed.success) {
@@ -76,11 +72,15 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     const CALENDAR_ID = process.env.CALENDAR_ID!;
     const SHEET_ID = process.env.SHEET_ID!;
     const fromAddr = process.env.ENCARGADO_EMAIL!;
-    // FIX: sanitizamos TZ y default válido IANA
-    const tz = (process.env.TZ || 'America/Argentina/Buenos_Aires').trim();
 
-    // --- Construcción de horarios ---
-    // Enviamos "dateTime" sin Z + "timeZone" IANA (forma recomendada por Calendar)
+    // ✅ NUEVO: variables de zona horaria sin usar "TZ" (reservada)
+    // RESERVAS_TZ (opcional): ej. "America/Argentina/Buenos_Aires"
+    // FORCE_TZ_OFFSET (opcional): ej. "-03:00" (Argentina, sin DST)
+    const tz = (process.env.RESERVAS_TZ || '').trim();         // si viene vacío, usamos offset
+    const offset = (process.env.FORCE_TZ_OFFSET || '-03:00').trim();
+    const useOffset = tz.length === 0;
+
+    // Construcción de horarios locales
     const startLocal = `${fecha}T${hora}:00`;
     const end = addHours(fecha, hora, 1);
     const endLocal = `${end.fecha}T${end.horaSS}`;
@@ -89,29 +89,42 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     stage = 'calendar';
     let eventId = '';
     try {
-      const ev = await calendar.events.insert({
-        calendarId: CALENDAR_ID,
-        requestBody: {
-          summary: `Reserva: ${nombre} (${personas})`,
-          description: `Sitio: ${sitio}\nTel: ${telefono}\nEmail: ${email}\nNotas: ${comentario || '-'}`,
-          // FIX: usamos timeZone IANA + dateTime local (sin "Z")
-          start: { dateTime: startLocal, timeZone: tz },
-          end:   { dateTime: endLocal,   timeZone: tz },
-        }
-      });
-      eventId = ev.data.id || '';
+      if (!useOffset) {
+        // Intento 1: usar IANA timeZone si definiste RESERVAS_TZ
+        const ev = await calendar.events.insert({
+          calendarId: CALENDAR_ID,
+          requestBody: {
+            summary: `Reserva: ${nombre} (${personas})`,
+            description: `Sitio: ${sitio}\nTel: ${telefono}\nEmail: ${email}\nNotas: ${comentario || '-'}`,
+            start: { dateTime: startLocal, timeZone: tz },     // ← usa IANA
+            end:   { dateTime: endLocal,   timeZone: tz },
+          }
+        });
+        eventId = ev.data.id || '';
+      } else {
+        // Intento directo con offset si no hay RESERVAS_TZ
+        const ev = await calendar.events.insert({
+          calendarId: CALENDAR_ID,
+          requestBody: {
+            summary: `Reserva: ${nombre} (${personas})`,
+            description: `Sitio: ${sitio}\nTel: ${telefono}\nEmail: ${email}\nNotas: ${comentario || '-'}`,
+            start: { dateTime: `${startLocal}${offset}` },     // ← RFC3339 con offset
+            end:   { dateTime: `${endLocal}${offset}` },
+          }
+        });
+        eventId = ev.data.id || '';
+      }
     } catch (e: any) {
       const msg = e?.response?.data?.error?.message || e?.message || '';
-      // NEW: Fallback si Google rechaza la TZ: usamos offset fijo de ART (-03:00) sin timeZone
+      // Fallback: si falla por TZ inválida, reintenta con offset
       if (/Invalid time zone/i.test(msg)) {
-        const offset = process.env.FORCE_TZ_OFFSET || '-03:00'; // Argentina
         const ev2 = await calendar.events.insert({
           calendarId: CALENDAR_ID,
           requestBody: {
             summary: `Reserva: ${nombre} (${personas})`,
             description: `Sitio: ${sitio}\nTel: ${telefono}\nEmail: ${email}\nNotas: ${comentario || '-'}`,
-            start: { dateTime: `${startLocal}${offset}` }, // sin timeZone
-            end:   { dateTime: `${endLocal}${offset}` },   // sin timeZone
+            start: { dateTime: `${startLocal}${offset}` },   // sin timeZone
+            end:   { dateTime: `${endLocal}${offset}` },
           }
         });
         eventId = ev2.data.id || '';
