@@ -25,7 +25,8 @@
 
         <label>
           <span>Hasta</span>
-          <input type="date" [(ngModel)]="filtro.hasta" name="hasta" />
+          <!-- Evita poner una fecha anterior al "desde" -->
+          <input type="date" [(ngModel)]="filtro.hasta" name="hasta" [min]="filtro.desde" />
         </label>
 
         <label>

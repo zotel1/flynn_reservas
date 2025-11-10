@@ -38,7 +38,12 @@ export class ReservasDashboard implements OnInit {
   kpiUltimos7 = 0;
   kpiProximos7 = 0;
 
+  // Rango y búsqueda
   filtro = { desde: '', hasta: '', q: '' };
+
+  // Constantes de rango por defecto
+  private readonly DEFAULT_PAST_DAYS = 30;   // últimos 30 días
+  private readonly DEFAULT_FUTURE_DAYS = 60; // próximos 60 días (2 meses)
 
   constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
 
@@ -47,15 +52,30 @@ export class ReservasDashboard implements OnInit {
     const meta = document.querySelector('meta[name="google-client-id"]') as HTMLMetaElement | null;
     this.clientId = meta?.content || this.clientId || 'TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
 
-    // 2) Rango por defecto: últimos 30 días
-    const hoy = new Date();
-    const hace30 = new Date(hoy.getTime() - 30 * 864e5);
-    this.filtro.desde = hace30.toISOString().slice(0, 10);
-    this.filtro.hasta = hoy.toISOString().slice(0, 10);
+    // 2) Rango por defecto: últimos 30 días hasta +60 días
+    this.setDefaultRange();
 
     // 3) Chequear sesión existente
     await this.checkSession();
   }
+
+  // ----------------- Helpers de fechas -----------------
+  private ymdLocal(d: Date): string {
+    // normaliza a yyyy-mm-dd evitando problemas de huso horario
+    const z = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
+    return z.toISOString().slice(0, 10);
+  }
+  private addDays(base: Date, days: number) {
+    return new Date(base.getTime() + days * 864e5);
+  }
+  private setDefaultRange() {
+    const hoy = new Date();
+    const desde = this.addDays(hoy, -this.DEFAULT_PAST_DAYS);
+    const hasta = this.addDays(hoy,  this.DEFAULT_FUTURE_DAYS);
+    this.filtro.desde = this.ymdLocal(desde);
+    this.filtro.hasta = this.ymdLocal(hasta);
+  }
+  // -----------------------------------------------------
 
   // ---------- AUTH ----------
   private async checkSession() {
@@ -128,8 +148,20 @@ export class ReservasDashboard implements OnInit {
   }
 
   // ---------- FILTROS ----------
-  aplicarFiltros() { this.cargar(); }
-  limpiar() { this.filtro = { desde: '', hasta: '', q: '' }; this.cargar(); }
+  aplicarFiltros() {
+    // si por error "hasta" quedó antes que "desde", lo corregimos
+    if (this.filtro.hasta && this.filtro.desde && this.filtro.hasta < this.filtro.desde) {
+      this.filtro.hasta = this.filtro.desde;
+    }
+    this.cargar();
+  }
+
+  limpiar() {
+    // vuelve al rango “últimos 30 días → próximos 60 días”
+    this.setDefaultRange();
+    this.filtro.q = '';
+    this.cargar();
+  }
 
   itemsFiltrados(): ReservaItem[] {
     const q = this.filtro.q.trim().toLowerCase();
