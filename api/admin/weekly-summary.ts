@@ -1,9 +1,13 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node';
-import { getApisFromEnvTokens } from '../lib/google';
+import { getApisFromEnvTokens } from '../../lib/google';
+import { requireAdmin } from '../../lib/auth'; // o '../../lib/auth' según la ruta
+// ...
+
 
 //export const config = { runtime: 'nodejs20' };
 
 export default async function handler(_req: VercelRequest, res: VercelResponse) {
+  if (!requireAdmin(_req, res)) return;
   try {
     const { gmail, sheets } = getApisFromEnvTokens();
     const SHEET_ID = process.env.SHEET_ID!;
