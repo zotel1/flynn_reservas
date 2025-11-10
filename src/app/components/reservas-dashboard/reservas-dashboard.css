@@ -1,18 +1,28 @@
-.dashboard { padding: 3rem 0; }
-.filtros .grid { display: grid; gap: 1rem; grid-template-columns: repeat(4, 1fr); }
+.dashboard { max-width: 1040px; margin: 1rem auto; padding: .5rem 1rem; }
+.topbar { display: flex; gap: 12px; align-items: center; margin: .5rem 0 1rem; }
+
+.filtros .grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .75rem; }
 .filtros label { display: flex; flex-direction: column; gap: .25rem; }
-.acciones { display: flex; gap: .5rem; align-items: end; }
-.btn { padding: .6rem 1rem; border: none; cursor: pointer; border-radius: .5rem; }
-.btn.sec { background: #eee; }
-.cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; margin: 1rem 0 2rem; }
-.card { background: #0f172a; color: #fff; padding: 1rem; border-radius: .75rem; }
-.kpi { font-size: 1.8rem; margin: .25rem 0 0; }
-.tabla-wrapper { overflow: auto; }
+.filtros .acciones { display: flex; gap: .5rem; align-items: end; }
+
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; margin: 1rem 0; }
+.card { background: #fafafa; border: 1px solid #eee; border-radius: 10px; padding: .75rem; }
+.kpi { font-size: 1.6rem; margin: .25rem 0 0; font-weight: 700; }
+
 .tabla { width: 100%; border-collapse: collapse; }
-.tabla th, .tabla td { border-bottom: 1px solid #eee; padding: .6rem .5rem; text-align: left; }
-.tabla .nota { max-width: 360px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.vacio, .error { margin-top: 1rem; }
-@media (max-width: 960px) {
+.tabla th, .tabla td { border-bottom: 1px solid #eee; padding: .5rem .6rem; text-align: left; }
+.tabla th { background: #fafafa; position: sticky; top: 0; z-index: 1; }
+
+.btn { padding: .45rem .8rem; border-radius: 8px; border: 1px solid #ddd; background: #fff; cursor: pointer; }
+.btn:hover { background: #f3f3f3; }
+.btn.sec { background: #fff; }
+.btn.small { padding: .3rem .6rem; font-size: .9rem; }
+
+.error { color: #b00020; margin-top: .5rem; }
+.vacio { color: #666; margin-top: .5rem; }
+.nota { max-width: 28ch; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+@media (max-width: 900px) {
   .filtros .grid { grid-template-columns: 1fr 1fr; }
   .cards { grid-template-columns: 1fr; }
 }

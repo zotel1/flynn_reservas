@@ -1,5 +1,4 @@
-// src/app/components/reservas-dashboard/reservas-dashboard.ts
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -27,12 +26,12 @@ type ReservaItem = {
   styleUrls: ['./reservas-dashboard.css']
 })
 export class ReservasDashboard implements OnInit {
-  // --- Estado auth ---
+  // --- Auth ---
   needsLogin = true;
   meEmail = '';
-  clientId = ''; // lo resolvemos desde <meta> o podés setearlo acá
+  clientId = ''; // lo leemos desde <meta name="google-client-id"> del index.html
 
-  // --- Estado UI / datos ---
+  // --- UI / datos ---
   cargando = false;
   error = '';
   items: ReservaItem[] = [];
@@ -41,10 +40,10 @@ export class ReservasDashboard implements OnInit {
 
   filtro = { desde: '', hasta: '', q: '' };
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
 
   async ngOnInit() {
-    // 1) Resolver clientId desde el <meta> (si existe)
+    // 1) Client ID (desde el <meta> en index.html)
     const meta = document.querySelector('meta[name="google-client-id"]') as HTMLMetaElement | null;
     this.clientId = meta?.content || this.clientId || 'TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
 
@@ -54,7 +53,7 @@ export class ReservasDashboard implements OnInit {
     this.filtro.desde = hace30.toISOString().slice(0, 10);
     this.filtro.hasta = hoy.toISOString().slice(0, 10);
 
-    // 3) Chequear si ya hay sesión
+    // 3) Chequear sesión existente
     await this.checkSession();
   }
 
@@ -64,15 +63,17 @@ export class ReservasDashboard implements OnInit {
       const me: any = await this.http.get('/api/auth/admin/me').toPromise();
       this.meEmail = me?.email || '';
       this.needsLogin = false;
-      await this.cargar(); // ya logueado → cargamos datos
+      this.cdr.detectChanges();         // fuerza render de la vista admin
+      await this.cargar();
     } catch {
       this.needsLogin = true;
+      this.cdr.detectChanges();         // asegura que se muestre el bloque de login
       this.renderGoogleButton();
     }
   }
 
   private renderGoogleButton() {
-    // Render nativo del botón de Google en el <div id="googleBtn">
+    // Render del botón de Google One Tap/Sign-In en <div id="googleBtn">
     const tryRender = () => {
       const g = (window as any).google;
       if (g?.accounts?.id) {
@@ -82,7 +83,12 @@ export class ReservasDashboard implements OnInit {
         });
         const el = document.getElementById('googleBtn');
         if (el) {
-          g.accounts.id.renderButton(el, { theme: 'outline', size: 'large', shape: 'pill', type: 'standard' });
+          g.accounts.id.renderButton(el, {
+            theme: 'outline',
+            size: 'large',
+            shape: 'pill',
+            type: 'standard'
+          });
         }
       } else {
         setTimeout(tryRender, 250);
@@ -93,14 +99,17 @@ export class ReservasDashboard implements OnInit {
 
   private async onGoogleCredential(resp: any) {
     try {
+      if (!resp?.credential) throw new Error('No llegó credential de Google');
       await this.http.post('/api/auth/admin/login', { id_token: resp.credential }).toPromise();
-      // sesión creada en cookie HttpOnly
-      this.needsLogin = false;
+
       const me: any = await this.http.get('/api/auth/admin/me').toPromise();
       this.meEmail = me?.email || '';
+      this.needsLogin = false;
+      this.cdr.detectChanges();         // asegura que se pinte el dashboard
       await this.cargar();
     } catch (e: any) {
-      this.error = e?.error?.message || 'No autorizado';
+      console.error('login/admin error', e);
+      this.error = e?.error?.message || e?.message || 'No autorizado';
     }
   }
 
@@ -108,12 +117,12 @@ export class ReservasDashboard implements OnInit {
     try {
       await this.http.post('/api/auth/admin/logout', {}).toPromise();
     } finally {
-      // limpiar estado local
       this.meEmail = '';
       this.items = [];
       this.kpiUltimos7 = 0;
       this.kpiProximos7 = 0;
       this.needsLogin = true;
+      this.cdr.detectChanges();
       this.renderGoogleButton();
     }
   }
@@ -130,7 +139,7 @@ export class ReservasDashboard implements OnInit {
 
   // ---------- CARGA ----------
   private async cargar() {
-    if (this.needsLogin) return; // si no está logueado, no pegamos al admin
+    if (this.needsLogin) return; // no pegamos si no hay sesión
     this.cargando = true;
     this.error = '';
     try {
@@ -139,9 +148,8 @@ export class ReservasDashboard implements OnInit {
       if (this.filtro.hasta) params.set('hasta', this.filtro.hasta);
       if (this.filtro.q)     params.set('q', this.filtro.q);
 
-      // Importante: SIN x-api-key, usamos cookie HttpOnly
+      // Cookie HttpOnly maneja la auth → no enviar x-api-key
       const resp: any = await this.http.get(`/api/admin/reservas?${params.toString()}`).toPromise();
-
       this.items = (resp?.items || []).map((r: any) => ({ ...r, personas: Number(r.personas || 0) }));
 
       // KPIs
