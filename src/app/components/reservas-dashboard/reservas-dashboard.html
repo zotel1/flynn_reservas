@@ -1,83 +1,104 @@
+<!-- src/app/components/reservas-dashboard/reservas-dashboard.html -->
+
 <section class="dashboard">
   <div class="container">
-    <h2>Gestión de Reservas</h2>
 
-    <!-- Filtros -->
-    <form class="filtros" (ngSubmit)="aplicarFiltros()">
-      <div class="grid">
-        <label>
-          <span>Desde</span>
-          <input type="date" [(ngModel)]="filtro.desde" name="desde" />
-        </label>
+    <!-- BLOQUE LOGIN -->
+    <div *ngIf="needsLogin" class="login-box">
+      <h2>Panel del Encargado</h2>
+      <p>Accedé con tu cuenta autorizada de Google para ver las reservas.</p>
+      <div id="googleBtn" style="margin-top:12px;"></div>
+      <p class="error" *ngIf="error">⚠️ {{ error }}</p>
+    </div>
 
-        <label>
-          <span>Hasta</span>
-          <input type="date" [(ngModel)]="filtro.hasta" name="hasta" />
-        </label>
-
-        <label>
-          <span>Buscar (nombre/email/teléfono)</span>
-          <input type="text" [(ngModel)]="filtro.q" name="q" placeholder="Ej: Juan, @gmail.com, +54..." />
-        </label>
-
-        <div class="acciones">
-          <button class="btn" type="submit" [disabled]="cargando">Filtrar</button>
-          <button class="btn sec" type="button" (click)="limpiar()" [disabled]="cargando">Limpiar</button>
+    <!-- DASHBOARD -->
+    <ng-container *ngIf="!needsLogin">
+      <div class="topbar">
+        <h2>Gestión de Reservas</h2>
+        <div class="user">
+          <span class="me">{{ meEmail }}</span>
+          <button class="btn sec" type="button" (click)="logout()">Salir</button>
         </div>
       </div>
-    </form>
 
-    <!-- Métricas -->
-    <div class="cards">
-      <div class="card">
-        <h3>Total (rango)</h3>
-        <p class="kpi">{{ items.length }}</p>
+      <!-- Filtros -->
+      <form class="filtros" (ngSubmit)="aplicarFiltros()">
+        <div class="grid">
+          <label>
+            <span>Desde</span>
+            <input type="date" [(ngModel)]="filtro.desde" name="desde" />
+          </label>
+
+          <label>
+            <span>Hasta</span>
+            <input type="date" [(ngModel)]="filtro.hasta" name="hasta" />
+          </label>
+
+          <label>
+            <span>Buscar (nombre/email/teléfono)</span>
+            <input type="text" [(ngModel)]="filtro.q" name="q" placeholder="Ej: Juan, @gmail.com, +54..." />
+          </label>
+
+          <div class="acciones">
+            <button class="btn" type="submit" [disabled]="cargando">Filtrar</button>
+            <button class="btn sec" type="button" (click)="limpiar()" [disabled]="cargando">Limpiar</button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Métricas -->
+      <div class="cards">
+        <div class="card">
+          <h3>Total (rango)</h3>
+          <p class="kpi">{{ items.length }}</p>
+        </div>
+        <div class="card">
+          <h3>Últimos 7 días</h3>
+          <p class="kpi">{{ kpiUltimos7 }}</p>
+        </div>
+        <div class="card">
+          <h3>Próximos 7 días</h3>
+          <p class="kpi">{{ kpiProximos7 }}</p>
+        </div>
       </div>
-      <div class="card">
-        <h3>ÚLTIMOS 7 días</h3>
-        <p class="kpi">{{ kpiUltimos7 }}</p>
+
+      <!-- Tabla -->
+      <div class="tabla-wrapper" *ngIf="!cargando; else loading">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Nombre</th>
+              <th>Email</th>
+              <th>Teléfono</th>
+              <th>Personas</th>
+              <th>Sitio</th>
+              <th>Notas</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let r of itemsFiltrados()">
+              <td>{{ r.fecha }}</td>
+              <td>{{ r.hora }}</td>
+              <td>{{ r.nombre }}</td>
+              <td>{{ r.email }}</td>
+              <td>{{ r.telefono }}</td>
+              <td>{{ r.personas }}</td>
+              <td>{{ r.sitio || '-' }}</td>
+              <td class="nota">{{ r.comentario || r.notas || '-' }}</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <p *ngIf="itemsFiltrados().length === 0" class="vacio">No hay reservas para los filtros aplicados.</p>
+        <p *ngIf="error" class="error">⚠️ {{ error }}</p>
       </div>
-      <div class="card">
-        <h3>Próximos 7 días</h3>
-        <p class="kpi">{{ kpiProximos7 }}</p>
-      </div>
-    </div>
 
-    <!-- Tabla -->
-    <div class="tabla-wrapper" *ngIf="!cargando; else loading">
-      <table class="tabla">
-        <thead>
-          <tr>
-            <th>Fecha</th>
-            <th>Hora</th>
-            <th>Nombre</th>
-            <th>Email</th>
-            <th>Teléfono</th>
-            <th>Personas</th>
-            <th>Sitio</th>
-            <th>Notas</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let r of itemsFiltrados()">
-            <td>{{ r.fecha }}</td>
-            <td>{{ r.hora }}</td>
-            <td>{{ r.nombre }}</td>
-            <td>{{ r.email }}</td>
-            <td>{{ r.telefono }}</td>
-            <td>{{ r.personas }}</td>
-            <td>{{ r.sitio || '-' }}</td>
-            <td class="nota">{{ r.comentario || r.notas || '-' }}</td>
-          </tr>
-        </tbody>
-      </table>
+      <ng-template #loading>
+        <p>Cargando reservas…</p>
+      </ng-template>
+    </ng-container>
 
-      <p *ngIf="itemsFiltrados().length === 0" class="vacio">No hay reservas para los filtros aplicados.</p>
-      <p *ngIf="error" class="error">⚠️ {{ error }}</p>
-    </div>
-
-    <ng-template #loading>
-      <p>Cargando reservas…</p>
-    </ng-template>
   </div>
 </section>
