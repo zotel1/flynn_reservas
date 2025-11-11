@@ -1,7 +1,15 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import {
+  Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import {
+  Subject, of, fromEvent
+} from 'rxjs';
+import {
+  takeUntil, catchError, finalize, tap, switchMap
+} from 'rxjs/operators';
 
 declare global { interface Window { google: any } }
 
@@ -25,11 +33,11 @@ type ReservaItem = {
   templateUrl: './reservas-dashboard.html',
   styleUrls: ['./reservas-dashboard.css']
 })
-export class ReservasDashboard implements OnInit {
+export class ReservasDashboard implements OnInit, OnDestroy {
   // --- Auth ---
   needsLogin = true;
   meEmail = '';
-  clientId = ''; // lo leemos desde <meta name="google-client-id"> del index.html
+  clientId = ''; // <meta name="google-client-id">
 
   // --- UI / datos ---
   cargando = false;
@@ -38,30 +46,41 @@ export class ReservasDashboard implements OnInit {
   kpiUltimos7 = 0;
   kpiProximos7 = 0;
 
-  // Rango y búsqueda
+  // Filtros
   filtro = { desde: '', hasta: '', q: '' };
 
-  // Constantes de rango por defecto
-  private readonly DEFAULT_PAST_DAYS = 30;   // últimos 30 días
-  private readonly DEFAULT_FUTURE_DAYS = 60; // próximos 60 días (2 meses)
+  private readonly DEFAULT_PAST_DAYS = 30;
+  private readonly DEFAULT_FUTURE_DAYS = 60;
 
-  constructor(private http: HttpClient, private cdr: ChangeDetectorRef) {}
+  private destroy$ = new Subject<void>();
 
-  async ngOnInit() {
-    // 1) Client ID (desde el <meta> en index.html)
+  constructor(
+    private http: HttpClient,
+    private cdr: ChangeDetectorRef,
+    private zone: NgZone
+  ) {}
+
+  ngOnInit(): void {
     const meta = document.querySelector('meta[name="google-client-id"]') as HTMLMetaElement | null;
-    this.clientId = meta?.content || this.clientId || 'TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+    this.clientId = meta?.content || 'TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
 
-    // 2) Rango por defecto: últimos 30 días hasta +60 días
     this.setDefaultRange();
 
-    // 3) Chequear sesión existente
-    await this.checkSession();
+    // recargar cuando la pestaña vuelve a estar al frente
+    fromEvent(window, 'focus')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => { if (!this.needsLogin) this.cargar(); });
+
+    this.checkSession();
   }
 
-  // ----------------- Helpers de fechas -----------------
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  // ---------- Helpers fecha ----------
   private ymdLocal(d: Date): string {
-    // normaliza a yyyy-mm-dd evitando problemas de huso horario
     const z = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
     return z.toISOString().slice(0, 10);
   }
@@ -70,46 +89,42 @@ export class ReservasDashboard implements OnInit {
   }
   private setDefaultRange() {
     const hoy = new Date();
-    const desde = this.addDays(hoy, -this.DEFAULT_PAST_DAYS);
-    const hasta = this.addDays(hoy,  this.DEFAULT_FUTURE_DAYS);
-    this.filtro.desde = this.ymdLocal(desde);
-    this.filtro.hasta = this.ymdLocal(hasta);
+    this.filtro.desde = this.ymdLocal(this.addDays(hoy, -this.DEFAULT_PAST_DAYS));
+    this.filtro.hasta = this.ymdLocal(this.addDays(hoy,  this.DEFAULT_FUTURE_DAYS));
   }
-  // -----------------------------------------------------
 
   // ---------- AUTH ----------
-  private async checkSession() {
-    try {
-      const me: any = await this.http.get('/api/auth/admin/me').toPromise();
-      this.meEmail = me?.email || '';
-      this.needsLogin = false;
-      this.cdr.detectChanges();         // fuerza render de la vista admin
-      await this.cargar();
-    } catch {
-      this.needsLogin = true;
-      this.cdr.detectChanges();         // asegura que se muestre el bloque de login
-      this.renderGoogleButton();
-    }
+  private checkSession() {
+    this.http.get<any>('/api/auth/admin/me', { withCredentials: true })
+      .pipe(
+        tap(me => {
+          this.meEmail = me?.email || '';
+          this.needsLogin = false;
+          this.cdr.detectChanges();
+        }),
+        switchMap(() => this.cargar$()),
+        catchError(() => {
+          this.needsLogin = true;
+          this.cdr.detectChanges();
+          this.renderGoogleButton();
+          return of(null);
+        }),
+        takeUntil(this.destroy$)
+      )
+      .subscribe();
   }
 
   private renderGoogleButton() {
-    // Render del botón de Google One Tap/Sign-In en <div id="googleBtn">
     const tryRender = () => {
       const g = (window as any).google;
       if (g?.accounts?.id) {
         g.accounts.id.initialize({
           client_id: this.clientId,
-          callback: (resp: any) => this.onGoogleCredential(resp),
+          // importantísimo: entrar a la zona de Angular
+          callback: (resp: any) => this.zone.run(() => this.onGoogleCredential(resp)),
         });
         const el = document.getElementById('googleBtn');
-        if (el) {
-          g.accounts.id.renderButton(el, {
-            theme: 'outline',
-            size: 'large',
-            shape: 'pill',
-            type: 'standard'
-          });
-        }
+        if (el) g.accounts.id.renderButton(el, { theme: 'outline', size: 'large', shape: 'pill', type: 'standard' });
       } else {
         setTimeout(tryRender, 250);
       }
@@ -117,39 +132,48 @@ export class ReservasDashboard implements OnInit {
     tryRender();
   }
 
-  private async onGoogleCredential(resp: any) {
-    try {
-      if (!resp?.credential) throw new Error('No llegó credential de Google');
-      await this.http.post('/api/auth/admin/login', { id_token: resp.credential }).toPromise();
-
-      const me: any = await this.http.get('/api/auth/admin/me').toPromise();
-      this.meEmail = me?.email || '';
-      this.needsLogin = false;
-      this.cdr.detectChanges();         // asegura que se pinte el dashboard
-      await this.cargar();
-    } catch (e: any) {
-      console.error('login/admin error', e);
-      this.error = e?.error?.message || e?.message || 'No autorizado';
+  private onGoogleCredential(resp: any) {
+    if (!resp?.credential) {
+      this.error = 'No llegó credential de Google';
+      return;
     }
+    this.http.post('/api/auth/admin/login', { id_token: resp.credential }, { withCredentials: true })
+      .pipe(
+        tap(() => {
+          this.needsLogin = false;
+          this.error = '';
+        }),
+        switchMap(() => this.http.get<any>('/api/auth/admin/me', { withCredentials: true })),
+        tap(me => {
+          this.meEmail = me?.email || '';
+          this.cdr.detectChanges();
+        }),
+        switchMap(() => this.cargar$()),
+        catchError(e => {
+          this.error = e?.error?.message || e?.message || 'No autorizado';
+          return of(null);
+        }),
+        takeUntil(this.destroy$)
+      )
+      .subscribe();
   }
 
-  async logout() {
-    try {
-      await this.http.post('/api/auth/admin/logout', {}).toPromise();
-    } finally {
-      this.meEmail = '';
-      this.items = [];
-      this.kpiUltimos7 = 0;
-      this.kpiProximos7 = 0;
-      this.needsLogin = true;
-      this.cdr.detectChanges();
-      this.renderGoogleButton();
-    }
+  logout() {
+    this.http.post('/api/auth/admin/logout', {}, { withCredentials: true })
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.meEmail = '';
+        this.items = [];
+        this.kpiUltimos7 = 0;
+        this.kpiProximos7 = 0;
+        this.needsLogin = true;
+        this.cdr.detectChanges();
+        this.renderGoogleButton();
+      });
   }
 
   // ---------- FILTROS ----------
   aplicarFiltros() {
-    // si por error "hasta" quedó antes que "desde", lo corregimos
     if (this.filtro.hasta && this.filtro.desde && this.filtro.hasta < this.filtro.desde) {
       this.filtro.hasta = this.filtro.desde;
     }
@@ -157,7 +181,6 @@ export class ReservasDashboard implements OnInit {
   }
 
   limpiar() {
-    // vuelve al rango “últimos 30 días → próximos 60 días”
     this.setDefaultRange();
     this.filtro.q = '';
     this.cargar();
@@ -170,39 +193,44 @@ export class ReservasDashboard implements OnInit {
   }
 
   // ---------- CARGA ----------
-  private async cargar() {
-    if (this.needsLogin) return; // no pegamos si no hay sesión
+  private cargar$() {
+    if (this.needsLogin) return of(null);
+
     this.cargando = true;
-    this.error = '';
-    try {
-      const params = new URLSearchParams();
-      if (this.filtro.desde) params.set('desde', this.filtro.desde);
-      if (this.filtro.hasta) params.set('hasta', this.filtro.hasta);
-      if (this.filtro.q)     params.set('q', this.filtro.q);
+    const params = new URLSearchParams();
+    if (this.filtro.desde) params.set('desde', this.filtro.desde);
+    if (this.filtro.hasta) params.set('hasta', this.filtro.hasta);
+    if (this.filtro.q)     params.set('q', this.filtro.q);
 
-      // Cookie HttpOnly maneja la auth → no enviar x-api-key
-      const resp: any = await this.http.get(`/api/admin/reservas?${params.toString()}`).toPromise();
-      this.items = (resp?.items || []).map((r: any) => ({ ...r, personas: Number(r.personas || 0) }));
+    return this.http.get<any>(`/api/admin/reservas?${params.toString()}`, { withCredentials: true })
+      .pipe(
+        tap(resp => {
+          this.items = (resp?.items || []).map((r: any) => ({ ...r, personas: Number(r.personas || 0) }));
+          // KPIs
+          const ahora = Date.now();
+          const ms7 = 7 * 864e5;
+          this.kpiUltimos7 = this.items.filter(r => {
+            const t = Date.parse(r.timestamp || `${r.fecha}T${r.hora || '00:00'}:00`);
+            return !isNaN(t) && t >= (ahora - ms7) && t <= ahora;
+          }).length;
+          this.kpiProximos7 = this.items.filter(r => {
+            const t = Date.parse(`${r.fecha}T${r.hora || '00:00'}:00`);
+            return !isNaN(t) && t > ahora && t <= (ahora + ms7);
+          }).length;
+          this.error = '';
+        }),
+        catchError(e => {
+          this.error = e?.error?.message || e?.message || 'No se pudieron cargar las reservas.';
+          this.items = [];
+          this.kpiUltimos7 = 0;
+          this.kpiProximos7 = 0;
+          return of(null);
+        }),
+        finalize(() => { this.cargando = false; })
+      );
+  }
 
-      // KPIs
-      const ahora = Date.now();
-      const ms7 = 7 * 864e5;
-      this.kpiUltimos7 = this.items.filter(r => {
-        const t = Date.parse(r.timestamp || `${r.fecha}T${r.hora || '00:00'}:00`);
-        return !isNaN(t) && t >= (ahora - ms7) && t <= ahora;
-      }).length;
-
-      this.kpiProximos7 = this.items.filter(r => {
-        const t = Date.parse(`${r.fecha}T${r.hora || '00:00'}:00`);
-        return !isNaN(t) && t > ahora && t <= (ahora + ms7);
-      }).length;
-    } catch (e: any) {
-      this.error = e?.error?.message || e?.message || 'No se pudieron cargar las reservas.';
-      this.items = [];
-      this.kpiUltimos7 = 0;
-      this.kpiProximos7 = 0;
-    } finally {
-      this.cargando = false;
-    }
+  private cargar() {
+    this.cargar$().pipe(takeUntil(this.destroy$)).subscribe();
   }
 }

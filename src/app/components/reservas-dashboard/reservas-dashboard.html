@@ -1,21 +1,18 @@
 <section class="dashboard">
   <h2>Panel del Encargado</h2>
 
-  <!-- BLOQUE LOGIN -->
   <ng-container *ngIf="needsLogin; else adminView">
     <p>Accedé con tu cuenta autorizada de Google para ver las reservas.</p>
     <div id="googleBtn" style="height:48px;"></div>
     <p class="error" *ngIf="error">⚠️ {{ error }}</p>
   </ng-container>
 
-  <!-- BLOQUE ADMIN -->
   <ng-template #adminView>
     <div class="topbar">
       <span>Sesión: <b>{{ meEmail }}</b></span>
       <button class="btn small" type="button" (click)="logout()">Cerrar sesión</button>
     </div>
 
-    <!-- Filtros -->
     <form class="filtros" (ngSubmit)="aplicarFiltros()">
       <div class="grid">
         <label>
@@ -25,7 +22,6 @@
 
         <label>
           <span>Hasta</span>
-          <!-- Evita poner una fecha anterior al "desde" -->
           <input type="date" [(ngModel)]="filtro.hasta" name="hasta" [min]="filtro.desde" />
         </label>
 
@@ -41,35 +37,18 @@
       </div>
     </form>
 
-    <!-- Métricas -->
     <div class="cards">
-      <div class="card">
-        <h3>Total (rango)</h3>
-        <p class="kpi">{{ itemsFiltrados().length }}</p>
-      </div>
-      <div class="card">
-        <h3>Últimos 7 días</h3>
-        <p class="kpi">{{ kpiUltimos7 }}</p>
-      </div>
-      <div class="card">
-        <h3>Próximos 7 días</h3>
-        <p class="kpi">{{ kpiProximos7 }}</p>
-      </div>
+      <div class="card"><h3>Total (rango)</h3><p class="kpi">{{ itemsFiltrados().length }}</p></div>
+      <div class="card"><h3>Últimos 7 días</h3><p class="kpi">{{ kpiUltimos7 }}</p></div>
+      <div class="card"><h3>Próximos 7 días</h3><p class="kpi">{{ kpiProximos7 }}</p></div>
     </div>
 
-    <!-- Tabla -->
     <div class="tabla-wrapper" *ngIf="!cargando; else loading">
       <table class="tabla">
         <thead>
           <tr>
-            <th>Fecha</th>
-            <th>Hora</th>
-            <th>Nombre</th>
-            <th>Email</th>
-            <th>Teléfono</th>
-            <th>Personas</th>
-            <th>Sitio</th>
-            <th>Notas</th>
+            <th>Fecha</th><th>Hora</th><th>Nombre</th><th>Email</th>
+            <th>Teléfono</th><th>Personas</th><th>Sitio</th><th>Notas</th>
           </tr>
         </thead>
         <tbody>
@@ -90,8 +69,6 @@
       <p *ngIf="error" class="error">⚠️ {{ error }}</p>
     </div>
 
-    <ng-template #loading>
-      <p>Cargando reservas…</p>
-    </ng-template>
+    <ng-template #loading><p>Cargando reservas…</p></ng-template>
   </ng-template>
 </section>
