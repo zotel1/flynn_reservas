@@ -4,12 +4,8 @@ import {
 import { CommonModule } from '@angular/common';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import {
-  Subject, of, fromEvent
-} from 'rxjs';
-import {
-  takeUntil, catchError, finalize, tap, switchMap
-} from 'rxjs/operators';
+import { Subject, of, fromEvent, timer } from 'rxjs';
+import { takeUntil, catchError, finalize, tap, switchMap } from 'rxjs/operators';
 
 declare global { interface Window { google: any } }
 
@@ -37,7 +33,7 @@ export class ReservasDashboard implements OnInit, OnDestroy {
   // --- Auth ---
   needsLogin = true;
   meEmail = '';
-  clientId = ''; // <meta name="google-client-id">
+  clientId = ''; // tomado de <meta name="google-client-id">
 
   // --- UI / datos ---
   cargando = false;
@@ -46,7 +42,6 @@ export class ReservasDashboard implements OnInit, OnDestroy {
   kpiUltimos7 = 0;
   kpiProximos7 = 0;
 
-  // Filtros
   filtro = { desde: '', hasta: '', q: '' };
 
   private readonly DEFAULT_PAST_DAYS = 30;
@@ -66,7 +61,7 @@ export class ReservasDashboard implements OnInit, OnDestroy {
 
     this.setDefaultRange();
 
-    // recargar cuando la pestaña vuelve a estar al frente
+    // Refrescar al volver el foco a la pestaña
     fromEvent(window, 'focus')
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => { if (!this.needsLogin) this.cargar(); });
@@ -79,7 +74,7 @@ export class ReservasDashboard implements OnInit, OnDestroy {
     this.destroy$.complete();
   }
 
-  // ---------- Helpers fecha ----------
+  // ---------- Helpers de fecha ----------
   private ymdLocal(d: Date): string {
     const z = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
     return z.toISOString().slice(0, 10);
@@ -120,7 +115,7 @@ export class ReservasDashboard implements OnInit, OnDestroy {
       if (g?.accounts?.id) {
         g.accounts.id.initialize({
           client_id: this.clientId,
-          // importantísimo: entrar a la zona de Angular
+          // Entramos a la zona de Angular para que detecte cambios
           callback: (resp: any) => this.zone.run(() => this.onGoogleCredential(resp)),
         });
         const el = document.getElementById('googleBtn');
@@ -137,12 +132,12 @@ export class ReservasDashboard implements OnInit, OnDestroy {
       this.error = 'No llegó credential de Google';
       return;
     }
+
     this.http.post('/api/auth/admin/login', { id_token: resp.credential }, { withCredentials: true })
       .pipe(
-        tap(() => {
-          this.needsLogin = false;
-          this.error = '';
-        }),
+        tap(() => { this.needsLogin = false; this.error = ''; }),
+        // --- Espera breve para que el navegador materialice la cookie ---
+        switchMap(() => timer(200)),
         switchMap(() => this.http.get<any>('/api/auth/admin/me', { withCredentials: true })),
         tap(me => {
           this.meEmail = me?.email || '';
@@ -206,7 +201,6 @@ export class ReservasDashboard implements OnInit, OnDestroy {
       .pipe(
         tap(resp => {
           this.items = (resp?.items || []).map((r: any) => ({ ...r, personas: Number(r.personas || 0) }));
-          // KPIs
           const ahora = Date.now();
           const ms7 = 7 * 864e5;
           this.kpiUltimos7 = this.items.filter(r => {
