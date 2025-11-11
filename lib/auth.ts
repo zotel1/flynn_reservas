@@ -1,4 +1,4 @@
-// api/lib/auth.ts
+//lib/auth.ts
 import type { VercelRequest, VercelResponse } from '@vercel/node';
 import crypto from 'crypto';
 

@@ -1,3 +1,4 @@
+// src/app/components/reservas-dashboard/reservas-dashboard.ts
 import {
   Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone
 } from '@angular/core';
@@ -10,16 +11,9 @@ import { takeUntil, catchError, finalize, tap, switchMap } from 'rxjs/operators'
 declare global { interface Window { google: any } }
 
 type ReservaItem = {
-  timestamp?: string;
-  nombre?: string;
-  email?: string;
-  telefono?: string;
-  fecha?: string;
-  hora?: string;
-  personas?: number;
-  comentario?: string;
-  notas?: string;
-  sitio?: string;
+  timestamp?: string; nombre?: string; email?: string; telefono?: string;
+  fecha?: string; hora?: string; personas?: number; comentario?: string;
+  notas?: string; sitio?: string;
 };
 
 @Component({
@@ -30,12 +24,10 @@ type ReservaItem = {
   styleUrls: ['./reservas-dashboard.css']
 })
 export class ReservasDashboard implements OnInit, OnDestroy {
-  // --- Auth ---
   needsLogin = true;
   meEmail = '';
-  clientId = ''; // tomado de <meta name="google-client-id">
+  clientId = '';
 
-  // --- UI / datos ---
   cargando = false;
   error = '';
   items: ReservaItem[] = [];
@@ -48,6 +40,8 @@ export class ReservasDashboard implements OnInit, OnDestroy {
   private readonly DEFAULT_FUTURE_DAYS = 60;
 
   private destroy$ = new Subject<void>();
+  private loggedIn = false;           // ← evita que checkSession() pise el estado
+  private sessionCheckKilled = false; // ← para “cancelar” el primer check si ya logueamos
 
   constructor(
     private http: HttpClient,
@@ -61,7 +55,6 @@ export class ReservasDashboard implements OnInit, OnDestroy {
 
     this.setDefaultRange();
 
-    // Refrescar al volver el foco a la pestaña
     fromEvent(window, 'focus')
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => { if (!this.needsLogin) this.cargar(); });
@@ -70,18 +63,14 @@ export class ReservasDashboard implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this.destroy$.next(); this.destroy$.complete();
   }
 
-  // ---------- Helpers de fecha ----------
   private ymdLocal(d: Date): string {
     const z = new Date(d.getTime() - d.getTimezoneOffset() * 60000);
     return z.toISOString().slice(0, 10);
   }
-  private addDays(base: Date, days: number) {
-    return new Date(base.getTime() + days * 864e5);
-  }
+  private addDays(base: Date, days: number) { return new Date(base.getTime() + days * 864e5); }
   private setDefaultRange() {
     const hoy = new Date();
     this.filtro.desde = this.ymdLocal(this.addDays(hoy, -this.DEFAULT_PAST_DAYS));
@@ -93,15 +82,18 @@ export class ReservasDashboard implements OnInit, OnDestroy {
     this.http.get<any>('/api/auth/admin/me', { withCredentials: true })
       .pipe(
         tap(me => {
+          if (this.sessionCheckKilled) return;        // ya logueamos → no tocar estado
           this.meEmail = me?.email || '';
           this.needsLogin = false;
           this.cdr.detectChanges();
         }),
         switchMap(() => this.cargar$()),
         catchError(() => {
-          this.needsLogin = true;
-          this.cdr.detectChanges();
-          this.renderGoogleButton();
+          if (!this.loggedIn) {                       // solo si REALMENTE no logueamos
+            this.needsLogin = true;
+            this.cdr.detectChanges();
+            this.renderGoogleButton();
+          }
           return of(null);
         }),
         takeUntil(this.destroy$)
@@ -115,7 +107,6 @@ export class ReservasDashboard implements OnInit, OnDestroy {
       if (g?.accounts?.id) {
         g.accounts.id.initialize({
           client_id: this.clientId,
-          // Entramos a la zona de Angular para que detecte cambios
           callback: (resp: any) => this.zone.run(() => this.onGoogleCredential(resp)),
         });
         const el = document.getElementById('googleBtn');
@@ -128,26 +119,22 @@ export class ReservasDashboard implements OnInit, OnDestroy {
   }
 
   private onGoogleCredential(resp: any) {
-    if (!resp?.credential) {
-      this.error = 'No llegó credential de Google';
-      return;
-    }
+    if (!resp?.credential) { this.error = 'No llegó credential de Google'; return; }
+
+    this.loggedIn = true;            // ← marcamos antes para bloquear el catch del check inicial
 
     this.http.post('/api/auth/admin/login', { id_token: resp.credential }, { withCredentials: true })
       .pipe(
         tap(() => { this.needsLogin = false; this.error = ''; }),
-        // --- Espera breve para que el navegador materialice la cookie ---
-        switchMap(() => timer(200)),
+        switchMap(() => timer(200)), // ← tiempo para que el navegador persista la cookie
         switchMap(() => this.http.get<any>('/api/auth/admin/me', { withCredentials: true })),
         tap(me => {
           this.meEmail = me?.email || '';
+          this.sessionCheckKilled = true; // ← no permitir que el primer check pise el estado
           this.cdr.detectChanges();
         }),
         switchMap(() => this.cargar$()),
-        catchError(e => {
-          this.error = e?.error?.message || e?.message || 'No autorizado';
-          return of(null);
-        }),
+        catchError(e => { this.error = e?.error?.message || e?.message || 'No autorizado'; return of(null); }),
         takeUntil(this.destroy$)
       )
       .subscribe();
@@ -157,6 +144,8 @@ export class ReservasDashboard implements OnInit, OnDestroy {
     this.http.post('/api/auth/admin/logout', {}, { withCredentials: true })
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
+        this.loggedIn = false;
+        this.sessionCheckKilled = false;
         this.meEmail = '';
         this.items = [];
         this.kpiUltimos7 = 0;
@@ -174,12 +163,7 @@ export class ReservasDashboard implements OnInit, OnDestroy {
     }
     this.cargar();
   }
-
-  limpiar() {
-    this.setDefaultRange();
-    this.filtro.q = '';
-    this.cargar();
-  }
+  limpiar() { this.setDefaultRange(); this.filtro.q = ''; this.cargar(); }
 
   itemsFiltrados(): ReservaItem[] {
     const q = this.filtro.q.trim().toLowerCase();
@@ -190,8 +174,8 @@ export class ReservasDashboard implements OnInit, OnDestroy {
   // ---------- CARGA ----------
   private cargar$() {
     if (this.needsLogin) return of(null);
-
     this.cargando = true;
+
     const params = new URLSearchParams();
     if (this.filtro.desde) params.set('desde', this.filtro.desde);
     if (this.filtro.hasta) params.set('hasta', this.filtro.hasta);
@@ -201,8 +185,7 @@ export class ReservasDashboard implements OnInit, OnDestroy {
       .pipe(
         tap(resp => {
           this.items = (resp?.items || []).map((r: any) => ({ ...r, personas: Number(r.personas || 0) }));
-          const ahora = Date.now();
-          const ms7 = 7 * 864e5;
+          const ahora = Date.now(), ms7 = 7 * 864e5;
           this.kpiUltimos7 = this.items.filter(r => {
             const t = Date.parse(r.timestamp || `${r.fecha}T${r.hora || '00:00'}:00`);
             return !isNaN(t) && t >= (ahora - ms7) && t <= ahora;
@@ -215,16 +198,12 @@ export class ReservasDashboard implements OnInit, OnDestroy {
         }),
         catchError(e => {
           this.error = e?.error?.message || e?.message || 'No se pudieron cargar las reservas.';
-          this.items = [];
-          this.kpiUltimos7 = 0;
-          this.kpiProximos7 = 0;
+          this.items = []; this.kpiUltimos7 = 0; this.kpiProximos7 = 0;
           return of(null);
         }),
         finalize(() => { this.cargando = false; })
       );
   }
 
-  private cargar() {
-    this.cargar$().pipe(takeUntil(this.destroy$)).subscribe();
-  }
+  private cargar() { this.cargar$().pipe(takeUntil(this.destroy$)).subscribe(); }
 }
