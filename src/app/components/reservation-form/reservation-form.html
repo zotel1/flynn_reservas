@@ -3,79 +3,99 @@
     <h2>Reservá tu Mesa</h2>
     <p>Completá tus datos y asegurá tu lugar en Flynn Irish Bar</p>
 
-    <form [formGroup]="form" (ngSubmit)="onSubmit()">
-      <!-- Selección de sitio -->
-      <div class="sitios">
-        <h3>Seleccioná tu sitio preferido</h3>
-        <div class="sitios-grid">
-          <button
-            type="button"
-            *ngFor="let s of sitios"
-            (click)="seleccionarSitio(s.nombre)"
-            [class.activo]="sitioSeleccionado === s.nombre">
-            <span class="icon">{{ s.icono }}</span>
-            <span>{{ s.nombre }}</span>
-          </button>
-        </div>
-        <small class="err" *ngIf="f.sitio.touched && f.sitio.invalid">Elegí un sector</small>
-      </div>
+    <!-- GATE DE PAGO: si todavía no hay pago exitoso -->
+    <div *ngIf="formBloqueado; else formBlock" class="pay-card">
+      <h3>Seña para reservar</h3>
+      <p>Para continuar, aboná una seña de <b>${{ amount || 10 }}</b>.</p>
+      <p class="muted">{{ desc }}</p>
 
-      <!-- Datos personales -->
-      <div class="grid">
-        <label>
-          <span>Nombre completo</span>
-          <input formControlName="nombre" type="text" placeholder="San Patricio 🍀" />
-          <small class="err" *ngIf="f.nombre.touched && f.nombre.invalid">
-            Ingresá tu nombre (mín. 2 caracteres).
-          </small>
-        </label>
-
-        <label>
-          <span>Teléfono</span>
-          <input formControlName="telefono" type="tel" placeholder="+54 11 1234-5678" />
-        </label>
-
-        <label>
-          <span>Email</span>
-          <input formControlName="email" type="email" placeholder="tu@email.com" />
-          <small class="err" *ngIf="f.email.touched && f.email.invalid">Ingresá un email válido.</small>
-        </label>
-
-        <label>
-          <span>Fecha</span>
-          <input formControlName="fecha" type="date" />
-          <small class="err" *ngIf="f.fecha.touched && f.fecha.invalid">Elegí una fecha.</small>
-        </label>
-
-        <label>
-          <span>Horario</span>
-          <input formControlName="hora" type="time" />
-          <small class="err" *ngIf="f.hora.touched && f.hora.invalid">Elegí un horario.</small>
-        </label>
-
-        <label>
-          <span>Personas</span>
-          <input formControlName="personas" type="number" min="1" />
-          <small class="err" *ngIf="f.personas.touched && f.personas.invalid">Indicá la cantidad.</small>
-        </label>
-      </div>
-
-      <!-- Notas -->
-      <div class="notas">
-        <label>
-          <span>Notas</span>
-          <textarea formControlName="notas" rows="3" placeholder="Algo más a tener en cuenta..."></textarea>
-        </label>
-      </div>
-
-      <!-- Botón -->
-      <button class="btn" type="submit" [disabled]="cargando || form.invalid">
-        {{ cargando ? 'Enviando...' : 'Confirmar Reserva' }}
+      <button class="btn" type="button" (click)="iniciarPago()" [disabled]="paying">
+        {{ paying ? 'Redirigiendo…' : 'Pagar seña con Mercado Pago' }}
       </button>
 
-      <!-- Mensajes -->
-      <p class="ok" *ngIf="enviado">✅ ¡Reserva enviada con éxito! Te enviamos un email de confirmación.</p>
+      <p class="info" *ngIf="paid==='0'">El pago fue cancelado. Podés intentarlo de nuevo.</p>
+      <p class="info" *ngIf="paid==='pending'">El pago quedó pendiente. Te avisaremos cuando se acredite.</p>
       <p class="error" *ngIf="error">⚠️ {{ error }}</p>
-    </form>
+    </div>
+
+    <!-- FORMULARIO: solo se muestra cuando paid=1 -->
+    <ng-template #formBlock>
+      <div class="ok">✅ Pago recibido. Completá el formulario para agendar tu reserva.</div>
+
+      <form [formGroup]="form" (ngSubmit)="onSubmit()">
+        <!-- Selección de sitio -->
+        <div class="sitios">
+          <h3>Seleccioná tu sitio preferido</h3>
+          <div class="sitios-grid">
+            <button
+              type="button"
+              *ngFor="let s of sitios"
+              (click)="seleccionarSitio(s.nombre)"
+              [class.activo]="sitioSeleccionado === s.nombre">
+              <span class="icon">{{ s.icono }}</span>
+              <span>{{ s.nombre }}</span>
+            </button>
+          </div>
+          <small class="err" *ngIf="f.sitio.touched && f.sitio.invalid">Elegí un sector</small>
+        </div>
+
+        <!-- Datos personales -->
+        <div class="grid">
+          <label>
+            <span>Nombre completo</span>
+            <input formControlName="nombre" type="text" placeholder="San Patricio 🍀" />
+            <small class="err" *ngIf="f.nombre.touched && f.nombre.invalid">
+              Ingresá tu nombre (mín. 2 caracteres).
+            </small>
+          </label>
+
+          <label>
+            <span>Teléfono</span>
+            <input formControlName="telefono" type="tel" placeholder="+54 11 1234-5678" />
+          </label>
+
+          <label>
+            <span>Email</span>
+            <input formControlName="email" type="email" placeholder="tu@email.com" />
+            <small class="err" *ngIf="f.email.touched && f.email.invalid">Ingresá un email válido.</small>
+          </label>
+
+          <label>
+            <span>Fecha</span>
+            <input formControlName="fecha" type="date" />
+            <small class="err" *ngIf="f.fecha.touched && f.fecha.invalid">Elegí una fecha.</small>
+          </label>
+
+          <label>
+            <span>Horario</span>
+            <input formControlName="hora" type="time" />
+            <small class="err" *ngIf="f.hora.touched && f.hora.invalid">Elegí un horario.</small>
+          </label>
+
+          <label>
+            <span>Personas</span>
+            <input formControlName="personas" type="number" min="1" />
+            <small class="err" *ngIf="f.personas.touched && f.personas.invalid">Indicá la cantidad.</small>
+          </label>
+        </div>
+
+        <!-- Notas -->
+        <div class="notas">
+          <label>
+            <span>Notas</span>
+            <textarea formControlName="notas" rows="3" placeholder="Algo más a tener en cuenta..."></textarea>
+          </label>
+        </div>
+
+        <!-- Botón -->
+        <button class="btn" type="submit" [disabled]="cargando || form.invalid">
+          {{ cargando ? 'Enviando...' : 'Confirmar Reserva' }}
+        </button>
+
+        <!-- Mensajes -->
+        <p class="ok" *ngIf="enviado">✅ ¡Reserva enviada con éxito! Te enviamos un email de confirmación.</p>
+        <p class="error" *ngIf="error">⚠️ {{ error }}</p>
+      </form>
+    </ng-template>
   </div>
 </section>
