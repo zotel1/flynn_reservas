@@ -52,11 +52,7 @@ const createSchema = z.object({
 
 export async function handlePayCreate(req: VercelRequest, res: VercelResponse) {
   try {
-    if (req.method !== 'POST') {
-      res.setHeader('Allow', 'POST');
-      return res.status(405).json({ ok: false, message: 'Method Not Allowed' });
-    }
-
+    // ✨ Dejamos de validar el método acá para evitar 405
     const raw = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
     const parsed = createSchema.safeParse(raw);
     if (!parsed.success) {
