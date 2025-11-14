@@ -96,21 +96,32 @@ export class ReservationForm implements OnInit {
 
   // === Paso 1: iniciar pago (redirige a la app/web de MP) ===
   async iniciarPago() {
-    this.error = '';
-    this.paying = true;
-    try {
-      const res: any = await firstValueFrom(
-        this.http.post('/api/pay/create-preference', { external_reference: this.extRef })
-      );
-      const url = res.init_point || res.sandbox_init_point || res.url;
-      if (!url) throw new Error('No se pudo obtener el link de pago.');
-      window.location.href = url;
-    } catch (e: any) {
-      this.error = e?.error?.message || e?.message || 'No se pudo iniciar el pago';
-    } finally {
-      this.paying = false;
-    }
+  this.error = '';
+  this.paying = true;
+
+  try {
+    const body = {
+      // enviamos la referencia que generaste en el front
+      xref: this.extRef,
+      // opcional: le pasamos el mail para precargar payer.email en MP
+      email: this.form.get('email')?.value || undefined,
+      // opcional: si querés forzar el monto desde el front
+      amount: this.amount || undefined
+    };
+
+    const res: any = await firstValueFrom(
+      this.http.post('/api/pay/create', body)   // 👈 cambiamos la URL
+    );
+
+    const url = res.init_point || res.sandbox_init_point || res.url;
+    if (!url) throw new Error('No se pudo obtener el link de pago.');
+    window.location.href = url;
+  } catch (e: any) {
+    this.error = e?.error?.message || e?.message || 'No se pudo iniciar el pago';
+  } finally {
+    this.paying = false;
   }
+}
 
   // === Paso 2: enviar la reserva (solo si paid=1) ===
   async onSubmit() {
