@@ -1,8 +1,9 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
+  "framework": "angular",
   "buildCommand": "npm ci && npm run build",
-  "outputDirectory": "dist/flynn-reservas/browser",
+  "outputDirectory": "dist/flynn_reservas",
   "rewrites": [
     {
       "source": "/api/(.*)",
