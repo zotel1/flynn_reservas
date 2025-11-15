@@ -15,7 +15,7 @@ export async function handlePayConfirm(req: VercelRequest, res: VercelResponse) 
   try {
     if (req.method !== 'GET') {
       res.setHeader('Allow', 'GET');
-      return res.status(405).json({ ok: false, message: 'Method Not Allowed' });
+      return res.status(405).json({ ok: false, message: 'Method Not Allowed esto es del metodo handlePayConfirm del get' });
     }
 
     const parsed = confirmSchema.safeParse({ payment_id: req.query.payment_id });
