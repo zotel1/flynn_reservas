@@ -8,12 +8,18 @@ import { FormsModule } from '@angular/forms';
 import { Subject, of, fromEvent, timer } from 'rxjs';
 import { takeUntil, catchError, finalize, tap, switchMap } from 'rxjs/operators';
 
-declare global { interface Window { google: any } }
+declare global {
+  interface Window {
+    google: any;
+    BarcodeDetector?: any;
+  }
+}
 
 type ReservaItem = {
   timestamp?: string; nombre?: string; email?: string; telefono?: string;
   fecha?: string; hora?: string; personas?: number; comentario?: string;
   notas?: string; sitio?: string;
+  qr_url?: string; // 👈 nuevo campo
 };
 
 @Component({
@@ -43,6 +49,11 @@ export class ReservasDashboard implements OnInit, OnDestroy {
   private loggedIn = false;           // ← evita que checkSession() pise el estado
   private sessionCheckKilled = false; // ← para “cancelar” el primer check si ya logueamos
 
+  // ----- Estado para escaneo de QR -----
+  scanActive = false;
+  scanMessage = '';
+  scanMatch: ReservaItem | null = null;
+
   constructor(
     private http: HttpClient,
     private cdr: ChangeDetectorRef,
@@ -64,6 +75,7 @@ export class ReservasDashboard implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.destroy$.next(); this.destroy$.complete();
+    this.stopScan();
   }
 
   private ymdLocal(d: Date): string {
@@ -153,6 +165,7 @@ export class ReservasDashboard implements OnInit, OnDestroy {
         this.needsLogin = true;
         this.cdr.detectChanges();
         this.renderGoogleButton();
+        this.stopScan();
       });
   }
 
@@ -168,7 +181,9 @@ export class ReservasDashboard implements OnInit, OnDestroy {
   itemsFiltrados(): ReservaItem[] {
     const q = this.filtro.q.trim().toLowerCase();
     if (!q) return this.items;
-    return this.items.filter(r => `${r.nombre} ${r.email} ${r.telefono}`.toLowerCase().includes(q));
+    return this.items.filter(r =>
+      `${r.nombre} ${r.email} ${r.telefono}`.toLowerCase().includes(q)
+    );
   }
 
   // ---------- CARGA ----------
@@ -184,7 +199,10 @@ export class ReservasDashboard implements OnInit, OnDestroy {
     return this.http.get<any>(`/api/admin/reservas?${params.toString()}`, { withCredentials: true })
       .pipe(
         tap(resp => {
-          this.items = (resp?.items || []).map((r: any) => ({ ...r, personas: Number(r.personas || 0) }));
+          this.items = (resp?.items || []).map((r: any) => ({
+            ...r,
+            personas: Number(r.personas || 0)
+          }));
           const ahora = Date.now(), ms7 = 7 * 864e5;
           this.kpiUltimos7 = this.items.filter(r => {
             const t = Date.parse(r.timestamp || `${r.fecha}T${r.hora || '00:00'}:00`);
@@ -206,4 +224,114 @@ export class ReservasDashboard implements OnInit, OnDestroy {
   }
 
   private cargar() { this.cargar$().pipe(takeUntil(this.destroy$)).subscribe(); }
+
+  // ---------- ESCÁNER DE QR ----------
+  // ---------- ESCÁNER DE QR ----------
+async startScan() {
+  this.scanMessage = '';
+  this.scanMatch = null;
+
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    this.scanMessage = 'Este dispositivo no permite acceder a la cámara.';
+    return;
+  }
+
+  const BarcodeDetectorCtor = (window as any).BarcodeDetector;
+  if (!BarcodeDetectorCtor) {
+    this.scanMessage =
+      'El navegador no soporta lectura de QR (BarcodeDetector). Probá con Chrome/Android actualizado.';
+    return;
+  }
+
+  const video = document.getElementById('qrVideo') as HTMLVideoElement | null;
+  if (!video) return;
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment' }
+    });
+    video.srcObject = stream;
+    await video.play();
+    this.scanActive = true;
+
+    const detector = new BarcodeDetectorCtor({ formats: ['qr_code'] });
+
+    const scanFrame = async () => {
+      if (!this.scanActive) {
+        stream.getTracks().forEach(t => t.stop());
+        return;
+      }
+
+      // 👇 cambio importante acá
+      if (video.readyState === video.HAVE_ENOUGH_DATA) {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
+
+        if (ctx) {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          try {
+            const codes = await detector.detect(canvas);
+            if (codes.length) {
+              const raw = (codes[0] as any).rawValue || '';
+              this.zone.run(() => this.onQrDecoded(raw));
+              this.scanActive = false;
+              stream.getTracks().forEach(t => t.stop());
+              return;
+            }
+          } catch {
+            // ignoramos errores de lectura de frame
+          }
+        }
+      }
+
+      requestAnimationFrame(scanFrame);
+    };
+
+    requestAnimationFrame(scanFrame);
+  } catch (e: any) {
+    this.scanMessage = e?.message || 'No se pudo iniciar la cámara.';
+  }
+}
+
+
+  stopScan() {
+    this.scanActive = false;
+    const video = document.getElementById('qrVideo') as HTMLVideoElement | null;
+    const stream = (video?.srcObject as MediaStream | null);
+    if (stream) stream.getTracks().forEach(t => t.stop());
+    if (video) video.srcObject = null;
+  }
+
+  private onQrDecoded(raw: string) {
+    try {
+      const payload = JSON.parse(raw);
+
+      if (payload?.type !== 'flynn-reserva') {
+        this.scanMessage = 'Este QR no corresponde a una reserva de Flynn.';
+        this.scanMatch = null;
+        return;
+      }
+
+      const match = this.items.find(r =>
+        (r.email || '').toLowerCase() === String(payload.email || '').toLowerCase() &&
+        (r.fecha || '')               === String(payload.fecha || '') &&
+        (r.hora || '')                === String(payload.hora || '') &&
+        (r.sitio || '')               === String(payload.sitio || '') &&
+        Number(r.personas || 0)       === Number(payload.personas || 0)
+      );
+
+      if (match) {
+        this.scanMatch = match;
+        this.scanMessage = '✅ Reserva válida';
+      } else {
+        this.scanMatch = null;
+        this.scanMessage = '⚠️ QR leído, pero la reserva no se encontró en el listado actual.';
+      }
+    } catch {
+      this.scanMessage = 'No se pudo interpretar el QR (formato inválido).';
+      this.scanMatch = null;
+    }
+  }
 }

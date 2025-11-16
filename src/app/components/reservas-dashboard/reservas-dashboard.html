@@ -37,6 +37,38 @@
       </div>
     </form>
 
+    <!-- ==== BLOQUE ESCÁNER QR ==== -->
+    <div class="scan-bar">
+      <button class="btn" type="button" (click)="startScan()" [disabled]="cargando || scanActive">
+        Escanear QR
+      </button>
+      <button class="btn sec small" type="button" *ngIf="scanActive" (click)="stopScan()">
+        Detener
+      </button>
+    </div>
+
+    <div class="qr-scan" *ngIf="scanActive">
+      <video id="qrVideo"
+             autoplay
+             playsinline
+             muted
+             style="max-width:320px;width:100%;border-radius:8px;border:1px solid #ccc;">
+      </video>
+      <p>Apuntá la cámara al QR que muestra el cliente en su correo.</p>
+    </div>
+
+    <div class="scan-result" *ngIf="scanMessage">
+      <p [class.ok]="scanMatch" [class.error]="!scanMatch">{{ scanMessage }}</p>
+
+      <div *ngIf="scanMatch" class="card">
+        <h3>Reserva encontrada</h3>
+        <p><b>{{ scanMatch?.nombre }}</b> · {{ scanMatch?.personas }} persona(s)</p>
+        <p>{{ scanMatch?.fecha }} {{ scanMatch?.hora }} · {{ scanMatch?.sitio || '-' }}</p>
+        <p>{{ scanMatch?.email }} · {{ scanMatch?.telefono }}</p>
+      </div>
+    </div>
+    <!-- ==== FIN BLOQUE ESCÁNER QR ==== -->
+
     <div class="cards">
       <div class="card"><h3>Total (rango)</h3><p class="kpi">{{ itemsFiltrados().length }}</p></div>
       <div class="card"><h3>Últimos 7 días</h3><p class="kpi">{{ kpiUltimos7 }}</p></div>
@@ -65,10 +97,14 @@
         </tbody>
       </table>
 
-      <p *ngIf="itemsFiltrados().length === 0" class="vacio">No hay reservas para los filtros aplicados.</p>
+      <p *ngIf="itemsFiltrados().length === 0" class="vacio">
+        No hay reservas para los filtros aplicados.
+      </p>
       <p *ngIf="error" class="error">⚠️ {{ error }}</p>
     </div>
 
-    <ng-template #loading><p>Cargando reservas…</p></ng-template>
+    <ng-template #loading>
+      <p>Cargando reservas…</p>
+    </ng-template>
   </ng-template>
 </section>
