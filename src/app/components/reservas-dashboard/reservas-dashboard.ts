@@ -7,6 +7,7 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Subject, of, fromEvent, timer } from 'rxjs';
 import { takeUntil, catchError, finalize, tap, switchMap } from 'rxjs/operators';
+import jsQR from 'jsqr';
 
 declare global {
   interface Window {
@@ -250,71 +251,92 @@ export class ReservasDashboard implements OnInit, OnDestroy {
 
   // ---------- ESCÁNER DE QR ----------
   async startScan(target?: ReservaItem) {
-    this.scanMessage = '';
-    this.scanMatch = null;
-    this.scanTarget = target || null;
+  this.scanMessage = '';
+  this.scanMatch = null;
+  this.scanTarget = target || null;
 
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      this.scanMessage = 'Este dispositivo no permite acceder a la cámara.';
-      return;
-    }
+  if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+    this.scanMessage = 'Este dispositivo no permite acceder a la cámara.';
+    return;
+  }
 
-    const BarcodeDetectorCtor = (window as any).BarcodeDetector;
-    if (!BarcodeDetectorCtor) {
-      this.scanMessage = 'El navegador no soporta lectura de QR (BarcodeDetector). Probá con Chrome/Android actualizado.';
-      return;
-    }
+  const hasNativeDetector =
+    typeof (window as any).BarcodeDetector === 'function';
 
-    const video = document.getElementById('qrVideo') as HTMLVideoElement | null;
-    if (!video) return;
+  const video = document.getElementById('qrVideo') as HTMLVideoElement | null;
+  if (!video) return;
 
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'environment' }
-      });
-      video.srcObject = stream;
-      await video.play();
-      this.scanActive = true;
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: { facingMode: 'environment' }
+    });
+    video.srcObject = stream;
+    await video.play();
+    this.scanActive = true;
 
-      const detector = new BarcodeDetectorCtor({ formats: ['qr_code'] });
+    const nativeDetector = hasNativeDetector
+      ? new (window as any).BarcodeDetector({ formats: ['qr_code'] })
+      : null;
 
-      const scanFrame = async () => {
-        if (!this.scanActive) {
-          stream.getTracks().forEach(t => t.stop());
-          return;
-        }
+    const scanFrame = async () => {
+      if (!this.scanActive) {
+        stream.getTracks().forEach(t => t.stop());
+        return;
+      }
 
-        if (video.readyState === HTMLMediaElement.HAVE_ENOUGH_DATA) {
-          const canvas = document.createElement('canvas');
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
-          const ctx = canvas.getContext('2d');
+      if (video.readyState === HTMLMediaElement.HAVE_ENOUGH_DATA) {
+        const canvas = document.createElement('canvas');
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        const ctx = canvas.getContext('2d');
 
-          if (ctx) {
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-            try {
-              const codes = await detector.detect(canvas);
+        if (ctx) {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+          try {
+            let raw = '';
+
+            if (nativeDetector) {
+              // ✅ Camino 1: usar BarcodeDetector si existe
+              const codes = await nativeDetector.detect(canvas);
               if (codes.length) {
-                const raw = (codes[0] as any).rawValue || '';
-                this.zone.run(() => this.onQrDecoded(raw));
-                this.scanActive = false;
-                stream.getTracks().forEach(t => t.stop());
-                return;
+                raw = (codes[0] as any).rawValue || '';
               }
-            } catch {
-              // ignoramos errores de lectura de frame
+            } else {
+              // ✅ Camino 2 (fallback): jsQR en cualquier navegador
+              const imageData = ctx.getImageData(
+                0, 0, canvas.width, canvas.height
+              );
+              const result = (jsQR as any)(
+                imageData.data,
+                imageData.width,
+                imageData.height
+              );
+              if (result && result.data) {
+                raw = result.data;
+              }
             }
+
+            if (raw) {
+              this.zone.run(() => this.onQrDecoded(raw));
+              this.scanActive = false;
+              stream.getTracks().forEach(t => t.stop());
+              return;
+            }
+          } catch {
+            // ignoramos errores de lectura en un frame
           }
         }
-
-        requestAnimationFrame(scanFrame);
-      };
+      }
 
       requestAnimationFrame(scanFrame);
-    } catch (e: any) {
-      this.scanMessage = e?.message || 'No se pudo iniciar la cámara.';
-    }
+    };
+
+    requestAnimationFrame(scanFrame);
+  } catch (e: any) {
+    this.scanMessage = e?.message || 'No se pudo iniciar la cámara.';
   }
+}
 
   stopScan() {
     this.scanActive = false;

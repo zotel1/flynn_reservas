@@ -37,6 +37,7 @@
     "dotenv": "^17.2.3",
     "google-auth-library": "^10.5.0",
     "googleapis": "^165.0.0",
+    "jsqr": "^1.4.0",
     "node-fetch": "^3.3.2",
     "openai": "^6.7.0",
     "qdrant-client": "^0.0.1",
