@@ -1,11 +1,20 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "version": 2,
-  "framework": "angular",
   "buildCommand": "npm ci && npm run build",
   "outputDirectory": "dist/flynn_reservas/browser",
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/api/$1" },
-    { "source": "/(.*)", "destination": "/index.html" }
+    {
+      "source": "/api/admin/:action",
+      "destination": "/api/admin/[action]"
+    },
+    {
+      "source": "/api/pay/:action",
+      "destination": "/api/pay/[action]"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
   ]
 }

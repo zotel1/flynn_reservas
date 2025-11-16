@@ -52,14 +52,22 @@ const createSchema = z.object({
 
 export async function handlePayCreate(req: VercelRequest, res: VercelResponse) {
   try {
-    // ✨ Dejamos de validar el método acá para evitar 405
+    if (req.method !== 'POST') {
+      res.setHeader('Allow', 'POST');
+      return res
+        .status(405)
+        .json({ ok: false, message: 'Method Not Allowed (create debe ser POST)' });
+    }
+
     const raw = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
     const parsed = createSchema.safeParse(raw);
     if (!parsed.success) {
       return res.status(400).json({ ok: false, error: parsed.error.flatten() });
     }
 
-    const amount = parsed.data.amount ?? Number(process.env.RESERVA_DEPOSITO_AMOUNT || 10);
+    const amount =
+      parsed.data.amount ?? Number(process.env.RESERVA_DEPOSITO_AMOUNT || 10);
+
     const { init_point, id, xref } = await createPreference({
       amount,
       xref: parsed.data.xref,
@@ -67,13 +75,16 @@ export async function handlePayCreate(req: VercelRequest, res: VercelResponse) {
     });
 
     res.setHeader('Cache-Control', 'no-store');
-    return res.status(200).json({ ok: true, init_point, preference_id: id, xref, amount });
+    return res
+      .status(200)
+      .json({ ok: true, init_point, preference_id: id, xref, amount });
   } catch (e: any) {
     return res
       .status(500)
       .json({ ok: false, message: e?.message || 'create failed' });
   }
 }
+
 
 //
 // === /api/pay/webhook =====================================
