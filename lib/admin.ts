@@ -91,6 +91,7 @@ function a1RangeForTab(tabName: string, tailRange = 'A:N') {
   return `${safeTab}!${tailRange}`;
 }
 
+
 type ReservaItem = {
   timestamp?: string;
   nombre?: string;
@@ -105,27 +106,30 @@ type ReservaItem = {
   ip?: string;
   ua?: string;
   sitio?: string;
-  qr_url?: string; // 👈 nueva propiedad
+  qr_url?: string;   // 👈 NUEVO
 };
+
+
 
 function mapRow(row: any[] = []): ReservaItem {
   return {
     timestamp: row[0] || '',
-    nombre: row[1] || '',
-    email: row[2] || '',
-    telefono: row[3] || '',
-    fecha: row[4] || '',
-    hora: row[5] || '',
-    personas: row[6] ? Number(row[6]) : 0,
+    nombre:    row[1] || '',
+    email:     row[2] || '',
+    telefono:  row[3] || '',
+    fecha:     row[4] || '',
+    hora:      row[5] || '',
+    personas:  row[6] ? Number(row[6]) : 0,
     comentario: row[7] || '',
-    eventId: row[8] || '',
-    status: row[9] || '',
-    ip: row[10] || '',
-    ua: row[11] || '',
-    sitio: row[12] || '',
-    qr_url: row[13] || '', // 👈 columna qr_url
+    eventId:   row[8] || '',
+    status:    row[9] || '',
+    ip:        row[10] || '',
+    ua:        row[11] || '',
+    sitio:     row[12] || '',
+    qr_url:    row[13] || '',   // 👈 NUEVO índice para qr_url
   };
 }
+
 
 export async function handleAdminReservas(req: VercelRequest, res: VercelResponse) {
   // 🔒 Solo encargado
