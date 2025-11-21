@@ -5,10 +5,12 @@ import { ReservationForm } from '../../components/reservation-form/reservation-f
 import { Footer } from '../../components/footer/footer';
 
 
+
 @Component({
   selector: 'app-reservas',
   standalone: true,
   imports: [
+    
     Hero,
     Features,
     ReservationForm,
