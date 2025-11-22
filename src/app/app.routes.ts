@@ -5,7 +5,7 @@ import { ReservasDashboard } from './components/reservas-dashboard/reservas-dash
 
 export const routes: Routes = [
   { path: '', component: Chatbot },
-  { path: '/reservas', component: Reservas },
+  { path: 'reservas', component: Reservas },
   {  path: 'admin/reservas', component: ReservasDashboard  },
   { path: '**', redirectTo: '' }
 ];
