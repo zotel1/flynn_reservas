@@ -1,6 +1,6 @@
 .footer{
   background:var(--flynn-green-dark);
-  color:var(--flynn-muted);
+  color: white;
   text-align:center;
   padding:1.5rem;
   border-top:1px solid rgba(255,255,255,.1);
