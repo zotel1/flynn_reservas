@@ -106,7 +106,10 @@ type ReservaItem = {
   ip?: string;
   ua?: string;
   sitio?: string;
-  qr_url?: string;   // 👈 NUEVO
+  qr_url?: string;
+  checked_in_at?: string;
+  checked_in_by?: string;
+
 };
 
 
@@ -126,7 +129,10 @@ function mapRow(row: any[] = []): ReservaItem {
     ip:        row[10] || '',
     ua:        row[11] || '',
     sitio:     row[12] || '',
-    qr_url:    row[13] || '',   // 👈 NUEVO índice para qr_url
+    qr_url:    row[13] || '',
+    checked_in_at: row[14] || '',
+    checked_in_by: row[15] || '',
+
   };
 }
 
@@ -143,7 +149,7 @@ export async function handleAdminReservas(req: VercelRequest, res: VercelRespons
   try {
     const sid = process.env.SHEET_ID!;
     const tab = (process.env.SHEET_TAB_NAME || 'Reservas').trim();
-    const range = a1RangeForTab(tab, 'A:N'); // 👈 ahora incluye qr_url
+    const range = a1RangeForTab(tab, 'A:P'); 
 
     const { sheets } = getApisFromEnvTokens();
     const resp = await sheets.spreadsheets.values.get({ spreadsheetId: sid, range });
