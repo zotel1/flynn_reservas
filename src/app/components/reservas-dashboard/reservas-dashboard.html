@@ -118,16 +118,16 @@
 
         <div *ngIf="scanMatch" class="card">
             <h4>Reserva validada</h4>
-            <p><b>{{ scanMatch?.nombre }}</b> · {{ scanMatch?.personas }} persona(s)</p>
-            <p>{{ scanMatch?.fecha }} {{ scanMatch?.hora }} · {{ scanMatch?.sitio || '-' }}</p>
+            <p><b>{{ scanMatch.nombre }}</b> · {{ scanMatch.personas }} persona(s)</p>
+            <p>{{ scanMatch.fecha }} {{ scanMatch.hora }} · {{ scanMatch.sitio || '-' }}</p>
         
-            <p *ngIf="scanMatch?.status" style="margin-top:8px;">
-                Estado actual: <b>{{ scanMatch?.status }}</b>
+            <p *ngIf="scanMatch.status" style="margin-top:8px;">
+                Estado actual: <b>{{ scanMatch.status }}</b>
             </p>
         
             <button class="btn" type="button" (click)="confirmCheckin()"
-                [disabled]="cargando || scanMatch?.status === 'CHECKED_IN'">
-                {{ scanMatch?.status === 'CHECKED_IN' ? 'Ya está en check-in' : 'Confirmar ingreso' }}
+                [disabled]="cargando || scanMatch.status === 'CHECKED_IN'">
+                {{ scanMatch.status === 'CHECKED_IN' ? 'Ya está en check-in' : 'Confirmar ingreso' }}
             </button>
         </div>
 
