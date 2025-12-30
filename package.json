@@ -6,6 +6,8 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build --configuration production",
+    "test": "ng test --watch=false --browsers=ChromeHeadless",
+    "typecheck": "tsc -p api/tsconfig.json --noEmit",
     "api": "vercel dev --yes",
     "dev": "concurrently \"ng serve\" \"npm run api\"",
     "generate:embeddings": "tsx scripts/generateEmbeddings.ts"
