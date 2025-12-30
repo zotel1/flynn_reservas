@@ -3,18 +3,15 @@ name: CI
 on:
   pull_request:
   push:
-    branches: ["main"]
+    branches: ["master"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: npm
@@ -25,10 +22,12 @@ jobs:
       - name: Typecheck API (serverless)
         run: npm run typecheck:api
 
+      - name: Test API (Jest)
+        run: npm run test:api
+
       - name: Build (Angular production)
         run: npm run build
 
-      # Por ahora lo dejo como opcional para que no te frene
-      # (si ya tenés karma.conf y al menos 1 spec, lo activamos)
-      #- name: Unit tests (Angular)
-      #  run: npm test
+      # UI tests quedan listos para cuando creemos specs del front
+      #- name: Test UI (Jest)
+      #  run: npm run test:ui

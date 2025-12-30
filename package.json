@@ -6,11 +6,12 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build --configuration production",
-    "test": "ng test --watch=false --browsers=ChromeHeadless",
-    "typecheck": "tsc -p api/tsconfig.json --noEmit",
     "api": "vercel dev --yes",
     "dev": "concurrently \"ng serve\" \"npm run api\"",
-    "generate:embeddings": "tsx scripts/generateEmbeddings.ts"
+    "generate:embeddings": "tsx scripts/generateEmbeddings.ts",
+    "typecheck:api": "tsc -p api/tsconfig.json --noEmit",
+    "test:api": "node --experimental-vm-modules node_modules/jest/bin/jest.js -c jest.api.config.ts --passWithNoTests",
+    "test:ui": "node --experimental-vm-modules node_modules/jest/bin/jest.js -c jest.ui.config.ts --passWithNoTests"
   },
   "prettier": {
     "printWidth": 100,
