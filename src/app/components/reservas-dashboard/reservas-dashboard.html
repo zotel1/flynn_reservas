@@ -122,6 +122,13 @@
             <p>{{ scanMatch?.fecha }} {{ scanMatch?.hora }} · {{ scanMatch?.sitio || '-' }}</p>
           </div>
         </div>
+
+        <div class="manual-qr">
+            <p style="margin:10px 0 6px;">Si no funciona la cámara, pegá el QR (texto):</p>
+            <textarea [(ngModel)]="manualQr" name="manualQr" rows="3" style="width:100%;"></textarea>
+            <button class="btn sec small" type="button" (click)="validarQrPegado()">Validar QR pegado</button>
+        </div>
+
       </div>
     </div>
 
