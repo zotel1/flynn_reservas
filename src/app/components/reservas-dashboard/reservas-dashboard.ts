@@ -21,6 +21,9 @@ type ReservaItem = {
   fecha?: string; hora?: string; personas?: number; comentario?: string;
   notas?: string; sitio?: string;
   qr_url?: string;
+  status?: string;
+  checked_in_at?: string;
+  checked_in_by?: string;
 };
 
 @Component({
