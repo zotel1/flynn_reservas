@@ -4,6 +4,7 @@ import {
   handleAdminDiag,
   handleAdminReservas,
   handleWeeklySummary,
+  handleAdminCheckin
 } from '../../lib/admin';
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
@@ -22,6 +23,9 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
 
     case 'weekly-summary':
       return handleWeeklySummary(req, res);
+    
+    case 'checkin':
+      return handleAdminCheckin(req, res);
 
     default:
       return res.status(404).json({ ok: false, message: 'Not found' });
