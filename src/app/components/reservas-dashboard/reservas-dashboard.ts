@@ -34,6 +34,7 @@ export class ReservasDashboard implements OnInit, OnDestroy {
   needsLogin = true;
   meEmail = '';
   clientId = '';
+  manualQr = '';
 
   cargando = false;
   error = '';
@@ -241,6 +242,53 @@ export class ReservasDashboard implements OnInit, OnDestroy {
   }
 
   private cargar() { this.cargar$().pipe(takeUntil(this.destroy$)).subscribe(); }
+
+    validarQrPegado() {
+        if (!this.manualQr.trim()) return;
+        this.onQrDecoded(this.manualQr.trim());
+    }
+
+    confirmCheckin() {
+        const r = this.scanMatch || this.selected;
+        if (!r) return;
+
+        this.cargando = true;
+        this.error = '';
+
+        const payload = {
+            email: r.email || '',
+            fecha: r.fecha || '',
+            hora: r.hora || '',
+            sitio: r.sitio || '',
+            personas: Number(r.personas || 0),
+            by: this.meEmail || '',
+        };
+
+        this.http.post<any>('/api/admin/checkin', payload, { withCredentials: true })
+            .pipe(
+                tap(resp => {
+                    const updated = resp?.item;
+                    if (updated) {
+                        this.items = this.items.map(it =>
+                            this.reservasCoinciden(it, updated) ? { ...it, ...updated } : it
+                        );
+                        if (this.selected && this.reservasCoinciden(this.selected, updated)) this.selected = { ...this.selected, ...updated };
+                        if (this.scanMatch && this.reservasCoinciden(this.scanMatch, updated)) this.scanMatch = { ...this.scanMatch, ...updated };
+                    }
+                    this.scanMessage = resp?.already
+                        ? '✅ Ya estaba en CHECK-IN (ok).'
+                        : '✅ Check-in registrado correctamente.';
+                }),
+                catchError(e => {
+                    this.error = e?.error?.message || e?.message || 'No se pudo registrar el check-in.';
+                    return of(null);
+                }),
+                finalize(() => this.cargando = false),
+                takeUntil(this.destroy$)
+            )
+            .subscribe();
+    }
+
 
   // ---------- Selección de reserva ----------
   selectReserva(r: ReservaItem) {
