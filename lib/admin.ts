@@ -4,6 +4,114 @@ import { google } from 'googleapis';
 import { getApisFromEnvTokens, getOAuthClient } from './google';
 import { requireAdmin } from './auth';
 
+import { z } from 'zod';
+
+const checkinSchema = z.object({
+    email: z.string().email(),
+    fecha: z.string().min(8),
+    hora: z.string().min(4),
+    sitio: z.string().optional().default(''),
+    personas: z.coerce.number().int().nonnegative().default(0),
+    by: z.string().optional().default(''), // lo manda el front (meEmail)
+});
+
+function sameStr(a?: string, b?: string) {
+    return String(a || '').trim().toLowerCase() === String(b || '').trim().toLowerCase();
+}
+
+function sameNum(a?: any, b?: any) {
+    return Number(a || 0) === Number(b || 0);
+}
+
+export async function handleAdminCheckin(req: VercelRequest, res: VercelResponse) {
+    if (!requireAdmin(req, res)) return;
+
+    if (req.method !== 'POST') {
+        res.setHeader('Allow', 'POST');
+        return res.status(405).json({ ok: false, message: 'Method Not Allowed' });
+    }
+
+    try {
+        const rawBody = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+        const parsed = checkinSchema.safeParse(rawBody);
+        if (!parsed.success) {
+            return res.status(400).json({ ok: false, message: 'Payload inválido', error: parsed.error.flatten() });
+        }
+
+        const { email, fecha, hora, sitio, personas, by } = parsed.data;
+
+        const sid = process.env.SHEET_ID!;
+        const tab = (process.env.SHEET_TAB_NAME || 'Reservas').trim();
+        const range = a1RangeForTab(tab, 'A:P');
+
+        const { sheets } = getApisFromEnvTokens();
+        const resp = await sheets.spreadsheets.values.get({ spreadsheetId: sid, range });
+        const values = (resp.data.values || []) as any[][];
+
+        // Buscar fila
+        const rowIndex = values.findIndex((row) => {
+            // columnas según tu schema actual
+            const rEmail = row[2];
+            const rFecha = row[4];
+            const rHora = row[5];
+            const rSitio = row[12];
+            const rPers = row[6];
+
+            if (!rEmail || !rFecha) return false;
+
+            return (
+                sameStr(rEmail, email) &&
+                String(rFecha || '') === String(fecha) &&
+                String(rHora || '') === String(hora) &&
+                (sitio ? String(rSitio || '') === String(sitio) : true) &&
+                (personas ? sameNum(rPers, personas) : true)
+            );
+        });
+
+        if (rowIndex === -1) {
+            return res.status(404).json({
+                ok: false,
+                message: 'No se encontró la reserva en Sheets con esos datos (probá ampliar el rango/filtros).',
+            });
+        }
+
+        const rowNumber = rowIndex + 1; // A1 es 1-based
+        const nowIso = new Date().toISOString();
+        const statusCell = a1RangeForTab(tab, `J${rowNumber}:J${rowNumber}`); // status = col J
+        const checkinCells = a1RangeForTab(tab, `O${rowNumber}:P${rowNumber}`); // checked_in_at/by
+
+        // Idempotencia: si ya está en CHECKED_IN, igual devolvemos OK
+        const currentStatus = String(values[rowIndex]?.[9] || '');
+        const already = currentStatus === 'CHECKED_IN';
+
+        await sheets.spreadsheets.values.batchUpdate({
+            spreadsheetId: sid,
+            requestBody: {
+                valueInputOption: 'USER_ENTERED',
+                data: [
+                    { range: statusCell, values: [['CHECKED_IN']] },
+                    { range: checkinCells, values: [[nowIso, by || '']] },
+                ],
+            },
+        });
+
+        // devolvemos item actualizado (como lo mapearía tu list)
+        const updatedRow = [...values[rowIndex]];
+        updatedRow[9] = 'CHECKED_IN';
+        updatedRow[14] = nowIso;
+        updatedRow[15] = by || '';
+
+        return res.status(200).json({
+            ok: true,
+            already,
+            item: mapRow(updatedRow),
+        });
+    } catch (e: any) {
+        return res.status(500).json({ ok: false, message: e?.message || 'No se pudo hacer check-in' });
+    }
+}
+
+
 //
 // === /api/admin/diag  =====================================
 //
