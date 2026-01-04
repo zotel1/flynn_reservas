@@ -1,18 +1,10 @@
 /* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
 /* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
 {
-    "extends": "./tsconfig.json",
-    "compilerOptions": {
-        "outDir": "./out-tsc/spec",
-        "module": "ES2022",
-        "types": [
-            "jest"
-        ]
-    },
-    "include": [
-        "src/**/*.spec.ts",
-        "src/**/*.d.ts",
-        "api/**/*.spec.ts",
-        "lib/**/*.spec.ts"
-    ]
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "types": ["jest", "node"],
+    "esModuleInterop": true
+  },
+  "include": ["lib/**/*.ts", "api/**/*.ts"]
 }
