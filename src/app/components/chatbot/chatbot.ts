@@ -123,7 +123,7 @@ export class Chatbot {
       this.currentTopic = 'bebidas';
     } else if (/(horario|abr|cier|días)/i.test(lower)) {
       this.currentTopic = 'horarios';
-    } else if (/(reserva|mesa|turno)/i.test(lower)) {
+    } else if (/\b(reserva|reservar|reservas)\b/i.test(lower)) {
       this.currentTopic = 'reservas';
     }
 
